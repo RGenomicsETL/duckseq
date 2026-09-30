@@ -4,21 +4,21 @@ This workspace probes whether BAM-derived evidence can be represented as typed P
 
 ## Run
 
-From `/root/aie-sql`, run:
+From this directory, run:
 
 ```sh
+./setup.sh
 ./test.sh
+./mutation_test.sh
 ```
 
-The command regenerates the reference, SAM-derived BAMs, indexes, Gravlax archives and Parquet files; runs the SQL and matching Gravlax region, junction, jset, replay, and annotation-comparison operations. It exits nonzero when the current annotation SQL disagrees with Gravlax rather than treating the difference as acceptable. Requirements: git/network access for the first Gravlax clone, Rust/Cargo, samtools, jq, `/root/.local/bin/duckdb` 1.5.1, and the pinned extension `ext/duckhts.duckdb_extension`.
+Setup obtains the DuckDB CLI and DuckHTS extension, then clones and builds Gravlax at the recorded commit. Set `DUCKDB` or `DUCKHTS_EXTENSION` to use local alternatives. The tests regenerate the reference, BAMs, indexes, Gravlax archives and Parquet files; run SQL and matching Gravlax region, junction, jset, replay, and annotation-comparison operations; and require all seven SQL mutants to be killed. Requirements: git/network access, Rust/Cargo, R, samtools, jq, curl and unzip. `EXTENSIONS.txt` records the resolved versions and extension checksum after setup.
 
 `fixture/README.md` documents each alignment. `SCHEMA.md` describes relation keys, ordering, coordinate conventions, and unavailable information. SQL is in `sql/`.
 
 ## Current oracle result
 
-The fixture-scoped region and junction queries agree exactly with Gravlax for both samples: four region UMI classes and two junction UMI classes per cell. This is not evidence of general parity with Gravlax's locus and UMI-collapse policy. The SQL jset include-only count agrees with Gravlax's `2`; the fixture has no exclusion junction, so it does not test a positive same-molecule `both` class or a separate-molecules false positive.
-
-Annotation replay is not yet equivalent. On sample A, Gravlax replay gives v1 `geneA=1, geneB=1` and v2 `geneB=1`; `compare-annotations` reports a signed `geneA` delta of `-1`. The exploratory SQL overlap query gives v1 `geneA=3` and v2 `geneA=3, geneC=3`; it misses `geneB=1` in both versions. SQL counts overlapping exon blocks and distinct exact UMIs; it does not yet implement transcript-concordant assignment, Gravlax's 1-mismatch UMI collapse, or alternative-placement assignment. The test reports this mismatch and exits nonzero.
+The fixture-scoped region, junction and jset results agree exactly with Gravlax for both samples. Annotation replay and signed annotation deltas also match for both annotation versions. Seven mutation tests kill altered rules in the annotation SQL. These results are scoped to the checked-in synthetic fixture and do not establish exhaustive compatibility or performance parity.
 
 ## Semantics and limitations
 

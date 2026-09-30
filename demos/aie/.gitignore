@@ -1,4 +1,5 @@
 ext/
+.cache/
 .gravlax/
 work/
 *.aie

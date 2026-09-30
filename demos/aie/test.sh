@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
+eval "$(./setup.sh)"
 AIE=.gravlax/target/release/aie
-DUCKDB=/root/.local/bin/duckdb
-GRAVLAX_COMMIT=75b8d6c01064ba92af295543d50230429774e170
 
 mkdir -p work
 failures=0
@@ -14,18 +13,6 @@ check_equal() {
     failures=$((failures + 1))
   fi
 }
-if [[ ! -d .gravlax/.git ]]; then
-  git clone https://github.com/COMBINE-lab/gravlax.git .gravlax
-  git -C .gravlax checkout "$GRAVLAX_COMMIT"
-fi
-if [[ "$(git -C .gravlax rev-parse HEAD)" != "$GRAVLAX_COMMIT" ]]; then
-  echo "Expected Gravlax $GRAVLAX_COMMIT in .gravlax" >&2
-  exit 1
-fi
-if [[ ! -x "$AIE" ]]; then
-  cargo build --release --manifest-path .gravlax/Cargo.toml
-fi
-
 ./fixture/build.sh > work/fixture-build.log 2>&1
 "$DUCKDB" -unsigned < sql/load.sql > work/load.log
 for query in region junction jset availability annotation_counts; do
