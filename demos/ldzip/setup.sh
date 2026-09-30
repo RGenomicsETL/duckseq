@@ -17,8 +17,20 @@ if [[ ! -d .ldzip/.git ]]; then
 fi
 git -C .ldzip checkout --detach "$LDZIP_COMMIT"
 make -C .ldzip/cpp -j"$(nproc)" build
-Rscript --vanilla -e 'Rcpp::compileAttributes(".ldzip/R")'
-R CMD INSTALL --library="$PWD/.rlib" .ldzip/R
+
+# CRAN packages go to .cache/R/library; bspm's apt hook is disabled because it
+# fails on some hosts. RSPM (set by r-lib/actions) serves Linux binaries in CI.
+r_lib="$PWD/.cache/R/library"
+mkdir -p "$r_lib"
+R_LIBS_USER="$r_lib" Rscript --vanilla -e '
+  if (requireNamespace("bspm", quietly=TRUE)) bspm::disable()
+  need <- c("Rcpp", "RSQLite", "DBI")
+  need <- need[!vapply(need, requireNamespace, logical(1), quietly=TRUE)]
+  if (length(need)) install.packages(need, repos=Sys.getenv("RSPM", "https://cloud.r-project.org"), lib=Sys.getenv("R_LIBS_USER"))
+  stopifnot(all(vapply(c("Rcpp", "RSQLite", "DBI"), requireNamespace, logical(1), quietly=TRUE)))
+' > .cache/ldzip-r-deps.log 2>&1 || { cat .cache/ldzip-r-deps.log >&2; exit 1; }
+R_LIBS_USER="$r_lib" Rscript --vanilla -e 'Rcpp::compileAttributes(".ldzip/R")'
+R_LIBS_USER="$r_lib" R CMD INSTALL --library="$PWD/.rlib" .ldzip/R
 
 case "$(uname -s)-$(uname -m)" in
   Linux-x86_64) plink_asset=plink2_linux_x86_64.zip ;;
@@ -55,19 +67,16 @@ else
   fi
 fi
 
-# Match demos/aie's R-universe installation path while suppressing bspm's apt hook.
-r_lib="$PWD/.cache/R/library"
-mkdir -p "$r_lib"
 R_LIBS_USER="$r_lib" Rscript --vanilla -e '
   if (requireNamespace("bspm", quietly=TRUE)) bspm::disable()
-  if (!requireNamespace("Rduckhts", quietly=TRUE)) install.packages("Rduckhts", repos="https://rgenomicsetl.r-universe.dev")
+  if (!requireNamespace("Rduckhts", quietly=TRUE)) install.packages("Rduckhts", repos=c(rgenomicsetl="https://rgenomicsetl.r-universe.dev", CRAN=Sys.getenv("RSPM", "https://cloud.r-project.org")))
 ' > .cache/rduckhts-install.log 2>&1 || { cat .cache/rduckhts-install.log >&2; exit 1; }
 R_LIBS_USER="$r_lib" Rscript --vanilla -e '
-  if (!requireNamespace("duckdb", quietly=TRUE) || as.character(packageVersion("duckdb")) != "1.5.5") {
+  if (!requireNamespace("duckdb", quietly=TRUE) || packageVersion("duckdb") < "1.5.5") {
     if (requireNamespace("bspm", quietly=TRUE)) bspm::disable()
-    install.packages("duckdb", repos="https://cloud.r-project.org", lib=Sys.getenv("R_LIBS_USER"))
+    install.packages("duckdb", repos=Sys.getenv("RSPM", "https://cloud.r-project.org"), lib=Sys.getenv("R_LIBS_USER"))
   }
-  stopifnot(as.character(packageVersion("duckdb")) == "1.5.5")
+  stopifnot(packageVersion("duckdb") >= "1.5.5")
 ' > .cache/duckdb-r-install.log 2>&1 || { cat .cache/duckdb-r-install.log >&2; exit 1; }
 extension_path=$(R_LIBS_USER="$r_lib" Rscript --vanilla -e 'cat(system.file("duckhts_extension", "build", "duckhts.duckdb_extension", package="Rduckhts"))')
 [[ -f "$extension_path" ]] || { echo "Rduckhts did not provide DuckHTS extension" >&2; exit 1; }

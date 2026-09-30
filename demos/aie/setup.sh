@@ -71,9 +71,13 @@ else
 fi
 ln -sfn "$extension_path" ext/duckhts.duckdb_extension
 
+# The CI cache restores .gravlax/target, so clone by init and fetch in place.
 if [[ ! -d .gravlax/.git ]]; then
-  git clone https://github.com/COMBINE-lab/gravlax.git .gravlax
+  git init -q .gravlax
+  git -C .gravlax remote add origin https://github.com/COMBINE-lab/gravlax.git
 fi
+git -C .gravlax cat-file -e "${GRAVLAX_COMMIT}^{commit}" 2>/dev/null ||
+  git -C .gravlax fetch --quiet origin "$GRAVLAX_COMMIT"
 git -C .gravlax checkout --detach "$GRAVLAX_COMMIT"
 if [[ ! -x .gravlax/target/release/aie ]]; then
   cargo build --release --manifest-path .gravlax/Cargo.toml
