@@ -18,7 +18,29 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      peakwhere: ${{ steps.filter.outputs.peakwhere }}
+      aie: ${{ steps.filter.outputs.aie }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            peakwhere:
+              - 'demos/peakwhere/**'
+              - '.github/workflows/test.yml'
+            aie:
+              - 'demos/aie/**'
+              - '.github/workflows/test.yml'
+
   peakwhere:
+    needs: changes
+    if: needs.changes.outputs.peakwhere == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -50,6 +72,8 @@ jobs:
       - run: npm test
 
   aie:
+    needs: changes
+    if: needs.changes.outputs.aie == 'true' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     defaults:
       run:

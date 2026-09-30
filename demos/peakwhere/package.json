@@ -13,7 +13,7 @@
   "description": "Where do your peaks land? peakwhere ported to SQL over DuckHTS in duckdb-wasm.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sounkou-bioinfo/duckpeakwhere.git"
+    "url": "https://github.com/RGenomicsETL/duckseq.git"
   },
   "scripts": {
     "stage": "node scripts/stage-duckhts.mjs",

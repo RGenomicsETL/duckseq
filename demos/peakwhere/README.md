@@ -3,8 +3,8 @@
 
 # duckpeakwhere <img src="man/figures/logo.svg" align="right" height="139" alt="duckpeakwhere hex sticker" />
 
-[![test](https://github.com/sounkou-bioinfo/duckpeakwhere/actions/workflows/test.yml/badge.svg)](https://github.com/sounkou-bioinfo/duckpeakwhere/actions/workflows/test.yml)
-[![pages](https://github.com/sounkou-bioinfo/duckpeakwhere/actions/workflows/pages.yml/badge.svg)](https://github.com/sounkou-bioinfo/duckpeakwhere/actions/workflows/pages.yml)
+[![test](https://github.com/RGenomicsETL/duckseq/actions/workflows/test.yml/badge.svg)](https://github.com/RGenomicsETL/duckseq/actions/workflows/test.yml)
+[![pages](https://github.com/RGenomicsETL/duckseq/actions/workflows/pages.yml/badge.svg)](https://github.com/RGenomicsETL/duckseq/actions/workflows/pages.yml)
 
 **Genomics tools as SQL, in the browser.** duckpeakwhere answers two
 first questions about a peak set (where do the peaks land, and what is
@@ -14,7 +14,7 @@ own. [htslib](https://github.com/samtools/htslib) reads the formats,
 kernels, and [DuckDB](https://duckdb.org) does everything else, running
 as [duckdb-wasm](https://github.com/duckdb/duckdb-wasm) in your tab.
 
-**Try it: <https://sounkou-bioinfo.github.io/duckpeakwhere/>**. Files
+**Try it: <https://rgenomicsetl.github.io/duckseq/peakwhere/>**. Files
 never leave your computer, and the page makes no requests outside its
 own origin.
 
@@ -75,14 +75,20 @@ FROM tx GROUP BY biotype ORDER BY transcripts DESC;
 **Show the SQL** under each result lists every statement that run
 executed, in order.
 
-## The same SQL, outside the browser
+## DuckDB on the same files
 
-Nothing in it is browser-specific. These chunks run in the DuckDB CLI
-with the same DuckHTS extension, on the bundled example data.
+The browser uses DuckHTS readers for validated parsing. Native DuckDB
+can also query these tab-delimited files directly; explicit schemas keep
+this small CLI example clear.
 
 ``` sql
 SELECT feature, count(*) AS n
-FROM read_gff('examples/gencode.vM25.basic.chr19.gff3.gz', scan_mode := 'sequential')
+FROM read_csv('test/fixtures/fixture.gff3', auto_detect = false, delim = '\t',
+  header = false, comment = '#', columns = {
+    'seqid': 'VARCHAR', 'source': 'VARCHAR', 'feature': 'VARCHAR',
+    'start': 'BIGINT', 'end': 'BIGINT', 'score': 'VARCHAR',
+    'strand': 'VARCHAR', 'phase': 'VARCHAR', 'attributes': 'VARCHAR'
+  })
 GROUP BY feature
 ORDER BY n DESC, feature
 LIMIT 6;
@@ -90,40 +96,34 @@ LIMIT 6;
 #> │     feature     │   n   │
 #> │     varchar     │ int64 │
 #> ├─────────────────┼───────┤
-#> │ exon            │ 17082 │
-#> │ CDS             │ 14404 │
-#> │ five_prime_UTR  │  2429 │
-#> │ transcript      │  2303 │
-#> │ three_prime_UTR │  1577 │
-#> │ start_codon     │  1553 │
+#> │ CDS             │     6 │
+#> │ exon            │     6 │
+#> │ five_prime_UTR  │     3 │
+#> │ gene            │     3 │
+#> │ three_prime_UTR │     3 │
+#> │ transcript      │     2 │
 #> └─────────────────┴───────┘
 ```
 
 ``` sql
-SELECT 'CTCF' AS mark, count(*) AS peaks, median("end" - start) AS median_width
-FROM read_bed('examples/thymus_CTCF_ENCFF714WDP.chr19.narrowPeak.gz', scan_mode := 'sequential')
-UNION ALL
-SELECT 'H3K4me3', count(*), median("end" - start)
-FROM read_bed('examples/thymus_H3K4me3_ENCFF674JZY.chr19.narrowPeak.gz', scan_mode := 'sequential');
-#> ┌─────────┬───────┬──────────────┐
-#> │  mark   │ peaks │ median_width │
-#> │ varchar │ int64 │    double    │
-#> ├─────────┼───────┼──────────────┤
-#> │ CTCF    │   706 │        344.0 │
-#> │ H3K4me3 │   859 │        648.0 │
-#> └─────────┴───────┴──────────────┘
+SELECT count(*) AS peaks, median("end" - start) AS median_width
+FROM read_csv('examples/thymus_CTCF_ENCFF714WDP.chr19.narrowPeak.gz',
+  auto_detect = false, delim = '\t', header = false, columns = {
+    'chrom': 'VARCHAR', 'start': 'BIGINT', 'end': 'BIGINT', 'name': 'VARCHAR',
+    'score': 'DOUBLE', 'strand': 'VARCHAR', 'signal': 'DOUBLE',
+    'pvalue': 'DOUBLE', 'qvalue': 'DOUBLE', 'peak': 'BIGINT'
+  });
+#> ┌───────┬──────────────┐
+#> │ peaks │ median_width │
+#> │ int64 │    double    │
+#> ├───────┼──────────────┤
+#> │   706 │        344.0 │
+#> └───────┴──────────────┘
 ```
 
-``` sql
-SELECT duckhts_contig_key('chr19') = duckhts_contig_key('19') AS same_contig,
-       duckhts_contig_key('chrM') = duckhts_contig_key('MT') AS same_mito;
-#> ┌─────────────┬───────────┐
-#> │ same_contig │ same_mito │
-#> │   boolean   │  boolean  │
-#> ├─────────────┼───────────┤
-#> │ true        │ true      │
-#> └─────────────┴───────────┘
-```
+The CLI examples check file shape and basic summaries; they are not a
+substitute for peakwhere’s annotation rules or the browser’s DuckHTS
+reader behavior.
 
 ## Is it right?
 

@@ -58,14 +58,22 @@ fi
 
 duckdb_version=$("$duckdb_path" --version | head -n 1)
 extension_sha=$(sha256sum "$extension_path" | awk '{print $1}')
+if [[ -n "${DUCKHTS_EXTENSION:-}" ]]; then
+  extension_source="DUCKHTS_EXTENSION override"
+else
+  extension_source="Rduckhts $(R_LIBS_USER="$PWD/.cache/R/library" Rscript --vanilla -e 'cat(as.character(packageVersion("Rduckhts")))')"
+fi
+duckhts_library_path="$(dirname "$extension_path")/../htslib/lib"
+if [[ ! -d "$duckhts_library_path" ]]; then duckhts_library_path=; else duckhts_library_path=$(realpath "$duckhts_library_path"); fi
 cat > EXTENSIONS.txt <<EOF
 DuckDB CLI: $duckdb_version
-DuckHTS extension: $extension_path
+DuckHTS extension source: $extension_source
 DuckHTS extension SHA-256: $extension_sha
-R package source: Rduckhts from https://rgenomicsetl.r-universe.dev (unless DUCKHTS_EXTENSION is set)
+R package repository: https://rgenomicsetl.r-universe.dev (unless DUCKHTS_EXTENSION is set)
 Gravlax commit: $GRAVLAX_COMMIT
 Gravlax AIE version: $(.gravlax/target/release/aie --version 2>&1 | head -n 1)
 EOF
 
 printf 'export DUCKDB=%q\n' "$duckdb_path"
 printf 'export DUCKHTS_EXTENSION=%q\n' "$extension_path"
+printf 'export DUCKHTS_LIBRARY_PATH=%q\n' "$duckhts_library_path"

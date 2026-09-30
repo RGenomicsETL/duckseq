@@ -18,8 +18,8 @@ kernels supply interval mechanics, and SQL supplies everything else.
 - `test/`: Node test runner driving headless Chromium; `test/oracle.R`; `test/fixtures/`.
 - `examples/`: the mouse thymus chr19 data and its provenance.
 - `README.Rmd` renders `README.md`. `man/figures/logo.svg` is the hex sticker.
-- `.github/workflows/test.yml` tests every push and PR; `.github/workflows/pages.yml` publishes
-  `main` to <https://sounkou-bioinfo.github.io/duckpeakwhere/> (signed DuckHTS builds only).
+- Root `.github/workflows/test.yml` tests the demo; root `.github/workflows/pages.yml` publishes
+  the app at <https://rgenomicsetl.github.io/duckseq/peakwhere/> (signed DuckHTS builds only).
 
 ## Rules
 

@@ -2,6 +2,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 eval "$(./setup.sh)"
+if [[ -n "$DUCKHTS_LIBRARY_PATH" ]]; then
+  export LD_LIBRARY_PATH="$DUCKHTS_LIBRARY_PATH${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+fi
 AIE=.gravlax/target/release/aie
 
 mkdir -p work
