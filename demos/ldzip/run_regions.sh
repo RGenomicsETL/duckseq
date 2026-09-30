@@ -24,6 +24,6 @@ for multiple in 1 2 4; do
       --snp_file "${prefix}-vars.pvar" --output_prefix "${prefix}-b${bits}" \
       --bits "$bits" --min 0.0001 --min_col UNPHASED_R
     Rscript --vanilla -e 'library(LDZipMatrix); x <- LDZipMatrix(commandArgs(TRUE)[[1L]]); buildIndex(x)' "${prefix}-b${bits}"
-    Rscript --vanilla build_parquet.R "$prefix" 262144 9 "$bits"
+    ./build.sh "$prefix" 262144 9 "$bits"
   done
 done

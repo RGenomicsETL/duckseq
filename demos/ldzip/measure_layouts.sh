@@ -9,7 +9,7 @@ for rg in 16384 65536 122880 262144; do
   for z in 3 9 19; do
     for rep in 1 2 3; do
       stem="work/perf/layout-runs/rg${rg}-z${z}-r${rep}"
-      /usr/bin/time -f '%e\t%M' -o "$stem.time" Rscript --vanilla build_parquet.R work/derived/region-1x "$rg" "$z" 8 >"$stem.out" 2>"$stem.err"
+      /usr/bin/time -f '%e\t%M' -o "$stem.time" ./build.sh work/derived/region-1x "$rg" "$z" 8 >"$stem.out" 2>"$stem.err"
       read -r seconds rss < "$stem.time"
       parquet="work/derived/region-1x-b8-parquet-rg${rg}-z${z}"
       bytes=$(find "$parquet" -type f -printf '%s\n' | awk '{s += $1} END {print s+0}')

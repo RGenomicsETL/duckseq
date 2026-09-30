@@ -9,4 +9,4 @@ for n in 1 2 4; do
     Rscript --vanilla parity_regions.R "work/derived/region-${n}x" "$bits"
   done
 done
-./mutation_test.sh
+./mutation_test.sh work/derived/region-1x

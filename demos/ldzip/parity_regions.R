@@ -92,8 +92,7 @@ if (!identical(as.numeric(region_sql$r_q), as.vector(region_r)))
   stop("SQL region extraction differs from LDZip region extraction")
 cat("PASS ID and region resolution through the SQL variants table\n")
 
-for (size in c(1000L, 5000L)) {
-  if (size > nrow(variants)) next
+for (size in unique(pmin(c(1000L, 5000L), nrow(variants)))) {
   idx <- seq_len(size)
   matrix_r <- fetchLD(ld, idx, idx, types = "UNPHASED_R")
   expected_values <- as.vector(t(matrix_r))
