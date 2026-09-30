@@ -25,10 +25,10 @@ ${sample}_multi	256	chr1	60	0	10M	*	0	0	AAAAAAAAAA	FFFFFFFFFF	RG:Z:${sample}	CB:
 EOF
   # Abundance chain: X=3, Y=1, Z=1; X-Y and Y-Z are adjacent but X-Z is not.
   for i in 1 2 3; do
-    printf '%s\t0\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:AAAAAAAAAAAA\tCR:Z:%s\tUR:Z:AAAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_x${i}" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
+    printf '%s\t16\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:AAAAAAAAAAAA\tCR:Z:%s\tUR:Z:AAAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_x${i}" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
   done
-  printf '%s\t0\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:CAAAAAAAAAAA\tCR:Z:%s\tUR:Z:CAAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_y" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
-  printf '%s\t0\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:CCAAAAAAAAAA\tCR:Z:%s\tUR:Z:CCAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_z" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
+  printf '%s\t16\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:CAAAAAAAAAAA\tCR:Z:%s\tUR:Z:CAAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_y" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
+  printf '%s\t16\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:CCAAAAAAAAAA\tCR:Z:%s\tUR:Z:CCAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_z" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
   # Tie: P and Q each occur twice; R is one mismatch from each.
   for umi in AAAAAAAAAAAA CCAAAAAAAAAA; do
     for i in 1 2; do
@@ -52,13 +52,13 @@ cat > fixture/annotation-v1.gtf <<'EOF'
 chr1	sqlfixture	exon	10	14	.	+	.	gene_id "geneA"; transcript_id "txA";
 chr1	sqlfixture	exon	25	29	.	+	.	gene_id "geneA"; transcript_id "txA";
 chr1	sqlfixture	exon	30	39	.	+	.	gene_id "geneB"; transcript_id "txB";
-chr1	sqlfixture	exon	40	44	.	+	.	gene_id "geneA"; transcript_id "txA";
+chr1	sqlfixture	exon	40	44	.	+	.	gene_id "geneD"; transcript_id "txD";
 EOF
 cat > fixture/annotation-v2.gtf <<'EOF'
 chr1	sqlfixture	exon	10	14	.	+	.	gene_id "geneA"; transcript_id "txA";
 chr1	sqlfixture	exon	25	29	.	+	.	gene_id "geneC"; transcript_id "txC";
 chr1	sqlfixture	exon	30	39	.	+	.	gene_id "geneB"; transcript_id "txB";
-chr1	sqlfixture	exon	40	44	.	+	.	gene_id "geneA"; transcript_id "txA";
+chr1	sqlfixture	exon	40	44	.	+	.	gene_id "geneD"; transcript_id "txD";
 EOF
 for bam in work/sample_{a,b}.bam; do
   .gravlax/target/release/aie ingest check "$bam" --whitelist fixture/whitelist.txt

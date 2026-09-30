@@ -63,17 +63,37 @@ WITH RECURSIVE annotations AS (
     ORDER BY alignment_start, read_id, flag ROWS UNBOUNDED PRECEDING
   ) AS locus_id
   FROM read_starts
+), umi_counts AS (
+  SELECT sample_id, cell_barcode, contig, is_reverse, locus_id, umi, count(*) AS read_count
+  FROM loci
+  GROUP BY sample_id, cell_barcode, contig, is_reverse, locus_id, umi
+), umi_parent AS (
+  SELECT u.*,
+         (
+           SELECT o.umi FROM umi_counts o
+           WHERE o.sample_id=u.sample_id AND o.cell_barcode=u.cell_barcode
+             AND o.contig=u.contig AND o.is_reverse=u.is_reverse AND o.locus_id=u.locus_id
+             AND o.read_count>u.read_count
+             AND (SELECT count(*) FROM unnest(generate_series(1,length(u.umi))) AS p(i)
+                  WHERE substr(u.umi,p.i,1)<>substr(o.umi,p.i,1))=1
+           ORDER BY o.read_count DESC, o.umi ASC LIMIT 1
+         ) AS parent_umi
+  FROM umi_counts u
+), umi_resolution(sample_id, cell_barcode, contig, is_reverse, locus_id, umi, collapsed_umi) AS (
+  SELECT sample_id, cell_barcode, contig, is_reverse, locus_id, umi, umi
+  FROM umi_parent WHERE parent_umi IS NULL
+  UNION ALL
+  SELECT child.sample_id, child.cell_barcode, child.contig, child.is_reverse,
+         child.locus_id, child.umi, resolved.collapsed_umi
+  FROM umi_resolution resolved
+  JOIN umi_parent child
+    ON child.sample_id=resolved.sample_id AND child.cell_barcode=resolved.cell_barcode
+   AND child.contig=resolved.contig AND child.is_reverse=resolved.is_reverse
+   AND child.locus_id=resolved.locus_id AND child.parent_umi=resolved.umi
 ), umi_labels AS (
-  SELECT l.*,
-         coalesce((
-           SELECT min(o.umi) FROM loci o
-           WHERE o.sample_id=l.sample_id AND o.cell_barcode=l.cell_barcode
-             AND o.contig=l.contig AND o.is_reverse=l.is_reverse AND o.locus_id=l.locus_id
-             AND o.umi<l.umi
-             AND (SELECT count(*) FROM unnest(generate_series(1,length(l.umi))) AS p(i)
-                  WHERE substr(l.umi,p.i,1)<>substr(o.umi,p.i,1))=1
-         ), l.umi) AS collapsed_umi
-  FROM loci l
+  SELECT l.*, r.collapsed_umi
+  FROM loci l JOIN umi_resolution r
+    USING(sample_id, cell_barcode, contig, is_reverse, locus_id, umi)
 ), umi_reads AS (
   SELECT *, row_number() OVER (
     PARTITION BY sample_id, cell_barcode, contig, is_reverse, locus_id, collapsed_umi
@@ -83,6 +103,12 @@ WITH RECURSIVE annotations AS (
 ), molecules AS (
   SELECT * EXCLUDE (representative_rank)
   FROM umi_reads WHERE representative_rank=1
+), molecule_placements AS (
+  SELECT m.sample_id,m.cell_barcode,m.contig,m.is_reverse,m.locus_id,
+         m.collapsed_umi,m.read_id AS molecule_id,m.flag AS molecule_flag,
+         l.read_id AS placement_read_id,m.nh
+  FROM molecules m JOIN umi_labels l
+    USING(sample_id,cell_barcode,contig,is_reverse,locus_id,collapsed_umi)
 ), cigar_tokens AS (
   SELECT a.sample_id, a.read_id, a.flag, a.contig, a.pos_1based,
          t.i AS token_id, t.token,
@@ -91,7 +117,7 @@ WITH RECURSIVE annotations AS (
   FROM read_parquet('work/alignments.parquet') a
   CROSS JOIN LATERAL unnest(regexp_extract_all(a.cigar, '[0-9]+[MIDNSHP=X]'))
        WITH ORDINALITY AS t(token, i)
-  WHERE (a.flag & 4)=0 AND (a.flag & 256)=0 AND (a.flag & 2048)=0
+  WHERE (a.flag & 4)=0 AND (a.flag & 2048)=0
 ), token_positions AS (
   SELECT t.*,
          count(*) FILTER (WHERE op='N') OVER (
@@ -102,26 +128,31 @@ WITH RECURSIVE annotations AS (
                  ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0) AS ref_before
   FROM cigar_tokens t
 ), molecule_blocks AS (
-  SELECT m.sample_id, m.cell_barcode AS cell_id, m.contig, m.is_reverse,
-         m.read_id, m.flag, m.nh, m.alignment_start, m.alignment_end,
+  SELECT m.sample_id, m.cell_barcode AS cell_id, p.contig,
+         (p.flag & 16) != 0 AS is_reverse,
+         m.molecule_id AS read_id, m.molecule_flag AS flag,
+         m.placement_read_id, p.flag AS placement_flag, m.nh,
+         min(p.pos_1based - 1) AS alignment_start,
+         max(p.pos_1based - 1 + p.ref_before + p.op_length) AS alignment_end,
          p.block_id,
-         min(m.pos_1based - 1 + p.ref_before) AS block_start,
-         max(m.pos_1based - 1 + p.ref_before + p.op_length) AS block_end
-  FROM molecules m JOIN token_positions p
-    USING(sample_id, read_id, flag, contig, pos_1based)
+         min(p.pos_1based - 1 + p.ref_before) AS block_start,
+         max(p.pos_1based - 1 + p.ref_before + p.op_length) AS block_end
+  FROM molecule_placements m JOIN token_positions p
+    ON m.sample_id=p.sample_id AND m.placement_read_id=p.read_id
   WHERE p.op IN ('M','D','=','X')
-  GROUP BY m.sample_id,m.cell_barcode,m.contig,m.is_reverse,m.read_id,m.flag,m.nh,
-           m.alignment_start,m.alignment_end,p.block_id
+  GROUP BY m.sample_id,m.cell_barcode,p.contig,p.flag,m.molecule_id,m.molecule_flag,
+           m.placement_read_id,m.nh,p.block_id
 ), molecule_junctions AS (
-  SELECT m.sample_id, m.read_id, m.flag, m.contig, m.pos_1based,
+  SELECT m.sample_id, m.molecule_id AS read_id, m.molecule_flag AS flag,
+         m.placement_read_id, t.flag AS placement_flag, t.contig,
          t.token_id AS junction_id,
-         m.pos_1based - 1 + t.ref_before AS donor,
-         m.pos_1based - 1 + t.ref_before + t.op_length AS acceptor
-  FROM molecules m JOIN token_positions t
-    USING(sample_id, read_id, flag, contig, pos_1based)
+         t.pos_1based - 1 + t.ref_before AS donor,
+         t.pos_1based - 1 + t.ref_before + t.op_length AS acceptor
+  FROM molecule_placements m JOIN token_positions t
+    ON m.sample_id=t.sample_id AND m.placement_read_id=t.read_id
   WHERE t.op='N'
 ), transcript_candidates AS (
-  SELECT e.annotation, b.sample_id, b.cell_id, e.gene_id, b.read_id, b.flag
+  SELECT e.annotation, b.sample_id, b.cell_id, e.gene_id, b.read_id, b.flag, b.placement_read_id, b.placement_flag
   FROM molecule_blocks b
   JOIN transcript_exons e ON e.contig=b.contig
     AND ((b.is_reverse AND e.strand='-') OR (NOT b.is_reverse AND e.strand='+'))
@@ -133,17 +164,22 @@ WITH RECURSIVE annotations AS (
    AND tj.acceptor IS NOT NULL
   LEFT JOIN molecule_junctions j
     ON j.sample_id=b.sample_id AND j.read_id=b.read_id AND j.flag=b.flag
-   AND j.contig=b.contig AND j.donor=tj.donor AND j.acceptor=tj.acceptor
+   AND j.placement_read_id=b.placement_read_id
+   AND j.placement_flag=b.placement_flag AND j.contig=b.contig
+   AND j.donor=tj.donor AND j.acceptor=tj.acceptor
   WHERE b.block_start >= e.exon_start AND b.block_end <= e.exon_end
   GROUP BY e.annotation, b.sample_id, b.cell_id, e.gene_id, b.read_id, b.flag,
-           e.transcript_id, e.contig, e.strand, e.exon_count
+           e.transcript_id, e.contig, e.strand, e.exon_count,
+           b.placement_read_id, b.placement_flag
   HAVING count(DISTINCT b.block_id) = (
            SELECT count(DISTINCT mb.block_id) FROM molecule_blocks mb
            WHERE mb.sample_id=b.sample_id AND mb.read_id=b.read_id AND mb.flag=b.flag
+             AND mb.placement_read_id=b.placement_read_id AND mb.placement_flag=b.placement_flag
          )
      AND count(DISTINCT j.junction_id) = (
            SELECT count(*) FROM molecule_junctions mj
            WHERE mj.sample_id=b.sample_id AND mj.read_id=b.read_id AND mj.flag=b.flag
+             AND mj.placement_read_id=b.placement_read_id AND mj.placement_flag=b.placement_flag
          )
 ), unique_assignments AS (
   SELECT tc.annotation, tc.sample_id, tc.cell_id, tc.gene_id, tc.read_id, tc.flag

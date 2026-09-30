@@ -1,4 +1,4 @@
 chr1	sqlfixture	exon	10	14	.	+	.	gene_id "geneA"; transcript_id "txA";
 chr1	sqlfixture	exon	25	29	.	+	.	gene_id "geneA"; transcript_id "txA";
 chr1	sqlfixture	exon	30	39	.	+	.	gene_id "geneB"; transcript_id "txB";
-chr1	sqlfixture	exon	40	44	.	+	.	gene_id "geneA"; transcript_id "txA";
+chr1	sqlfixture	exon	40	44	.	+	.	gene_id "geneD"; transcript_id "txD";

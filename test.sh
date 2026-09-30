@@ -58,6 +58,9 @@ printf 'PASS region and junction counts match Gravlax for both samples\n'
 sql_include=$(awk -F, '$1=="sample_a" && $5=="false" && $4=="true" {n++} END {print n+0}' work/sql-jset.csv)
 aie_include=$(sed -n 's/^# summary=//p' work/aie-jset.tsv | jq -r '.totals.include_only')
 [[ "$sql_include" == "$aie_include" ]] || { echo "jset include-only mismatch: SQL=$sql_include AIE=$aie_include"; exit 1; }
+sql_both=$(awk -F, '$1=="sample_a" && $6=="true" {n++} END {print n+0}' work/sql-jset.csv)
+aie_both=$(sed -n 's/^# summary=//p' work/aie-jset.tsv | jq -r '.totals.both')
+[[ "$sql_both" == "$aie_both" ]] || { echo "jset both mismatch: SQL=$sql_both AIE=$aie_both"; exit 1; }
 
 parity=0
 for sample in a b; do

@@ -5,7 +5,7 @@ WITH ops AS (
          right(operation_token,1) AS op
   FROM read_parquet('work/cigar_operations.parquet')
 ), positioned AS (
-  SELECT *, pos_1based - 1 + coalesce(sum(CASE WHEN op IN ('M','D','=','X') THEN op_length ELSE 0 END)
+  SELECT *, pos_1based - 1 + coalesce(sum(CASE WHEN op IN ('M','D','N','=','X') THEN op_length ELSE 0 END)
     OVER (PARTITION BY sample_id, read_id, flag ORDER BY operation_order ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0) AS ref_before
   FROM ops
 ), junctions AS (
