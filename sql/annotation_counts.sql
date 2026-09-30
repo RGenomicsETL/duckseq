@@ -49,7 +49,7 @@ WITH RECURSIVE annotations AS (
   JOIN read_parquet('work/read_geometry.parquet') g
     USING(sample_id, read_id, flag, contig, pos_1based, cigar)
   JOIN read_span s USING(sample_id, read_id, flag, contig, pos_1based)
-  WHERE (a.flag & 4)=0 AND (a.flag & 256)=0 AND (a.flag & 2048)=0
+  WHERE (a.flag & 4)=0 AND (a.flag & 2048)=0
 ), read_starts AS (
   SELECT *, lag(alignment_start) OVER (
     PARTITION BY sample_id, cell_barcode, contig, is_reverse
@@ -64,7 +64,8 @@ WITH RECURSIVE annotations AS (
   ) AS locus_id
   FROM read_starts
 ), umi_counts AS (
-  SELECT sample_id, cell_barcode, contig, is_reverse, locus_id, umi, count(*) AS read_count
+  SELECT sample_id, cell_barcode, contig, is_reverse, locus_id, umi,
+         count(DISTINCT read_id) AS read_count
   FROM loci
   GROUP BY sample_id, cell_barcode, contig, is_reverse, locus_id, umi
 ), umi_parent AS (
@@ -73,7 +74,7 @@ WITH RECURSIVE annotations AS (
            SELECT o.umi FROM umi_counts o
            WHERE o.sample_id=u.sample_id AND o.cell_barcode=u.cell_barcode
              AND o.contig=u.contig AND o.is_reverse=u.is_reverse AND o.locus_id=u.locus_id
-             AND o.read_count>u.read_count
+             AND (o.read_count>u.read_count OR (o.read_count=u.read_count AND o.umi<u.umi))
              AND (SELECT count(*) FROM unnest(generate_series(1,length(u.umi))) AS p(i)
                   WHERE substr(u.umi,p.i,1)<>substr(o.umi,p.i,1))=1
            ORDER BY o.read_count DESC, o.umi ASC LIMIT 1
