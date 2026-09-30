@@ -10,7 +10,7 @@ From `/root/aie-sql`, run:
 ./test.sh
 ```
 
-The command regenerates the reference, SAM-derived BAMs, indexes, Gravlax archives and Parquet files; runs the SQL and matching Gravlax region, junction, jset, replay, and annotation-comparison operations. It exits nonzero when the current annotation SQL disagrees with Gravlax rather than treating the difference as acceptable. Requirements: Rust/Cargo, samtools, `/root/.local/bin/duckdb` 1.5.1, and the pinned extension `ext/duckhts.duckdb_extension`.
+The command regenerates the reference, SAM-derived BAMs, indexes, Gravlax archives and Parquet files; runs the SQL and matching Gravlax region, junction, jset, replay, and annotation-comparison operations. It exits nonzero when the current annotation SQL disagrees with Gravlax rather than treating the difference as acceptable. Requirements: git/network access for the first Gravlax clone, Rust/Cargo, samtools, jq, `/root/.local/bin/duckdb` 1.5.1, and the pinned extension `ext/duckhts.duckdb_extension`.
 
 `fixture/README.md` documents each alignment. `SCHEMA.md` describes relation keys, ordering, coordinate conventions, and unavailable information. SQL is in `sql/`.
 
