@@ -25,8 +25,13 @@ samples).
 
 The chr20 VCF is 763 MiB compressed. The initial 1×/2×/4× source
 conversion used 2.1 GiB on disk; `df` showed 54 GiB available before
-generating derived outputs. The full source and all derived data are
-ignored under `work/`.
+generating derived outputs. The PGEN contains 1,647,102 chr20 variants,
+but the full-chromosome LD output was not built: its size and compute
+cost were not measured, and a speculative extrapolation would not
+establish whether it fits the remaining disk budget. The nested slices
+are a bounded benchmark scope, not evidence that a full chr20 matrix
+cannot fit. The full source and all derived data are ignored under
+`work/`.
 
 Environment: Ubuntu 24.04, Linux 6.8, Intel Core i5-13500 (20 logical
 CPUs reported; 64 GiB RAM), R 4.6.0, PLINK 2 `v2.0.0-a.7.10LM` (archive
