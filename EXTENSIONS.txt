@@ -1,0 +1,6 @@
+# Pinned local extensions (not committed)
+duckhts 2.0.0 from RGenomicsETL/duckhts develop 625ce1ac
+ducktinycc 0.3.0.9000 from sounkou-bioinfo/DuckTinyCC e53e1ed
+3a3254ac587d77cb0682d2ae99880acfc98dff5ee368367b5d80c2b7be9c8af6  duckhts.duckdb_extension
+30054a7da930905f7b530f0ba3c2dce8a1c3ea698c581c6cf7c9c227ed634b49  ducktinycc.duckdb_extension
+DuckDB CLI: v1.5.1 (Variegata) 7dbb2e646f
