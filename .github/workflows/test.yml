@@ -80,6 +80,8 @@ jobs:
         working-directory: demos/aie
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/cache@v4
         with:
           path: |
