@@ -1,0 +1,29 @@
+# fixture.gtf with Ensembl's attribute names (transcript_biotype, gene_biotype) and one
+# extra lncRNA, tD, whose promoter window [10500, 12501) holds p17's centre. With the
+# protein-coding filter tD drops out and the counts are fixture.gtf's; without it p17 is promoter.
+chrF	fixture	gene	5001	9000	.	+	.	gene_id "gA"; gene_biotype "protein_coding";
+chrF	fixture	transcript	5001	9000	.	+	.	gene_id "gA"; transcript_id "tA"; transcript_biotype "protein_coding";
+chrF	fixture	exon	5001	5500	.	+	.	gene_id "gA"; transcript_id "tA"; exon_number 1;
+chrF	fixture	exon	8501	9000	.	+	.	gene_id "gA"; transcript_id "tA"; exon_number 2;
+chrF	fixture	CDS	5201	5500	.	+	0	gene_id "gA"; transcript_id "tA";
+chrF	fixture	CDS	8501	8800	.	+	0	gene_id "gA"; transcript_id "tA";
+chrF	fixture	UTR	5001	5200	.	+	.	gene_id "gA"; transcript_id "tA";
+chrF	fixture	UTR	8801	9000	.	+	.	gene_id "gA"; transcript_id "tA";
+chrF	fixture	gene	15001	19000	.	-	.	gene_id "gB"; gene_biotype "protein_coding";
+chrF	fixture	transcript	15001	19000	.	-	.	gene_id "gB"; transcript_id "tB"; transcript_biotype "protein_coding";
+chrF	fixture	exon	18501	19000	.	-	.	gene_id "gB"; transcript_id "tB"; exon_number 1;
+chrF	fixture	exon	15001	15500	.	-	.	gene_id "gB"; transcript_id "tB"; exon_number 2;
+chrF	fixture	CDS	18501	18800	.	-	0	gene_id "gB"; transcript_id "tB";
+chrF	fixture	CDS	15201	15500	.	-	0	gene_id "gB"; transcript_id "tB";
+chrF	fixture	UTR	18801	19000	.	-	.	gene_id "gB"; transcript_id "tB";
+chrF	fixture	UTR	15001	15200	.	-	.	gene_id "gB"; transcript_id "tB";
+chrF	fixture	gene	23001	29000	.	+	.	gene_id "gC"; gene_biotype "protein_coding";
+chrF	fixture	exon	23001	25000	.	+	.	gene_id "gC"; transcript_id "tC"; transcript_biotype "protein_coding"; exon_number 1;
+chrF	fixture	exon	28001	29000	.	+	.	gene_id "gC"; transcript_id "tC"; transcript_biotype "protein_coding"; exon_number 2;
+chrF	fixture	CDS	24501	25000	.	+	0	gene_id "gC"; transcript_id "tC";
+chrF	fixture	CDS	28001	28500	.	+	0	gene_id "gC"; transcript_id "tC";
+chrF	fixture	UTR	23001	24500	.	+	.	gene_id "gC"; transcript_id "tC";
+chrF	fixture	UTR	28501	29000	.	+	.	gene_id "gC"; transcript_id "tC";
+chrF	fixture	gene	11501	12500	.	+	.	gene_id "gD"; gene_biotype "lncRNA";
+chrF	fixture	transcript	11501	12500	.	+	.	gene_id "gD"; transcript_id "tD"; gene_biotype "lncRNA"; transcript_biotype "lncRNA";
+chrF	fixture	exon	11501	12500	.	+	.	gene_id "gD"; transcript_id "tD"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number 1;

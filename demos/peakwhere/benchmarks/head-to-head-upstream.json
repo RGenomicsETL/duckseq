@@ -1,0 +1,63 @@
+[
+ {
+  "i": 0,
+  "warmup": true,
+  "run": 4.345,
+  "redraw": {
+   "mode_bp": 0.528,
+   "promoter_2000": 0.492
+  },
+  "offsite": []
+ },
+ {
+  "i": 1,
+  "warmup": false,
+  "run": 4.341,
+  "redraw": {
+   "mode_bp": 0.513,
+   "promoter_2000": 0.479
+  },
+  "offsite": [],
+  "csv": "# Promoter −1000/+1000 bp · counted by peak centre · priority Promoter > 5′ UTR > 3′ UTR > Exon > Intron > Intergenic · all transcripts · annotation gencode.vM25.basic.annotation.gff3.gz (GRCm38)\n# Unmatched, excluded from percentages: thymus_CTCF_ENCFF714WDP 15 peaks · thymus_DNase_ENCFF979ULB 0 peaks · thymus_H3K27me3_ENCFF478UYW 1 peak · thymus_H3K36me3_ENCFF853BYO 1 peak · thymus_H3K4me3_ENCFF674JZY 6 peaks\n# Warning: thymus_CTCF_ENCFF714WDP: 15 peaks on chromosomes not in the annotation, left out of the percentages: chrUn_JH584304, chrUn_GL456370, chr4_GL456216_random, chrUn_GL456359.\n# Warning: thymus_H3K27me3_ENCFF478UYW: 1 peak on chromosomes not in the annotation, left out of the percentages: chrUn_GL456393.\n# Warning: thymus_H3K36me3_ENCFF853BYO: 1 peak on chromosomes not in the annotation, left out of the percentages: chr4_GL456216_random.\n# Warning: thymus_H3K4me3_ENCFF674JZY: 6 peaks on chromosomes not in the annotation, left out of the percentages: chr4_GL456216_random, chrUn_JH584304, chrX_GL456233_random.\nlabel,unit,promoter,promoter_pct,utr5,utr5_pct,utr3,utr3_pct,exon,exon_pct,intron,intron_pct,intergenic,intergenic_pct,matched,matched_pct,unmatched,unmatched_pct,not_drawn\nthymus_CTCF_ENCFF714WDP,peaks,9191,45.49,21,0.10,384,1.90,825,4.08,5193,25.70,4591,22.72,20205,99.93,15,0.07,\nthymus_DNase_ENCFF979ULB,peaks,25018,36.83,80,0.12,1024,1.51,1965,2.89,21844,32.16,17998,26.50,67929,100.00,0,0.00,\nthymus_H3K27me3_ENCFF478UYW,peaks,6976,42.06,39,0.24,378,2.28,960,5.79,4212,25.40,4020,24.24,16585,99.99,1,0.01,\nthymus_H3K36me3_ENCFF853BYO,peaks,3067,3.35,96,0.10,6533,7.14,13986,15.29,65384,71.48,2407,2.63,91473,100.00,1,0.00,\nthymus_H3K4me3_ENCFF674JZY,peaks,17291,68.91,39,0.16,193,0.77,807,3.22,3947,15.73,2816,11.22,25093,99.98,6,0.02,\nGenome,bp,116099140,4.26,893597,0.03,31130352,1.14,44952870,1.65,1032914204,37.90,1499547506,55.02,2725537669,100.00,0,0.00,\n"
+ },
+ {
+  "i": 2,
+  "warmup": false,
+  "run": 4.351,
+  "redraw": {
+   "mode_bp": 0.525,
+   "promoter_2000": 0.506
+  },
+  "offsite": []
+ },
+ {
+  "i": 3,
+  "warmup": false,
+  "run": 4.348,
+  "redraw": {
+   "mode_bp": 0.529,
+   "promoter_2000": 0.493
+  },
+  "offsite": []
+ },
+ {
+  "i": 4,
+  "warmup": false,
+  "run": 4.368,
+  "redraw": {
+   "mode_bp": 0.516,
+   "promoter_2000": 0.494
+  },
+  "offsite": []
+ },
+ {
+  "i": 5,
+  "warmup": false,
+  "run": 4.381,
+  "redraw": {
+   "mode_bp": 0.537,
+   "promoter_2000": 0.495
+  },
+  "offsite": []
+ }
+]

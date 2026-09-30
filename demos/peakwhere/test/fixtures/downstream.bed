@@ -1,0 +1,30 @@
+# 17 one-base peaks: promoter=1, exon=5, intron=4, downstream=6, intergenic=1.
+# Three wide peaks have centres 250 (promoter), 425 (intron), 10 (exon).
+# Centre totals with 100bp downstream: promoter=2, exon=6, intron=5,
+# downstream=6, intergenic=1. Off: downstream's 6 become intergenic.
+# Wide peak bp: [190,310) = exon 19 + promoter 1 + intron 50 + downstream 50;
+# [390,460) = downstream 10 + exon 20 + intron 40;
+# E [0,20) = downstream 10 + exon 9 + promoter 1.
+# Add the 17 single bases: promoter=3, exon=53, intron=94, downstream=76,
+# intergenic=1; total 227. No UTRs. At window 10 only centre 249 changes
+# from downstream to intergenic (centre downstream=5, intergenic=2).
+chrD	199	200	exon_plus_TES
+chrD	200	201	downstream_plus_first
+chrD	249	250	downstream_plus_last
+chrD	250	251	promoter_over_downstream
+chrD	255	256	exon_over_downstream
+chrD	275	276	intron_over_downstream
+chrD	300	301	intron_over_minus_downstream
+chrD	349	350	exon_C_TES
+chrD	350	351	downstream_C_first
+chrD	399	400	downstream_minus_last
+chrD	400	401	exon_minus_TES
+chrD	425	426	intron_over_C_downstream
+chrD	450	451	intron_after_C_downstream
+chrD	500	501	intergenic
+chrE	0	1	downstream_clipped_first
+chrE	9	10	downstream_clipped_last
+chrE	10	11	exon_minus_TES
+chrD	190	310	wide_plus
+chrD	390	460	wide_minus
+chrE	0	20	wide_clipped

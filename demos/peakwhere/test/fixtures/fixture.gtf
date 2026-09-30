@@ -1,0 +1,26 @@
+# Hand-built test fixture, the same three transcripts as fixture.gff3.
+# GTF has only a generic UTR type, so 5'/3' must be derived from CDS position and
+# strand. tC has NO transcript line, on purpose: its span must come from its exons.
+chrF	fixture	gene	5001	9000	.	+	.	gene_id "gA"; gene_type "protein_coding";
+chrF	fixture	transcript	5001	9000	.	+	.	gene_id "gA"; transcript_id "tA"; transcript_type "protein_coding";
+chrF	fixture	exon	5001	5500	.	+	.	gene_id "gA"; transcript_id "tA"; exon_number 1;
+chrF	fixture	exon	8501	9000	.	+	.	gene_id "gA"; transcript_id "tA"; exon_number 2;
+chrF	fixture	CDS	5201	5500	.	+	0	gene_id "gA"; transcript_id "tA";
+chrF	fixture	CDS	8501	8800	.	+	0	gene_id "gA"; transcript_id "tA";
+chrF	fixture	UTR	5001	5200	.	+	.	gene_id "gA"; transcript_id "tA";
+chrF	fixture	UTR	8801	9000	.	+	.	gene_id "gA"; transcript_id "tA";
+chrF	fixture	gene	15001	19000	.	-	.	gene_id "gB"; gene_type "protein_coding";
+chrF	fixture	transcript	15001	19000	.	-	.	gene_id "gB"; transcript_id "tB"; transcript_type "protein_coding";
+chrF	fixture	exon	18501	19000	.	-	.	gene_id "gB"; transcript_id "tB"; exon_number 1;
+chrF	fixture	exon	15001	15500	.	-	.	gene_id "gB"; transcript_id "tB"; exon_number 2;
+chrF	fixture	CDS	18501	18800	.	-	0	gene_id "gB"; transcript_id "tB";
+chrF	fixture	CDS	15201	15500	.	-	0	gene_id "gB"; transcript_id "tB";
+chrF	fixture	UTR	18801	19000	.	-	.	gene_id "gB"; transcript_id "tB";
+chrF	fixture	UTR	15001	15200	.	-	.	gene_id "gB"; transcript_id "tB";
+chrF	fixture	gene	23001	29000	.	+	.	gene_id "gC"; gene_type "protein_coding";
+chrF	fixture	exon	23001	25000	.	+	.	gene_id "gC"; transcript_id "tC"; transcript_type "protein_coding"; exon_number 1;
+chrF	fixture	exon	28001	29000	.	+	.	gene_id "gC"; transcript_id "tC"; transcript_type "protein_coding"; exon_number 2;
+chrF	fixture	CDS	24501	25000	.	+	0	gene_id "gC"; transcript_id "tC";
+chrF	fixture	CDS	28001	28500	.	+	0	gene_id "gC"; transcript_id "tC";
+chrF	fixture	UTR	23001	24500	.	+	.	gene_id "gC"; transcript_id "tC";
+chrF	fixture	UTR	28501	29000	.	+	.	gene_id "gC"; transcript_id "tC";

@@ -1,0 +1,337 @@
+/* Palette from the hex sticker: ink, DuckDB yellow, the pin's orange. */
+:root {
+  --ink: #1b1f2a;
+  --yellow: #fff100;
+  --pin: #ff5a36;
+  --fg: #1f2933;
+  --muted: #5b6673;
+  --bg: #f6f5f0;
+  --panel: #ffffff;
+  --line: #e2e1da;
+  --accent: #0f766e;
+  --accent-fg: #ffffff;
+  font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #e6e8eb;
+    --muted: #9aa5b1;
+    --bg: #111418;
+    --panel: #181c22;
+    --line: #2b323b;
+    --accent: #2dd4bf;
+    --accent-fg: #0b1215;
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); }
+a { color: var(--accent); }
+[hidden] { display: none !important; }
+
+/* Header and footer carry the sticker's identity. */
+header.site {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  padding: 0.9rem clamp(1rem, 4vw, 2.5rem);
+  background: var(--ink);
+  color: #e8e8e8;
+  border-bottom: 4px solid var(--yellow);
+}
+.brand { display: flex; align-items: center; gap: 0.85rem; }
+.brand img { display: block; }
+.brand h1 {
+  margin: 0;
+  font: 700 1.45rem/1.1 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color: var(--yellow);
+  letter-spacing: -0.01em;
+}
+.tagline { margin: 0.15rem 0 0; font-size: 0.9rem; color: #c9ccd1; }
+header.site nav { display: flex; align-items: center; gap: 1.1rem; font-size: 0.9rem; }
+header.site nav a { color: #e8e8e8; text-decoration: none; border-bottom: 1px solid transparent; }
+header.site nav a:hover { border-bottom-color: var(--yellow); }
+.badge {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--pin);
+  border-radius: 999px;
+  color: #ffd2c7;
+  font-size: 0.8rem;
+}
+footer.site {
+  max-width: 76rem;
+  margin: 2rem auto 0;
+  padding: 1.25rem clamp(1rem, 4vw, 2.5rem) 2.5rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Controls on the left, results on the right; one column on narrow screens. */
+main {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 0;
+  display: grid;
+  grid-template-columns: minmax(17rem, 21rem) minmax(0, 1fr);
+  gap: 1.5rem 2rem;
+  align-items: start;
+}
+.lede { grid-column: 1 / -1; margin: 0; max-width: 48rem; font-size: 1.05rem; color: var(--muted); }
+#form { grid-column: 1; position: sticky; top: 1rem; }
+#output { grid-column: 2; min-width: 0; }
+main:has(> #output[hidden])::after {
+  content: "Choose a dataset or your own files, then run.";
+  grid-column: 2;
+  grid-row: 2;
+  padding: 3rem 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  text-align: center;
+}
+@media (max-width: 52rem) {
+  main { grid-template-columns: minmax(0, 1fr); }
+  #form { position: static; }
+  #output, main:has(> #output[hidden])::after { grid-column: 1; grid-row: auto; }
+}
+
+/* The control panel. */
+form {
+  display: grid;
+  gap: 1rem;
+  padding: 1.1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.view { display: grid; gap: 0.3rem; }
+.view label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+fieldset { margin: 0; padding: 0; border: 0; display: grid; gap: 0.7rem; min-width: 0; }
+legend {
+  padding: 0 0 0.4rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+label { display: grid; gap: 0.25rem; font-size: 0.88rem; }
+label.inline { display: flex; align-items: center; gap: 0.45rem; }
+#where-settings { grid-template-columns: 1fr 1fr; align-items: end; }
+#where-settings label.inline, #where-settings label:has(#mode), #where-settings .caption { grid-column: 1 / -1; }
+.caption { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.checks { display: flex; flex-wrap: wrap; gap: 0.35rem 0.9rem; font-size: 0.88rem; }
+.checks label { display: flex; align-items: center; gap: 0.35rem; }
+select, input[type="number"] {
+  width: 100%;
+  font: inherit;
+  padding: 0.4rem 0.5rem;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+.drop {
+  padding: 0.75rem;
+  border: 1.5px dashed var(--line);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.drop:hover { border-color: var(--accent); }
+.drop span { color: var(--muted); overflow-wrap: anywhere; }
+#local-files { display: grid; gap: 0.6rem; }
+
+button {
+  justify-self: start;
+  font: 600 0.95rem/1 system-ui, sans-serif;
+  padding: 0.65rem 1.1rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  cursor: pointer;
+}
+#run { justify-self: stretch; padding: 0.8rem; font-size: 1rem; }
+button:disabled { opacity: 0.55; cursor: default; }
+button[type="button"] { background: transparent; color: var(--accent); border: 1px solid var(--line); }
+#status { margin: 0; font-size: 0.85rem; color: var(--muted); }
+
+/* Results. */
+.note { color: var(--muted); font-size: 0.85rem; }
+#output h2 { margin: 2rem 0 0.4rem; font-size: 1.05rem; }
+#output h2:first-child { margin-top: 0; }
+#chart svg, #width-chart svg, #chrom-chart svg { display: block; max-width: 100%; height: auto; }
+#chart { padding: 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+#width-chart, #chrom-chart { margin: 0.75rem 0; }
+#warnings { color: #b45309; font-size: 0.88rem; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 0.88rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 0.35rem 0.65rem; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; }
+th:first-child, td:first-child { text-align: left; }
+tr:last-child td { border-bottom: 0; }
+#peek-table td[data-metric="label"], #peek-table td[data-metric="error"] { text-align: left; }
+#peek-problems section { border-top: 1px solid var(--line); padding: 0.5rem 0; }
+#peek-problems h3 { margin: 0.25rem 0; font-size: 0.95rem; overflow-wrap: anywhere; }
+
+/* Chart controls in the results column stay compact. */
+#output label:has(select) { display: flex; align-items: center; gap: 0.5rem; width: fit-content; }
+#output select { width: auto; padding: 0.25rem 0.4rem; }
+
+/* Settings: groups separated by hairlines; a dependent control dims when it doesn't apply
+   (still focusable, so it can be set ahead of time). */
+#where-settings .group {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem 0.7rem;
+  align-items: end;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line);
+}
+#where-settings .group:first-of-type { padding-top: 0; border-top: 0; }
+#where-settings .group > .caption,
+#where-settings .group > label.inline,
+#where-settings .group > label:has(#mode),
+#where-settings .group > .dependent { grid-column: 1 / -1; }
+.dependent {
+  margin-left: 1.55rem;
+  transition: opacity 120ms ease;
+}
+.hint { display: block; font-size: 0.78rem; color: var(--muted); }
+#where-settings:has(#mode option[value="bp"]:checked) .dependent:has(#summits),
+#where-settings .group:has(#downstream-enabled:not(:checked)) .dependent:has(#downstream-window) {
+  opacity: 0.45;
+}
+
+/* Small shared pieces: action rows, quiet buttons, optional file input, screen-reader text. */
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
+button.quiet { padding: 0.4rem 0.75rem; font-size: 0.85rem; }
+.optional-file { display: flex; align-items: end; gap: 0.5rem; flex-wrap: wrap; font-size: 0.85rem; }
+.optional-file label { flex: 1 1 12rem; }
+.optional-file input[type="file"] { font-size: 0.8rem; max-width: 100%; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* The SQL console: the header's ink and yellow under the results, so the thesis is
+   something to try rather than a sentence. */
+#sql-console {
+  background: var(--ink);
+  color: #e8e8e8;
+  border-radius: 12px;
+  border-top: 4px solid var(--yellow);
+  overflow: hidden;
+}
+#sql-console > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.9rem 1.1rem;
+}
+#sql-console > summary::-webkit-details-marker { display: none; }
+#sql-console > summary::before {
+  content: "▸";
+  color: var(--yellow);
+  transition: transform 120ms ease;
+}
+#sql-console[open] > summary::before { transform: rotate(90deg); }
+#sql-console .title {
+  font: 700 1.05rem/1.2 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color: var(--yellow);
+}
+#sql-console .subtitle { font-size: 0.85rem; color: #c9ccd1; }
+#sql-console .body { display: grid; gap: 0.75rem; padding: 0 1.1rem 1.1rem; }
+
+#sql-console textarea {
+  width: 100%;
+  min-height: 9rem;
+  resize: vertical;
+  padding: 0.75rem 0.85rem;
+  font: 0.88rem/1.5 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color: #f3f4f6;
+  background: #10131a;
+  border: 1px solid #2c3240;
+  border-radius: 8px;
+  tab-size: 2;
+}
+#sql-console textarea:focus { outline: 2px solid var(--yellow); outline-offset: -1px; }
+#sql-console .bar { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+#sql-console .bar .note { margin: 0; color: #9aa3ad; font-size: 0.8rem; }
+#sql-run { background: var(--yellow); color: var(--ink); border: 0; font-weight: 600; }
+#sql-console kbd {
+  padding: 0 0.3rem;
+  font: 0.75rem ui-monospace, Menlo, monospace;
+  border: 1px solid #3a4150;
+  border-radius: 4px;
+}
+
+/* Results: light table on the dark band, numbers right-aligned, a hard cap noted below. */
+.sql-scroll { width: fit-content; max-width: 100%; overflow: auto; max-height: 26rem; border-radius: 8px; background: var(--panel); color: var(--fg); }
+table.sql-result { width: auto; min-width: 16rem; border-collapse: collapse; font: 0.82rem/1.4 ui-monospace, Menlo, monospace; }
+.sql-result th {
+  position: sticky; top: 0;
+  text-align: left; font-weight: 600;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  padding: 0.35rem 0.6rem;
+}
+.sql-result td { padding: 0.3rem 0.6rem; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.sql-result td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.sql-result .null { color: var(--muted); font-style: italic; }
+#sql-status { margin: 0; font-size: 0.8rem; color: #9aa3ad; }
+#sql-error:not(:empty) {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  font: 0.82rem/1.45 ui-monospace, Menlo, monospace;
+  white-space: pre-wrap;
+  color: #ffd2c7;
+  background: #2a1512;
+  border-left: 3px solid var(--pin);
+  border-radius: 6px;
+}
+
+/* "Show the SQL" under each result: quiet until opened. */
+.executed-sql { margin-top: 0.75rem; font-size: 0.85rem; }
+.executed-sql > summary { cursor: pointer; color: var(--muted); }
+.executed-sql pre {
+  max-height: 22rem;
+  overflow: auto;
+  margin: 0.5rem 0;
+  padding: 0.75rem 0.85rem;
+  font: 0.8rem/1.5 ui-monospace, Menlo, monospace;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+#sql-error:empty { display: none; }
+#sql-status:empty { display: none; }
+#sql-status { font-family: inherit; }
+
+/* Inside the dark band the results-column defaults need the band's colours. */
+#sql-console { margin-top: 2rem; }
+#sql-console label.bar { color: #c9ccd1; font-size: 0.85rem; }
+#sql-console select {
+  color: #e8e8e8; background: #10131a; border-color: #2c3240;
+  max-width: 100%;
+}
+#sql-console pre { margin: 0; }
+#sql-console .note { margin: 0; color: #9aa3ad; }
+table.sql-result th, table.sql-result td { text-align: left; }
+table.sql-result td.num { text-align: right; }
+/* A checkbox with a two-line label sits on the first line. */
+label.inline:has(.hint) { align-items: flex-start; }
+label.inline:has(.hint) > input { margin-top: 0.3rem; }
+.optional-file button.quiet { padding: 0.3rem 0.6rem; }
+table.sql-result th.num { text-align: right; }
+/* iOS zooms into inputs under 16px. */
+@media (max-width: 52rem) { #sql-console textarea { font-size: 16px; } }

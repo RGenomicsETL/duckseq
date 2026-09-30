@@ -1,0 +1,3 @@
+# F and chrF refer to the same contig but disagree; there is no valid length.
+F	1000
+chrF	1200

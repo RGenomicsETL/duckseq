@@ -1,0 +1,332 @@
+[
+ {
+  "i": 0,
+  "warmup": true,
+  "commit": "e27ecb13b9d06084013237d397661400ddbb0856",
+  "dirty": false,
+  "startup": 0.9052000007629395,
+  "run": 5.974100002288818,
+  "redraw": {
+   "mode_bp": 0.2959000015258789,
+   "promoter_2000": 1.811
+  },
+  "counts": {
+   "CTCF": {
+    "promoter": 9191,
+    "utr5": 21,
+    "utr3": 384,
+    "exon": 825,
+    "intron": 5193,
+    "intergenic": 4591
+   },
+   "DNase": {
+    "promoter": 25018,
+    "utr5": 80,
+    "utr3": 1024,
+    "exon": 1965,
+    "intron": 21844,
+    "intergenic": 17998
+   },
+   "H3K27me3": {
+    "promoter": 6976,
+    "utr5": 39,
+    "utr3": 378,
+    "exon": 960,
+    "intron": 4212,
+    "intergenic": 4020
+   },
+   "H3K36me3": {
+    "promoter": 3067,
+    "utr5": 96,
+    "utr3": 6533,
+    "exon": 13986,
+    "intron": 65384,
+    "intergenic": 2407
+   },
+   "H3K4me3": {
+    "promoter": 17291,
+    "utr5": 39,
+    "utr3": 193,
+    "exon": 807,
+    "intron": 3947,
+    "intergenic": 2816
+   }
+  },
+  "offsite": []
+ },
+ {
+  "i": 1,
+  "warmup": false,
+  "commit": "e27ecb13b9d06084013237d397661400ddbb0856",
+  "dirty": false,
+  "startup": 0.8855999984741211,
+  "run": 6.005099998474121,
+  "redraw": {
+   "mode_bp": 0.29339999771118164,
+   "promoter_2000": 1.7942000007629395
+  },
+  "counts": {
+   "CTCF": {
+    "promoter": 9191,
+    "utr5": 21,
+    "utr3": 384,
+    "exon": 825,
+    "intron": 5193,
+    "intergenic": 4591
+   },
+   "DNase": {
+    "promoter": 25018,
+    "utr5": 80,
+    "utr3": 1024,
+    "exon": 1965,
+    "intron": 21844,
+    "intergenic": 17998
+   },
+   "H3K27me3": {
+    "promoter": 6976,
+    "utr5": 39,
+    "utr3": 378,
+    "exon": 960,
+    "intron": 4212,
+    "intergenic": 4020
+   },
+   "H3K36me3": {
+    "promoter": 3067,
+    "utr5": 96,
+    "utr3": 6533,
+    "exon": 13986,
+    "intron": 65384,
+    "intergenic": 2407
+   },
+   "H3K4me3": {
+    "promoter": 17291,
+    "utr5": 39,
+    "utr3": 193,
+    "exon": 807,
+    "intron": 3947,
+    "intergenic": 2816
+   }
+  },
+  "offsite": []
+ },
+ {
+  "i": 2,
+  "warmup": false,
+  "commit": "e27ecb13b9d06084013237d397661400ddbb0856",
+  "dirty": false,
+  "startup": 0.8922999992370605,
+  "run": 6.06070000076294,
+  "redraw": {
+   "mode_bp": 0.2926000022888184,
+   "promoter_2000": 1.816099998474121
+  },
+  "counts": {
+   "CTCF": {
+    "promoter": 9191,
+    "utr5": 21,
+    "utr3": 384,
+    "exon": 825,
+    "intron": 5193,
+    "intergenic": 4591
+   },
+   "DNase": {
+    "promoter": 25018,
+    "utr5": 80,
+    "utr3": 1024,
+    "exon": 1965,
+    "intron": 21844,
+    "intergenic": 17998
+   },
+   "H3K27me3": {
+    "promoter": 6976,
+    "utr5": 39,
+    "utr3": 378,
+    "exon": 960,
+    "intron": 4212,
+    "intergenic": 4020
+   },
+   "H3K36me3": {
+    "promoter": 3067,
+    "utr5": 96,
+    "utr3": 6533,
+    "exon": 13986,
+    "intron": 65384,
+    "intergenic": 2407
+   },
+   "H3K4me3": {
+    "promoter": 17291,
+    "utr5": 39,
+    "utr3": 193,
+    "exon": 807,
+    "intron": 3947,
+    "intergenic": 2816
+   }
+  },
+  "offsite": []
+ },
+ {
+  "i": 3,
+  "warmup": false,
+  "commit": "e27ecb13b9d06084013237d397661400ddbb0856",
+  "dirty": false,
+  "startup": 0.8882999992370606,
+  "run": 6.1415,
+  "redraw": {
+   "mode_bp": 0.30370000076293946,
+   "promoter_2000": 1.8411999969482422
+  },
+  "counts": {
+   "CTCF": {
+    "promoter": 9191,
+    "utr5": 21,
+    "utr3": 384,
+    "exon": 825,
+    "intron": 5193,
+    "intergenic": 4591
+   },
+   "DNase": {
+    "promoter": 25018,
+    "utr5": 80,
+    "utr3": 1024,
+    "exon": 1965,
+    "intron": 21844,
+    "intergenic": 17998
+   },
+   "H3K27me3": {
+    "promoter": 6976,
+    "utr5": 39,
+    "utr3": 378,
+    "exon": 960,
+    "intron": 4212,
+    "intergenic": 4020
+   },
+   "H3K36me3": {
+    "promoter": 3067,
+    "utr5": 96,
+    "utr3": 6533,
+    "exon": 13986,
+    "intron": 65384,
+    "intergenic": 2407
+   },
+   "H3K4me3": {
+    "promoter": 17291,
+    "utr5": 39,
+    "utr3": 193,
+    "exon": 807,
+    "intron": 3947,
+    "intergenic": 2816
+   }
+  },
+  "offsite": []
+ },
+ {
+  "i": 4,
+  "warmup": false,
+  "commit": "e27ecb13b9d06084013237d397661400ddbb0856",
+  "dirty": false,
+  "startup": 0.8795999984741211,
+  "run": 6.00270000076294,
+  "redraw": {
+   "mode_bp": 0.29570000076293945,
+   "promoter_2000": 1.8142999992370605
+  },
+  "counts": {
+   "CTCF": {
+    "promoter": 9191,
+    "utr5": 21,
+    "utr3": 384,
+    "exon": 825,
+    "intron": 5193,
+    "intergenic": 4591
+   },
+   "DNase": {
+    "promoter": 25018,
+    "utr5": 80,
+    "utr3": 1024,
+    "exon": 1965,
+    "intron": 21844,
+    "intergenic": 17998
+   },
+   "H3K27me3": {
+    "promoter": 6976,
+    "utr5": 39,
+    "utr3": 378,
+    "exon": 960,
+    "intron": 4212,
+    "intergenic": 4020
+   },
+   "H3K36me3": {
+    "promoter": 3067,
+    "utr5": 96,
+    "utr3": 6533,
+    "exon": 13986,
+    "intron": 65384,
+    "intergenic": 2407
+   },
+   "H3K4me3": {
+    "promoter": 17291,
+    "utr5": 39,
+    "utr3": 193,
+    "exon": 807,
+    "intron": 3947,
+    "intergenic": 2816
+   }
+  },
+  "offsite": []
+ },
+ {
+  "i": 5,
+  "warmup": false,
+  "commit": "e27ecb13b9d06084013237d397661400ddbb0856",
+  "dirty": false,
+  "startup": 0.8838999977111817,
+  "run": 6.119,
+  "redraw": {
+   "mode_bp": 0.2945,
+   "promoter_2000": 1.7972000007629394
+  },
+  "counts": {
+   "CTCF": {
+    "promoter": 9191,
+    "utr5": 21,
+    "utr3": 384,
+    "exon": 825,
+    "intron": 5193,
+    "intergenic": 4591
+   },
+   "DNase": {
+    "promoter": 25018,
+    "utr5": 80,
+    "utr3": 1024,
+    "exon": 1965,
+    "intron": 21844,
+    "intergenic": 17998
+   },
+   "H3K27me3": {
+    "promoter": 6976,
+    "utr5": 39,
+    "utr3": 378,
+    "exon": 960,
+    "intron": 4212,
+    "intergenic": 4020
+   },
+   "H3K36me3": {
+    "promoter": 3067,
+    "utr5": 96,
+    "utr3": 6533,
+    "exon": 13986,
+    "intron": 65384,
+    "intergenic": 2407
+   },
+   "H3K4me3": {
+    "promoter": 17291,
+    "utr5": 39,
+    "utr3": 193,
+    "exon": 807,
+    "intron": 3947,
+    "intergenic": 2816
+   }
+  },
+  "offsite": []
+ }
+]

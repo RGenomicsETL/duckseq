@@ -1,0 +1,5 @@
+# Midpoints: 150,450,750,150. See gene-types.gtf for hand-worked counts.
+chrF	150	151	coding_biotype
+chrF	450	451	noncoding
+chrF	750	751	coding_without_transcript_line
+chrG	150	151	noncoding_reused_gene_id

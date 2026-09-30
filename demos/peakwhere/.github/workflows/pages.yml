@@ -1,0 +1,62 @@
+name: pages
+
+# Publishes the app to GitHub Pages from main. The site is the same static
+# files `npm run serve` serves: index.html, src/, the staged vendor/ (signed
+# DuckHTS builds verified against duckhts-manifest.json), the examples and the
+# favicon. No build step touches the app's own code.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+      - run: npm run stage
+      # Whole-genome ENCODE thymus peak files for the Peek view (3.9 MB, hash-checked
+      # against bench/manifest.json).
+      - run: npm run stage:peek
+      - run: npm run vendor
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site/man _site/test
+          cp -r index.html src vendor examples _site/
+          cp -r man/figures _site/man/
+          # The hand-worked fixture is also a selectable dataset in the page.
+          cp -r test/fixtures _site/test/
+
+      - name: Every offered dataset is in the site
+        run: node scripts/check-site.mjs _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

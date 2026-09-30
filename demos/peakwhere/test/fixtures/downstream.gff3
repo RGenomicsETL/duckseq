@@ -1,0 +1,22 @@
+##gff-version 3
+##sequence-region chrD 1 1000
+##sequence-region chrE 1 20
+# With promoter 0/0 and downstream 100, A's [200,300), B's [300,400),
+# C's [350,450), and E's [0,10) lose to exon/intron/promoter coverage.
+# Surviving downstream: D [200,250) + [350,400), E [0,10) = 110 bp.
+# Promoters: D 100,250,499 and E 19 = 4 bp. Exons excluding promoters:
+# A 39 + B 39 + C 19 + E 9 = 106 bp. Introns: A [120,180) = 60,
+# B [420,480) = 60, C [260,340) = 80; sum = 200 bp.
+# Background intergenic = 1020 - 4 - 106 - 200 - 110 = 600 bp.
+# At window 10, downstream = 10+10+10+10 = 40 bp; intergenic = 670.
+chrD	test	mRNA	101	200	.	+	.	ID=A
+chrD	test	exon	101	120	.	+	.	Parent=A
+chrD	test	exon	181	200	.	+	.	Parent=A
+chrD	test	mRNA	401	500	.	-	.	ID=B
+chrD	test	exon	401	420	.	-	.	Parent=B
+chrD	test	exon	481	500	.	-	.	Parent=B
+chrD	test	mRNA	251	350	.	+	.	ID=C
+chrD	test	exon	251	260	.	+	.	Parent=C
+chrD	test	exon	341	350	.	+	.	Parent=C
+chrE	test	mRNA	11	20	.	-	.	ID=E
+chrE	test	exon	11	20	.	-	.	Parent=E

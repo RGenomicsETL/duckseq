@@ -1,0 +1,21 @@
+{
+  "source": "seandavi/peakpeek@a05b6615b1c51c41781b6a1f2081868fbc2b711e: examples/fixture.js, tests/stats.test.js, SPEC.md sections 2 and 7",
+  "fixture": {
+    "n": 9, "min": 1, "median": 100, "mean": 195.66666666666666, "max": 1000,
+    "sum": 1761, "mergedBp": 1611, "duplicates": 1, "chromStyle": "chr",
+    "chromosomes": 6, "offMain": 1, "overlapping": 3, "over100kb": 0,
+    "histogramCounts": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "perChrom": [
+      {"chrom": "chr1", "n": 4}, {"chrom": "chr2", "n": 1},
+      {"chrom": "chr10", "n": 1}, {"chrom": "chrX", "n": 1},
+      {"chrom": "chrM", "n": 1}, {"chrom": "other", "n": 1}
+    ]
+  },
+  "thymus": {
+    "H3K4me3": {"n": 25099, "min": 160, "median": 629, "meanRounded": 768, "max": 12358, "sum": 19267844, "mergedBp": 19267844, "chromosomes": 24, "offMain": 6, "duplicates": 0},
+    "H3K36me3": {"n": 91474, "min": 95, "median": 205, "meanRounded": 262, "max": 7445, "sum": 23997445, "mergedBp": 23997445, "chromosomes": 22, "offMain": 1, "duplicates": 0},
+    "H3K27me3": {"n": 16586, "min": 85, "median": 160, "meanRounded": 197, "max": 1564, "sum": 3273733, "mergedBp": 3273733, "chromosomes": 21, "offMain": 1, "duplicates": 0},
+    "CTCF": {"n": 20220, "min": 86, "median": 344, "meanRounded": 308, "max": 408, "sum": 6217728, "mergedBp": 6003019, "chromosomes": 24, "offMain": 15, "duplicates": 1},
+    "DNase": {"n": 67929, "min": 21, "median": 200, "meanRounded": 212, "max": 1900, "sum": 14423756, "mergedBp": 14146163, "chromosomes": 21, "offMain": 0, "duplicates": 0}
+  }
+}

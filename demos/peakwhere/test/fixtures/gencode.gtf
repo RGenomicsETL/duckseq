@@ -1,0 +1,12 @@
+# Types on every line: two coding transcripts and two noncoding transcripts.
+chrF	test	gene	101	200	.	+	.	gene_id "g1"; gene_type "protein_coding";
+chrF	test	transcript	101	200	.	+	.	gene_id "g1"; transcript_id "t1"; gene_type "protein_coding"; transcript_type "protein_coding";
+chrF	test	exon	101	200	.	+	.	gene_id "g1"; transcript_id "t1"; gene_type "protein_coding"; transcript_type "protein_coding";
+chrF	test	gene	401	500	.	+	.	gene_id "g2"; gene_type "lncRNA";
+chrF	test	transcript	401	500	.	+	.	gene_id "g2"; transcript_id "t2"; gene_type "lncRNA"; transcript_type "lncRNA";
+chrF	test	exon	401	500	.	+	.	gene_id "g2"; transcript_id "t2"; gene_type "lncRNA"; transcript_type "lncRNA";
+chrF	test	gene	701	800	.	+	.	gene_id "g3"; gene_type "protein_coding";
+chrF	test	exon	701	800	.	+	.	gene_id "g3"; transcript_id "t3"; gene_type "protein_coding"; transcript_type "protein_coding";
+chrG	test	gene	101	200	.	+	.	gene_id "g1"; gene_type "lncRNA";
+chrG	test	transcript	101	200	.	+	.	gene_id "g1"; transcript_id "t1"; gene_type "lncRNA"; transcript_type "lncRNA";
+chrG	test	exon	101	200	.	+	.	gene_id "g1"; transcript_id "t1"; gene_type "lncRNA"; transcript_type "lncRNA";

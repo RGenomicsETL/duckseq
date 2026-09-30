@@ -1,0 +1,7 @@
+# gene-types.gtf has four 100bp exons, no introns; at promoter 0/0 each
+# contributes 1 promoter + 99 exon bp. F and chrG normalize to the annotation.
+# Genome = 1000+500 = 1500 bp: promoter 4, exon 396, intergenic 1500-400=1100.
+# chrZ is not in the annotation and contributes neither background nor matches.
+F	1000
+chrG	500
+chrZ	9999

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>duckpeakwhere</title>
+  <link rel="icon" href="man/figures/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="src/style.css">
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+  <header class="site">
+    <div class="brand">
+      <img src="man/figures/logo.svg" alt="" width="52" height="60">
+      <div>
+        <h1>duckpeakwhere</h1>
+        <p class="tagline">Genomics tools as SQL, in your browser</p>
+      </div>
+    </div>
+    <nav>
+      <span class="badge" title="Local files are read in place; the page makes no requests outside this site.">Nothing leaves this tab</span>
+      <a href="https://github.com/sounkou-bioinfo/duckpeakwhere">Source</a>
+      <a href="https://github.com/RGenomicsETL/duckhts">DuckHTS</a>
+    </nav>
+  </header>
+  <main>
+    <p class="lede">Where do your peaks land, and what is in these files? htslib reads the
+      formats, <a href="https://github.com/RGenomicsETL/duckhts">DuckHTS</a> does the interval
+      work and DuckDB runs the rest, all inside this tab.</p>
+    <form id="form">
+      <div class="view">
+        <label for="view">View</label>
+        <select id="view">
+          <option value="where">Where: genomic annotation</option>
+          <option value="peek">Peek: peak-file check</option>
+        </select>
+      </div>
+      <p id="peek-help" class="note" hidden>BED, narrowPeak or broadPeak; plain, gzip or bgzip.
+        No annotation needed.</p>
+      <fieldset id="files">
+        <legend>Data</legend>
+        <label>Dataset <select id="dataset"></select></label>
+        <div id="bundled-files">
+          <label id="bundled-annotation">Annotation <select id="annotation"></select></label>
+          <div id="peaks" class="checks"></div>
+        </div>
+        <div id="local-files" hidden>
+          <label class="drop" id="annotation-drop">Annotation: GFF3 or GTF, plain, gzip or bgzip
+            <input id="local-annotation" type="file" accept=".gff,.gff3,.gtf,.gz">
+            <span id="annotation-name">No annotation selected</span>
+          </label>
+          <label class="drop" id="peaks-drop">Peak files: BED, narrowPeak or broadPeak, plain, gzip or bgzip
+            <input id="local-peaks" type="file" multiple accept=".bed,.narrowPeak,.broadPeak,.gz">
+            <span id="peak-names">No peak files selected</span>
+          </label>
+          <button id="clear-files" type="button">Clear local files</button>
+          <p id="local-status" class="note" role="status">Checking local-file support…</p>
+        </div>
+        <div id="chrom-sizes-control" class="optional-file">
+          <label>chrom.sizes <span class="hint">optional: a Genome bar for annotations without lengths, like GTF</span>
+            <input id="chrom-sizes" type="file" accept=".sizes,.tsv,.txt"></label>
+          <button id="clear-chrom-sizes" type="button" class="quiet">Clear</button>
+        </div>
+      </fieldset>
+
+      <fieldset id="where-settings">
+        <legend>Settings</legend>
+        <div class="group">
+          <p class="caption">Promoter around the TSS</p>
+          <label>Upstream (bp) <input id="up" type="number" min="0" step="1" value="1000"></label>
+          <label>Downstream (bp) <input id="down" type="number" min="0" step="1" value="1000"></label>
+        </div>
+        <div class="group">
+          <label>Count
+            <select id="mode">
+              <option value="centre">peak centres</option>
+              <option value="bp">peak base pairs</option>
+            </select>
+          </label>
+          <label class="inline dependent"><input id="summits" type="checkbox">
+            <span>Use the summit as the centre
+              <small class="hint">narrowPeak only; other files, and missing summits, use the midpoint</small></span></label>
+        </div>
+        <div class="group">
+          <label class="inline"><input id="coding" type="checkbox"> Protein-coding transcripts only</label>
+        </div>
+        <div class="group">
+          <label class="inline"><input id="downstream-enabled" type="checkbox">
+            <span>Downstream category
+              <small class="hint">a window past each transcript end, before intergenic</small></span></label>
+          <label class="dependent">Window past the TES (bp) <input id="downstream-window" type="number" min="0" step="1" value="1000"></label>
+        </div>
+      </fieldset>
+
+      <button id="run" type="submit" disabled>Starting DuckDB…</button>
+      <p id="status" role="status"></p>
+    </form>
+
+    <section id="output" hidden>
+      <div id="where-results">
+        <div id="chart"></div>
+        <p id="summary" class="note"></p>
+        <ul id="warnings"></ul>
+        <div class="scroll"><table id="table"></table></div>
+        <div class="actions">
+          <button id="where-tsv" type="button" class="quiet">Download TSV</button>
+          <button id="where-svg" type="button" class="quiet">Download SVG</button>
+        </div>
+        <details class="executed-sql"><summary>Show the SQL</summary>
+          <pre></pre>
+          <div class="actions">
+            <button type="button" data-action="copy" class="quiet">Copy</button>
+            <button type="button" data-action="open" class="quiet">Open in console</button>
+          </div>
+        </details>
+      </div>
+      <div id="peek-results" hidden>
+        <h2>Peek summary</h2>
+        <p class="note">Width is end − start. Duplicates are counted, not dropped; merged bp joins touching and overlapping peaks.</p>
+        <p class="note" id="peek-limits">DuckHTS exposes parsed BED rows, not raw-line diagnostics:
+          skipped-line counts, original line numbers/text, scientific-notation coordinates and
+          signal/p/q ranges are unavailable. A short row can fail the whole file.
+          <a href="https://github.com/sounkou-bioinfo/duckpeakwhere/blob/main/docs/peakpeek.md">Compatibility with PeakPeek</a>.</p>
+        <div class="scroll"><table id="peek-table"></table></div>
+        <button id="peek-tsv" type="button">Download summary TSV</button>
+        <h2>Width distribution</h2>
+        <label>Height <select id="width-unit"><option value="fraction">Percent of file</option><option value="count">Peaks</option></select></label>
+        <p class="note">30 shared log-spaced bins; the last bin includes the maximum. No sampling.</p>
+        <div id="width-chart"></div>
+        <button id="width-svg" type="button">Download width SVG</button>
+        <h2>Chromosome distribution</h2>
+        <label>Height <select id="chrom-unit"><option value="fraction">Percent of file</option><option value="count">Peaks</option></select></label>
+        <div id="chrom-chart"></div>
+        <button id="chrom-svg" type="button">Download chromosome SVG</button>
+        <h2>Problems and extreme widths</h2>
+        <div id="peek-problems"></div>
+        <details class="executed-sql"><summary>Show the SQL</summary>
+          <pre></pre>
+          <div class="actions">
+            <button type="button" data-action="copy" class="quiet">Copy</button>
+            <button type="button" data-action="open" class="quiet">Open in console</button>
+          </div>
+        </details>
+      </div>
+      <details id="sql-console">
+        <summary><span class="title">SQL</span>
+          <span class="subtitle">The tables behind this result are live. Query them, or call DuckHTS on your files.</span></summary>
+        <div class="body">
+          <label class="bar">Examples <select id="sql-examples"></select></label>
+          <label for="sql-input" class="visually-hidden">Query</label>
+          <textarea id="sql-input" rows="10" spellcheck="false" placeholder="SELECT * FROM segment LIMIT 10;"></textarea>
+          <div class="bar">
+            <button id="sql-run" type="button">Run</button>
+            <span class="note"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></span>
+            <pre id="sql-status" aria-live="polite"></pre>
+          </div>
+          <pre id="sql-error" role="alert"></pre>
+          <div class="sql-scroll"><table id="sql-result" class="sql-result"></table></div>
+        </div>
+      </details>
+    </section>
+  </main>
+  <footer class="site">
+    A port of <a href="https://github.com/seandavi/peakwhere">peakwhere</a> and
+    <a href="https://github.com/seandavi/peakpeek">PeakPeek</a> by Sean Davis.
+    Example data from GENCODE and ENCODE. MIT licensed.
+  </footer>
+</body>
+</html>

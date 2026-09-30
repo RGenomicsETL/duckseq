@@ -1,0 +1,55 @@
+{
+  "_comment": [
+    "Expected results for fixture.gff3 / fixture.gtf with peaks.bed.",
+    "Worked out BY HAND upstream (seandavi/peakwhere test/fixtures) before any code existed. Never edit these",
+    "to make a test pass: a mismatch is a bug in the code or a decision to revisit.",
+    "Settings: promoter 1000 bp upstream and 1000 bp downstream of the TSS base,",
+    "priority Promoter > 5'UTR > 3'UTR > Exon > Intron > Intergenic, all transcripts."
+  ],
+  "settings": {
+    "promoterUpstream": 1000,
+    "promoterDownstream": 1000,
+    "priority": ["promoter", "utr5", "utr3", "exon", "intron", "intergenic"]
+  },
+  "derivedIntervals_0based_halfOpen": {
+    "promoter": [[4000, 6001], [17999, 20000], [22000, 24001]],
+    "utr5": [[5000, 5200], [18800, 19000], [23000, 24500]],
+    "utr3": [[8800, 9000], [15000, 15200], [28500, 29000]],
+    "exon": [[5000, 5500], [8500, 9000], [15000, 15500], [18500, 19000], [23000, 25000], [28000, 29000]],
+    "transcript": [[5000, 9000], [15000, 19000], [23000, 29000]],
+    "intron": [[5500, 8500], [15500, 18500], [25000, 28000]]
+  },
+  "perPeak_centre": {
+    "p01_promoter_upstream_of_tA": "promoter",
+    "p02_intergenic_1bp_before_promoter_window": "intergenic",
+    "p03_promoter_first_base_of_window": "promoter",
+    "p04_utr5_tC_beyond_promoter": "utr5",
+    "p05_exon_tA_cds": "exon",
+    "p06_exon_first_base_of_tA_exon2": "exon",
+    "p07_intron_last_base_before_tA_exon2": "intron",
+    "p08_utr3_tA": "utr3",
+    "p09_utr3_last_base_of_tA": "utr3",
+    "p10_intergenic_first_base_after_tA": "intergenic",
+    "p11_intron_tA": "intron",
+    "p12_intron_centre_spans_exon_and_intron": "intron",
+    "p13_promoter_minus_strand_upstream_is_higher": "promoter",
+    "p14_intergenic_where_a_strand_bug_puts_a_promoter": "intergenic",
+    "p15_utr3_minus_strand_low_end": "utr3",
+    "p16_unmatched_chromosome": "unmatched",
+    "p17_intergenic": "intergenic"
+  },
+  "counts_centre": {
+    "promoter": 3, "utr5": 1, "utr3": 3, "exon": 2, "intron": 3, "intergenic": 4,
+    "matched": 16, "unmatched": 1, "unmatchedChroms": ["chrZ"]
+  },
+  "basepairs": {
+    "_comment": "Per-base priority; unmatched peaks excluded. Total matched bp = 1306.",
+    "promoter": 201, "utr5": 100, "utr3": 101, "exon": 201, "intron": 501, "intergenic": 202,
+    "matched": 1306
+  },
+  "genomeBackground_bp": {
+    "_comment": "chrF length 30000 from ##sequence-region (GFF3 only; GTF has no lengths).",
+    "promoter": 6003, "utr5": 499, "utr3": 900, "exon": 1600, "intron": 7998, "intergenic": 13000,
+    "total": 30000
+  }
+}

@@ -1,0 +1,29 @@
+##gff-version 3
+##sequence-region chrF 1 30000
+# Hand-built test fixture. Links features with ID/Parent ONLY: no transcript_id,
+# on purpose, so a parser keyed on GENCODE's duplicated attributes fails here.
+# tC uses type mRNA rather than transcript, also on purpose.
+chrF	fixture	gene	5001	9000	.	+	.	ID=gA;gene_type=protein_coding
+chrF	fixture	transcript	5001	9000	.	+	.	ID=tA;Parent=gA;transcript_type=protein_coding
+chrF	fixture	exon	5001	5500	.	+	.	ID=tA.e1;Parent=tA
+chrF	fixture	exon	8501	9000	.	+	.	ID=tA.e2;Parent=tA
+chrF	fixture	CDS	5201	5500	.	+	0	ID=tA.cds;Parent=tA
+chrF	fixture	CDS	8501	8800	.	+	0	ID=tA.cds;Parent=tA
+chrF	fixture	five_prime_UTR	5001	5200	.	+	.	Parent=tA
+chrF	fixture	three_prime_UTR	8801	9000	.	+	.	Parent=tA
+chrF	fixture	gene	15001	19000	.	-	.	ID=gB;gene_type=protein_coding
+chrF	fixture	transcript	15001	19000	.	-	.	ID=tB;Parent=gB;transcript_type=protein_coding
+chrF	fixture	exon	18501	19000	.	-	.	ID=tB.e1;Parent=tB
+chrF	fixture	exon	15001	15500	.	-	.	ID=tB.e2;Parent=tB
+chrF	fixture	CDS	18501	18800	.	-	0	ID=tB.cds;Parent=tB
+chrF	fixture	CDS	15201	15500	.	-	0	ID=tB.cds;Parent=tB
+chrF	fixture	five_prime_UTR	18801	19000	.	-	.	Parent=tB
+chrF	fixture	three_prime_UTR	15001	15200	.	-	.	Parent=tB
+chrF	fixture	gene	23001	29000	.	+	.	ID=gC;gene_type=protein_coding
+chrF	fixture	mRNA	23001	29000	.	+	.	ID=tC;Parent=gC;transcript_type=protein_coding
+chrF	fixture	exon	23001	25000	.	+	.	ID=tC.e1;Parent=tC
+chrF	fixture	exon	28001	29000	.	+	.	ID=tC.e2;Parent=tC
+chrF	fixture	CDS	24501	25000	.	+	0	ID=tC.cds;Parent=tC
+chrF	fixture	CDS	28001	28500	.	+	0	ID=tC.cds;Parent=tC
+chrF	fixture	five_prime_UTR	23001	24500	.	+	.	Parent=tC
+chrF	fixture	three_prime_UTR	28501	29000	.	+	.	Parent=tC

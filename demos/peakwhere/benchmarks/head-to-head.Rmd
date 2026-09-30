@@ -1,0 +1,156 @@
+---
+output: github_document
+---
+
+<!-- Render with make head-to-head; the drivers write the JSON receipts. -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+up <- jsonlite::read_json("head-to-head-upstream.json")
+ours <- jsonlite::read_json("head-to-head-ours.json")
+threads <- jsonlite::read_json("threading.json")
+before <- jsonlite::fromJSON(paste(system2("git", c("show",
+  "71c4674:benchmarks/head-to-head-ours.json"), stdout = TRUE), collapse = "\n"), simplifyVector = FALSE)
+timed <- function(runs) Filter(function(r) !isTRUE(r$warmup), runs)
+stat <- function(x) sprintf("%.3f [%.3f–%.3f]", median(x), min(x), max(x))
+col <- function(runs, f) vapply(timed(runs), f, numeric(1))
+measured <- unique(vapply(ours, `[[`, "", "commit"))
+stopifnot(length(measured) == 1L, !any(vapply(ours, `[[`, FALSE, "dirty")))
+```
+
+# Head-to-head: duckpeakwhere vs upstream peakwhere
+
+W2 on the same 13th Gen Intel Core i5-13500 (20 logical CPUs), headless Chromium
+148.0.7778.96. One warm-up plus five measured app runs, each in a fresh browser.
+Timing jobs ran sequentially, without another test or benchmark job launched alongside
+them. Resident system and agent services remained; this was not an exclusive host.
+
+- **Upstream:** [seandavi/peakwhere](https://github.com/seandavi/peakwhere) at
+  `f40a673842815b9eef08c4d32243b29dac3e0646`, using its committed application and real
+  file inputs. The upstream receipt is the committed 2026-09-23 measurement, not a new run.
+- **duckpeakwhere measured commit:** `r measured`, signed DuckHTS 1.5.2, duckdb-wasm
+  1.5.4 (`wasm_eh`, one thread), W2 files over same-origin HTTP.
+- **Inputs:** full GENCODE vM25 basic and full ENCODE thymus narrowPeak files
+  ENCFF714WDP, ENCFF979ULB, ENCFF478UYW, ENCFF853BYO, ENCFF674JZY. Compressed hashes
+  were verified against `bench/manifest.json`. There are 221,308 peaks.
+- **Settings:** promoter −1000/+1000, centres, all transcripts. The first redraw
+  switches to bp; the second changes promoter upstream to 2000, retaining bp mode.
+- **Driver:** `node bench/head-to-head-ours.mjs 6 benchmarks/head-to-head-ours.json`.
+  It submits the real app form, waits for rendered results, and uses the same session
+  on redraws. Startup is navigation to the ready app and is outside first-analysis time.
+
+## Seconds, median [min–max] of five runs
+
+```{r timing}
+rows <- data.frame(
+  step = c("App startup", "First analysis (Run → results)",
+           "Redraw: centres → base pairs", "Redraw: promoter upstream 2000 (bp)"),
+  upstream = c("—", stat(col(up, function(r) r$run)),
+               stat(col(up, function(r) r$redraw$mode_bp)), stat(col(up, function(r) r$redraw$promoter_2000))),
+  duckpeakwhere = c(stat(col(ours, function(r) r$startup)), stat(col(ours, function(r) r$run)),
+                    stat(col(ours, function(r) r$redraw$mode_bp)), stat(col(ours, function(r) r$redraw$promoter_2000))))
+knitr::kable(rows, align = "lrr")
+```
+
+Upstream includes a 300 ms redraw debounce. duckpeakwhere measures submission through
+rendering, with no debounce. Neither driver observed off-origin requests. The bp
+redraw is under one second; the promoter redraw is **not**: it rebuilds categories and
+the cgranges partition. The first analysis remains slower than upstream's 4.35 s.
+The full feature read remains a [DuckHTS #249](https://github.com/RGenomicsETL/duckhts/issues/249)
+work item; there is no application-side parser or projection workaround.
+
+```{r before-after}
+knitr::kable(data.frame(
+  step = c("First analysis", "Mode redraw", "Promoter redraw"),
+  before = c(stat(col(before, function(r) r$run)), stat(col(before, function(r) r$redraw$mode_bp)),
+             stat(col(before, function(r) r$redraw$promoter_2000))),
+  after = c(stat(col(ours, function(r) r$run)), stat(col(ours, function(r) r$redraw$mode_bp)),
+            stat(col(ours, function(r) r$redraw$promoter_2000)))), align = "lrr")
+```
+
+The before receipt is preserved at `71c4674:benchmarks/head-to-head-ours.json` (the
+report identifies its source as `5fa746b`). Its driver called uncached `annotate`
+without rendering, and reset to centre mode for the promoter measurement. The after
+driver includes rendering and keeps bp mode, matching upstream. The promoter rows
+therefore compare workflows, not identical settings or identical timing boundaries.
+
+## Exact agreement
+
+```{r agreement}
+csv <- up[[which(vapply(up, function(r) !is.null(r$csv), logical(1)))[1]]]$csv
+lines <- strsplit(csv, "\n")[[1]]
+reference <- read.csv(text = paste(lines[!startsWith(lines, "#")], collapse = "\n"))
+reference <- reference[startsWith(reference$label, "thymus_"), ]
+categories <- c("promoter", "utr5", "utr3", "exon", "intron", "intergenic")
+marks <- vapply(strsplit(reference$label, "_"), `[`, "", 2L)
+for (run in c(ours, before)) for (i in seq_along(marks)) {
+  mine <- vapply(categories, function(k) as.numeric(run$counts[[marks[i]]][[k]]), numeric(1))
+  stopifnot(identical(mine, setNames(as.numeric(unlist(reference[i, categories], use.names = FALSE)), categories)))
+}
+knitr::kable(data.frame(file = marks, identical_categories = 6L, of = 6L))
+```
+
+All 30 centre counts match both immutable pre-port receipts on **every** timed run
+and warm-up, including native replay. This is independent upstream peakwhere agreement;
+it is not a claim that the separate W2 R oracle finished. That oracle's timeout remains
+recorded in [performance.md](performance.md). PeakPeek expectations are still its own
+SPEC and tests at `a05b661` ([a05b6615b1c51c41781b6a1f2081868fbc2b711e](https://github.com/seandavi/peakpeek/tree/a05b6615b1c51c41781b6a1f2081868fbc2b711e)), not outputs from this port.
+The expected file's values were re-checked against that commit: the fixture expectations
+against `examples/fixture.js` and the five thymus rows against `SPEC.md` §2. (An earlier
+revision of this report cited a PeakPeek commit `4f91069` that does not exist; it was a
+recording error, corrected here.)
+
+## SQL decisions and measured effects
+
+- **Segment labelling and centre counting keep cgranges.** The supplied native-1t W2
+  comparison found segment labelling at 0.84 s versus 1.64 s for islands + ASOF,
+  1.51 s for islands + genome-coordinate IEJoin, and 1.68 s for IEJoin without islands.
+  Centre probes took 0.079 s versus ASOF's 0.116 s. These operator experiments were
+  not repeated. CTE range-join plans with poor estimates are not adopted.
+- **Parent decoding:** only values containing `%` call `url_decode`; the supplied
+  exact-equality measurement was 0.69 → 0.62 s native. Plain and encoded multi-parent
+  links have a regression fixture.
+- **File reads and caching:** one peak scan supplies validation, both views, contig
+  reports and past-end warnings. The supplied profile attributed 0.32 of 0.70 s of
+  count time to redundant reads. Annotation tables and the partition survive redraws;
+  only dependent tables are rebuilt. File selection changes scan only added/replaced
+  peak files. SQL-trace tests check the invalidation boundaries.
+- **Bp reduction:** one materialized overlap list per matched peak feeds five genic
+  sums; intergenic is total width minus those sums. Cache the annotation contig set
+  rather than scanning all features per file. A bounded W2 browser probe measured
+  bp 1.255 → 0.286 s and promoter-bp 2.744 → 1.793 s for these two changes together;
+  all category counts at both bp settings exactly matched the pre-change SQL. This
+  is a regression comparison, not an independent oracle. Independent hand fixtures
+  check bp semantics. EXPLAIN JSON shows list reductions/`UNGROUPED_AGGREGATE`, a
+  contig-membership `HASH_JOIN`, and no lateral `INOUT_FUNCTION`/UNNEST.
+- **Peek histogram:** the bin grid and accepted rows are materialized temp tables.
+  EXPLAIN on the 30-bin/17-row fixture selects `BLOCKWISE_NL_JOIN` for the inclusive
+  last-bin predicate. No speedup is claimed for this materialization. There is no
+  new interval range join in Where.
+
+## Threading
+
+`node bench/threading.mjs 3 benchmarks/threading.json` replays identical captured app
+SQL over the same local HTTP URLs in signed native DuckDB `r threads$results[[1]]$version`.
+One warm-up and three measured runs per setting; setting order alternates. These are
+first-analysis SQL times, not app redraws or native local-file I/O.
+
+```{r threads}
+engines <- c("native-1t", "native-nt")
+knitr::kable(do.call(rbind, lapply(engines, function(engine) {
+  runs <- Filter(function(r) r$engine == engine, threads$results)
+  data.frame(engine = engine, threads = runs[[1]]$threads,
+    seconds = stat(col(runs, function(r) r$seconds$total)),
+    rss_MiB = stat(col(runs, function(r) r$rss_kb / 1024)))
+})), align = "lrrr")
+```
+
+The deployed browser probe reports crossOriginIsolated = **`r threads$wasm$crossOriginIsolated`**,
+SharedArrayBuffer = **`r threads$wasm$sharedArrayBuffer`**, platform **`r threads$wasm$platform`**, and
+`r threads$wasm$threads` thread. Signed extensions remain enforced and there are no
+off-origin requests. **Browser threading is not usable in this deployment as served.**
+GitHub Pages cannot set COOP/COEP response headers. A same-origin `coi-serviceworker`
+could establish isolation, but worker registration/reload behavior and signed
+`wasm_threads` execution would need a separate browser benchmark. No service worker
+or threaded bundle is adopted; native thread scaling does not establish a browser
+speedup. Threaded-browser throughput is unverified.

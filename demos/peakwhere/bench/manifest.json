@@ -1,0 +1,40 @@
+{
+  "native": {
+    "version": "1.5.2",
+    "url": "https://community-extensions.duckdb.org/v1.5.5/linux_amd64/duckhts.duckdb_extension.gz",
+    "sha256": "9df0025d9ea52960482c2f10e5aafe83d281cfd5a2289de7b71a82f96f0cf827",
+    "path": "bench/.cache/native/duckhts.duckdb_extension.gz"
+  },
+  "W2": [
+    {
+      "url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/gencode.vM25.basic.annotation.gff3.gz",
+      "sha256": "e8ed48bef6a44fdf0db7c10a551d4398aa341318d00fbd9efd69530593106846",
+      "path": "bench/.cache/W2/gencode.vM25.basic.annotation.gff3.gz"
+    },
+    {
+      "url": "https://www.encodeproject.org/files/ENCFF714WDP/@@download/ENCFF714WDP.bed.gz",
+      "sha256": "15afa43aab7022c24a5f4324ca0b71203daf3121a9316f9049e5c58c6eab3572",
+      "path": "bench/.cache/W2/thymus_CTCF_ENCFF714WDP.narrowPeak.gz"
+    },
+    {
+      "url": "https://www.encodeproject.org/files/ENCFF979ULB/@@download/ENCFF979ULB.bed.gz",
+      "sha256": "2fe1a60dc6412b93e0880601e5822746b7114702e1709423dcdb49a3a3656086",
+      "path": "bench/.cache/W2/thymus_DNase_ENCFF979ULB.narrowPeak.gz"
+    },
+    {
+      "url": "https://www.encodeproject.org/files/ENCFF478UYW/@@download/ENCFF478UYW.bed.gz",
+      "sha256": "9faf7f19d7dd80325fb22074b3f0c5f2eeb45a54e389df7e924540fea61b25b6",
+      "path": "bench/.cache/W2/thymus_H3K27me3_ENCFF478UYW.narrowPeak.gz"
+    },
+    {
+      "url": "https://www.encodeproject.org/files/ENCFF853BYO/@@download/ENCFF853BYO.bed.gz",
+      "sha256": "014da868e773ac7e0c5f7392ba00592e497eb79acd4cc6254775577b02ffcf4c",
+      "path": "bench/.cache/W2/thymus_H3K36me3_ENCFF853BYO.narrowPeak.gz"
+    },
+    {
+      "url": "https://www.encodeproject.org/files/ENCFF674JZY/@@download/ENCFF674JZY.bed.gz",
+      "sha256": "ab6da876a876ade8c8467e8a84850d36b42af0df68a0606f077c547f8da5b93a",
+      "path": "bench/.cache/W2/thymus_H3K4me3_ENCFF674JZY.narrowPeak.gz"
+    }
+  ]
+}

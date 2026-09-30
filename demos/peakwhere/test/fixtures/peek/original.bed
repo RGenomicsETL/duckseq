@@ -1,0 +1,17 @@
+track name=fixture description="hand-made test file"
+browser position chr1:1-1000
+# a comment
+chr1	100	200	a
+chr1	150	250	b
+chr2	0	1	c
+chr10	5000	6000	d
+chrX	10	20	e
+chrM	0	50	f
+chrUn_JH584304	100	400	g
+chr1	300	300	h
+chr1	500	400	i
+chr1	abc	600	j
+chr1	1e+03	1100	k
+
+chr1	100	200	a
+chr3	2000

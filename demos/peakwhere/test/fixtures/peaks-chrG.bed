@@ -1,0 +1,8 @@
+# BED: 0-based, half-open. The chrG copy of tC in reused-id.gtf: TSS 3000 (+), promoter
+# window [2000, 4001), exons [3000, 5000) and [8000, 9000), CDS [4500, 5000) and [8000, 8500).
+# Expected category (centre rule, promoter +/-1 kb) in name.
+chrG	2500	2600	g1_promoter
+chrG	4200	4300	g2_utr5_beyond_promoter
+chrG	6000	6100	g3_intron
+chrG	8600	8700	g4_utr3
+chrG	9500	9600	g5_intergenic_after_the_copy

@@ -1,0 +1,13 @@
+# Ten matched peaks (3 exon, 7 intergenic); five invalid summit offsets.
+# The invalid chrZ offset is excluded with its unmatched peak.
+chrF	190	230	first	0	.	1.5	2.5	3.5	0
+chrF	190	230	last_exon	0	.	1.5	2.5	3.5	9
+chrF	190	230	first_intergenic	0	.	1.5	2.5	3.5	10
+chrF	190	230	unknown	0	.	1.5	2.5	3.5	-1
+chrF	190	230	at_end	0	.	1.5	2.5	3.5	40
+chrF	190	230	negative	0	.	1.5	2.5	3.5	-2
+chrF	190	230	missing	0	.	1.5	2.5	3.5
+chrF	80	120	zero	0	.	1.5	2.5	3.5	0
+chrF	80	120	last_base	0	.	1.5	2.5	3.5	39
+chrF	190	230	far_past_end	0	.	1.5	2.5	3.5	9999999999
+chrZ	190	230	unmatched_invalid	0	.	1.5	2.5	3.5	-1

@@ -1,0 +1,45 @@
+{
+  "_comment": "Peak-centre counts from test/oracle.R, promoter 1000/1000, all transcripts.",
+  "counts_centre": {
+    "CTCF": {
+      "promoter": 360,
+      "utr5": 0,
+      "utr3": 15,
+      "exon": 28,
+      "intron": 192,
+      "intergenic": 111
+    },
+    "DNase": {
+      "promoter": 893,
+      "utr5": 1,
+      "utr3": 47,
+      "exon": 60,
+      "intron": 732,
+      "intergenic": 462
+    },
+    "H3K27me3": {
+      "promoter": 233,
+      "utr5": 1,
+      "utr3": 13,
+      "exon": 29,
+      "intron": 148,
+      "intergenic": 181
+    },
+    "H3K36me3": {
+      "promoter": 96,
+      "utr5": 5,
+      "utr3": 226,
+      "exon": 440,
+      "intron": 2007,
+      "intergenic": 81
+    },
+    "H3K4me3": {
+      "promoter": 594,
+      "utr5": 1,
+      "utr3": 8,
+      "exon": 30,
+      "intron": 148,
+      "intergenic": 78
+    }
+  }
+}

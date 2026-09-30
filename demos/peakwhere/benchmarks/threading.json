@@ -1,0 +1,2649 @@
+{
+ "commit": "e27ecb13b9d06084013237d397661400ddbb0856",
+ "cpu": "13th Gen Intel(R) Core(TM) i5-13500",
+ "logical_cpus": 20,
+ "wasm": {
+  "platform": "wasm_eh",
+  "version": "v1.5.4",
+  "threads": 1,
+  "unsigned": false,
+  "crossOriginIsolated": false,
+  "sharedArrayBuffer": false,
+  "features": {
+   "bigInt64Array": true,
+   "crossOriginIsolated": false,
+   "wasmExceptions": true,
+   "wasmSIMD": true,
+   "wasmThreads": false,
+   "wasmBulkMemory": true
+  },
+  "offsite": []
+ },
+ "sql_sha256": "eb70ce9e96a102791d16e6f150295e3a8d971e7d4b95155d225238735389a763",
+ "results": [
+  {
+   "i": 0,
+   "warmup": true,
+   "engine": "native-1t",
+   "version": "v1.5.1",
+   "threads": 1,
+   "unsigned": false,
+   "duckhts": "1.5.2",
+   "seconds": {
+    "partition": 3.818,
+    "count": 0.272,
+    "total": 4.09,
+    "process_wall": 4.157922513
+   },
+   "rss_kb": 616944,
+   "counts_centre": {
+    "CTCF": {
+     "promoter": 9191,
+     "utr5": 21,
+     "utr3": 384,
+     "exon": 825,
+     "intron": 5193,
+     "intergenic": 4591
+    },
+    "DNase": {
+     "promoter": 25018,
+     "utr5": 80,
+     "utr3": 1024,
+     "exon": 1965,
+     "intron": 21844,
+     "intergenic": 17998
+    },
+    "H3K27me3": {
+     "promoter": 6976,
+     "utr5": 39,
+     "utr3": 378,
+     "exon": 960,
+     "intron": 4212,
+     "intergenic": 4020
+    },
+    "H3K36me3": {
+     "promoter": 3067,
+     "utr5": 96,
+     "utr3": 6533,
+     "exon": 13986,
+     "intron": 65384,
+     "intergenic": 2407
+    },
+    "H3K4me3": {
+     "promoter": 17291,
+     "utr5": 39,
+     "utr3": 193,
+     "exon": 807,
+     "intron": 3947,
+     "intergenic": 2816
+    }
+   },
+   "unmatched": {
+    "CTCF": 15,
+    "DNase": 0,
+    "H3K27me3": 1,
+    "H3K36me3": 1,
+    "H3K4me3": 6
+   },
+   "sql_sha256": "eb70ce9e96a102791d16e6f150295e3a8d971e7d4b95155d225238735389a763",
+   "statements": [
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 2.218
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.353
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.115
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.012
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.009
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.007
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.154
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.141
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.028
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.591
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.017
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.007
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.158
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.034
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.055
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.019
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.015
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.023
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.03
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.006
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.022
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0.006
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    }
+   ]
+  },
+  {
+   "i": 0,
+   "warmup": true,
+   "engine": "native-nt",
+   "version": "v1.5.1",
+   "threads": 20,
+   "unsigned": false,
+   "duckhts": "1.5.2",
+   "seconds": {
+    "partition": 3.606999999999999,
+    "count": 0.25700000000000006,
+    "total": 3.863999999999999,
+    "process_wall": 3.939840503
+   },
+   "rss_kb": 803432,
+   "counts_centre": {
+    "CTCF": {
+     "promoter": 9191,
+     "utr5": 21,
+     "utr3": 384,
+     "exon": 825,
+     "intron": 5193,
+     "intergenic": 4591
+    },
+    "DNase": {
+     "promoter": 25018,
+     "utr5": 80,
+     "utr3": 1024,
+     "exon": 1965,
+     "intron": 21844,
+     "intergenic": 17998
+    },
+    "H3K27me3": {
+     "promoter": 6976,
+     "utr5": 39,
+     "utr3": 378,
+     "exon": 960,
+     "intron": 4212,
+     "intergenic": 4020
+    },
+    "H3K36me3": {
+     "promoter": 3067,
+     "utr5": 96,
+     "utr3": 6533,
+     "exon": 13986,
+     "intron": 65384,
+     "intergenic": 2407
+    },
+    "H3K4me3": {
+     "promoter": 17291,
+     "utr5": 39,
+     "utr3": 193,
+     "exon": 807,
+     "intron": 3947,
+     "intergenic": 2816
+    }
+   },
+   "unmatched": {
+    "CTCF": 15,
+    "DNase": 0,
+    "H3K27me3": 1,
+    "H3K36me3": 1,
+    "H3K4me3": 6
+   },
+   "sql_sha256": "eb70ce9e96a102791d16e6f150295e3a8d971e7d4b95155d225238735389a763",
+   "statements": [
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 2.22
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.205
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.042
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.01
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.015
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.081
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.299
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.028
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.37
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.014
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.288
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.028
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.032
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.048
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.017
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.009
+    },
+    {
+     "phase": "count",
+     "seconds": 0.005
+    },
+    {
+     "phase": "count",
+     "seconds": 0.028
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.036
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.016
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.005
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    }
+   ]
+  },
+  {
+   "i": 1,
+   "warmup": false,
+   "engine": "native-nt",
+   "version": "v1.5.1",
+   "threads": 20,
+   "unsigned": false,
+   "duckhts": "1.5.2",
+   "seconds": {
+    "partition": 3.5389999999999997,
+    "count": 0.262,
+    "total": 3.8009999999999997,
+    "process_wall": 3.872391064
+   },
+   "rss_kb": 801944,
+   "counts_centre": {
+    "CTCF": {
+     "promoter": 9191,
+     "utr5": 21,
+     "utr3": 384,
+     "exon": 825,
+     "intron": 5193,
+     "intergenic": 4591
+    },
+    "DNase": {
+     "promoter": 25018,
+     "utr5": 80,
+     "utr3": 1024,
+     "exon": 1965,
+     "intron": 21844,
+     "intergenic": 17998
+    },
+    "H3K27me3": {
+     "promoter": 6976,
+     "utr5": 39,
+     "utr3": 378,
+     "exon": 960,
+     "intron": 4212,
+     "intergenic": 4020
+    },
+    "H3K36me3": {
+     "promoter": 3067,
+     "utr5": 96,
+     "utr3": 6533,
+     "exon": 13986,
+     "intron": 65384,
+     "intergenic": 2407
+    },
+    "H3K4me3": {
+     "promoter": 17291,
+     "utr5": 39,
+     "utr3": 193,
+     "exon": 807,
+     "intron": 3947,
+     "intergenic": 2816
+    }
+   },
+   "unmatched": {
+    "CTCF": 15,
+    "DNase": 0,
+    "H3K27me3": 1,
+    "H3K36me3": 1,
+    "H3K4me3": 6
+   },
+   "sql_sha256": "eb70ce9e96a102791d16e6f150295e3a8d971e7d4b95155d225238735389a763",
+   "statements": [
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 2.201
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.198
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.042
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.007
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.015
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.084
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.312
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.029
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.325
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.013
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.278
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.028
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.033
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.01
+    },
+    {
+     "phase": "count",
+     "seconds": 0.004
+    },
+    {
+     "phase": "count",
+     "seconds": 0.052
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.018
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.027
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.008
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.035
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.015
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.004
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    }
+   ]
+  },
+  {
+   "i": 1,
+   "warmup": false,
+   "engine": "native-1t",
+   "version": "v1.5.1",
+   "threads": 1,
+   "unsigned": false,
+   "duckhts": "1.5.2",
+   "seconds": {
+    "partition": 3.7939999999999996,
+    "count": 0.26400000000000007,
+    "total": 4.058,
+    "process_wall": 4.127926469
+   },
+   "rss_kb": 616712,
+   "counts_centre": {
+    "CTCF": {
+     "promoter": 9191,
+     "utr5": 21,
+     "utr3": 384,
+     "exon": 825,
+     "intron": 5193,
+     "intergenic": 4591
+    },
+    "DNase": {
+     "promoter": 25018,
+     "utr5": 80,
+     "utr3": 1024,
+     "exon": 1965,
+     "intron": 21844,
+     "intergenic": 17998
+    },
+    "H3K27me3": {
+     "promoter": 6976,
+     "utr5": 39,
+     "utr3": 378,
+     "exon": 960,
+     "intron": 4212,
+     "intergenic": 4020
+    },
+    "H3K36me3": {
+     "promoter": 3067,
+     "utr5": 96,
+     "utr3": 6533,
+     "exon": 13986,
+     "intron": 65384,
+     "intergenic": 2407
+    },
+    "H3K4me3": {
+     "promoter": 17291,
+     "utr5": 39,
+     "utr3": 193,
+     "exon": 807,
+     "intron": 3947,
+     "intergenic": 2816
+    }
+   },
+   "unmatched": {
+    "CTCF": 15,
+    "DNase": 0,
+    "H3K27me3": 1,
+    "H3K36me3": 1,
+    "H3K4me3": 6
+   },
+   "sql_sha256": "eb70ce9e96a102791d16e6f150295e3a8d971e7d4b95155d225238735389a763",
+   "statements": [
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 2.201
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.351
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.115
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.012
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.008
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.008
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.155
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.141
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.026
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.59
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.003
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.018
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.005
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.154
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.034
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.05
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.017
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.015
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.023
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.028
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.023
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    }
+   ]
+  },
+  {
+   "i": 2,
+   "warmup": false,
+   "engine": "native-1t",
+   "version": "v1.5.1",
+   "threads": 1,
+   "unsigned": false,
+   "duckhts": "1.5.2",
+   "seconds": {
+    "partition": 3.83,
+    "count": 0.272,
+    "total": 4.102,
+    "process_wall": 4.166977453
+   },
+   "rss_kb": 617012,
+   "counts_centre": {
+    "CTCF": {
+     "promoter": 9191,
+     "utr5": 21,
+     "utr3": 384,
+     "exon": 825,
+     "intron": 5193,
+     "intergenic": 4591
+    },
+    "DNase": {
+     "promoter": 25018,
+     "utr5": 80,
+     "utr3": 1024,
+     "exon": 1965,
+     "intron": 21844,
+     "intergenic": 17998
+    },
+    "H3K27me3": {
+     "promoter": 6976,
+     "utr5": 39,
+     "utr3": 378,
+     "exon": 960,
+     "intron": 4212,
+     "intergenic": 4020
+    },
+    "H3K36me3": {
+     "promoter": 3067,
+     "utr5": 96,
+     "utr3": 6533,
+     "exon": 13986,
+     "intron": 65384,
+     "intergenic": 2407
+    },
+    "H3K4me3": {
+     "promoter": 17291,
+     "utr5": 39,
+     "utr3": 193,
+     "exon": 807,
+     "intron": 3947,
+     "intergenic": 2816
+    }
+   },
+   "unmatched": {
+    "CTCF": 15,
+    "DNase": 0,
+    "H3K27me3": 1,
+    "H3K36me3": 1,
+    "H3K4me3": 6
+   },
+   "sql_sha256": "eb70ce9e96a102791d16e6f150295e3a8d971e7d4b95155d225238735389a763",
+   "statements": [
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 2.227
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.35
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.115
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.012
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.008
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.007
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.157
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.144
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.027
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.597
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.017
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.006
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.156
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.035
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.054
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.019
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.016
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.023
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.028
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.024
+    },
+    {
+     "phase": "count",
+     "seconds": 0.006
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    }
+   ]
+  },
+  {
+   "i": 2,
+   "warmup": false,
+   "engine": "native-nt",
+   "version": "v1.5.1",
+   "threads": 20,
+   "unsigned": false,
+   "duckhts": "1.5.2",
+   "seconds": {
+    "partition": 3.5749999999999997,
+    "count": 0.259,
+    "total": 3.8339999999999996,
+    "process_wall": 3.9149379040000003
+   },
+   "rss_kb": 810840,
+   "counts_centre": {
+    "CTCF": {
+     "promoter": 9191,
+     "utr5": 21,
+     "utr3": 384,
+     "exon": 825,
+     "intron": 5193,
+     "intergenic": 4591
+    },
+    "DNase": {
+     "promoter": 25018,
+     "utr5": 80,
+     "utr3": 1024,
+     "exon": 1965,
+     "intron": 21844,
+     "intergenic": 17998
+    },
+    "H3K27me3": {
+     "promoter": 6976,
+     "utr5": 39,
+     "utr3": 378,
+     "exon": 960,
+     "intron": 4212,
+     "intergenic": 4020
+    },
+    "H3K36me3": {
+     "promoter": 3067,
+     "utr5": 96,
+     "utr3": 6533,
+     "exon": 13986,
+     "intron": 65384,
+     "intergenic": 2407
+    },
+    "H3K4me3": {
+     "promoter": 17291,
+     "utr5": 39,
+     "utr3": 193,
+     "exon": 807,
+     "intron": 3947,
+     "intergenic": 2816
+    }
+   },
+   "unmatched": {
+    "CTCF": 15,
+    "DNase": 0,
+    "H3K27me3": 1,
+    "H3K36me3": 1,
+    "H3K4me3": 6
+   },
+   "sql_sha256": "eb70ce9e96a102791d16e6f150295e3a8d971e7d4b95155d225238735389a763",
+   "statements": [
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 2.189
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.196
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.042
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.006
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.014
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.097
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.301
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.028
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.362
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.003
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.012
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.292
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.027
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.032
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.051
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.018
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.028
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.008
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.035
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0.01
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.016
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.005
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    }
+   ]
+  },
+  {
+   "i": 3,
+   "warmup": false,
+   "engine": "native-nt",
+   "version": "v1.5.1",
+   "threads": 20,
+   "unsigned": false,
+   "duckhts": "1.5.2",
+   "seconds": {
+    "partition": 3.676999999999999,
+    "count": 0.26,
+    "total": 3.9369999999999994,
+    "process_wall": 4.014873303
+   },
+   "rss_kb": 787672,
+   "counts_centre": {
+    "CTCF": {
+     "promoter": 9191,
+     "utr5": 21,
+     "utr3": 384,
+     "exon": 825,
+     "intron": 5193,
+     "intergenic": 4591
+    },
+    "DNase": {
+     "promoter": 25018,
+     "utr5": 80,
+     "utr3": 1024,
+     "exon": 1965,
+     "intron": 21844,
+     "intergenic": 17998
+    },
+    "H3K27me3": {
+     "promoter": 6976,
+     "utr5": 39,
+     "utr3": 378,
+     "exon": 960,
+     "intron": 4212,
+     "intergenic": 4020
+    },
+    "H3K36me3": {
+     "promoter": 3067,
+     "utr5": 96,
+     "utr3": 6533,
+     "exon": 13986,
+     "intron": 65384,
+     "intergenic": 2407
+    },
+    "H3K4me3": {
+     "promoter": 17291,
+     "utr5": 39,
+     "utr3": 193,
+     "exon": 807,
+     "intron": 3947,
+     "intergenic": 2816
+    }
+   },
+   "unmatched": {
+    "CTCF": 15,
+    "DNase": 0,
+    "H3K27me3": 1,
+    "H3K36me3": 1,
+    "H3K4me3": 6
+   },
+   "sql_sha256": "eb70ce9e96a102791d16e6f150295e3a8d971e7d4b95155d225238735389a763",
+   "statements": [
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 2.217
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.197
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.05
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.009
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.015
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.082
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.339
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.028
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.373
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.015
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.318
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.026
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.01
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.031
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.051
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.018
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.028
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.009
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.036
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.016
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.006
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    }
+   ]
+  },
+  {
+   "i": 3,
+   "warmup": false,
+   "engine": "native-1t",
+   "version": "v1.5.1",
+   "threads": 1,
+   "unsigned": false,
+   "duckhts": "1.5.2",
+   "seconds": {
+    "partition": 3.8089999999999997,
+    "count": 0.268,
+    "total": 4.077,
+    "process_wall": 4.150794325
+   },
+   "rss_kb": 616800,
+   "counts_centre": {
+    "CTCF": {
+     "promoter": 9191,
+     "utr5": 21,
+     "utr3": 384,
+     "exon": 825,
+     "intron": 5193,
+     "intergenic": 4591
+    },
+    "DNase": {
+     "promoter": 25018,
+     "utr5": 80,
+     "utr3": 1024,
+     "exon": 1965,
+     "intron": 21844,
+     "intergenic": 17998
+    },
+    "H3K27me3": {
+     "promoter": 6976,
+     "utr5": 39,
+     "utr3": 378,
+     "exon": 960,
+     "intron": 4212,
+     "intergenic": 4020
+    },
+    "H3K36me3": {
+     "promoter": 3067,
+     "utr5": 96,
+     "utr3": 6533,
+     "exon": 13986,
+     "intron": 65384,
+     "intergenic": 2407
+    },
+    "H3K4me3": {
+     "promoter": 17291,
+     "utr5": 39,
+     "utr3": 193,
+     "exon": 807,
+     "intron": 3947,
+     "intergenic": 2816
+    }
+   },
+   "unmatched": {
+    "CTCF": 15,
+    "DNase": 0,
+    "H3K27me3": 1,
+    "H3K36me3": 1,
+    "H3K4me3": 6
+   },
+   "sql_sha256": "eb70ce9e96a102791d16e6f150295e3a8d971e7d4b95155d225238735389a763",
+   "statements": [
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.002
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 0
+    },
+    {
+     "phase": "partition",
+     "seconds": 2.203
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.351
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.116
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.013
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.008
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.007
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.154
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.001
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.149
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.027
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.593
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.003
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.017
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.006
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.156
+    },
+    {
+     "phase": "partition",
+     "seconds": 0.003
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.034
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.011
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.052
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.018
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.016
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.023
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0.029
+    },
+    {
+     "phase": "count",
+     "seconds": 0.002
+    },
+    {
+     "phase": "count",
+     "seconds": 0.012
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.024
+    },
+    {
+     "phase": "count",
+     "seconds": 0.006
+    },
+    {
+     "phase": "count",
+     "seconds": 0.007
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0.001
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    },
+    {
+     "phase": "count",
+     "seconds": 0
+    }
+   ]
+  }
+ ]
+}

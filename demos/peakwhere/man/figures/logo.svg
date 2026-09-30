@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 600" width="520" height="600" role="img" aria-labelledby="title">
+  <title id="title">duckpeakwhere</title>
+  <defs>
+    <clipPath id="hex">
+      <polygon points="260,6 514,153 514,447 260,594 6,447 6,153"/>
+    </clipPath>
+  </defs>
+  <polygon points="260,6 514,153 514,447 260,594 6,447 6,153" fill="#1b1f2a"/>
+  <g clip-path="url(#hex)">
+    <!-- signal track: peaks over a gene -->
+    <path d="M60,318 L110,318 C122,318 126,296 134,296 C142,296 146,318 158,318
+             L178,318 C196,318 204,168 222,168 C240,168 248,318 266,318
+             L296,318 C306,318 310,282 318,282 C326,282 330,318 340,318
+             L362,318 C374,318 380,250 390,250 C400,250 406,318 418,318 L460,318 Z"
+          fill="#fff100" opacity="0.92"/>
+    <line x1="60" y1="318" x2="460" y2="318" stroke="#fff100" stroke-width="3"/>
+    <!-- gene model: TSS arrow, exons on an intron line -->
+    <line x1="120" y1="372" x2="420" y2="372" stroke="#e8e8e8" stroke-width="4"/>
+    <rect x="200" y="356" width="44" height="32" rx="3" fill="#e8e8e8"/>
+    <rect x="296" y="360" width="30" height="24" rx="3" fill="#e8e8e8"/>
+    <rect x="370" y="356" width="40" height="32" rx="3" fill="#e8e8e8"/>
+    <path d="M200,356 L200,334 L232,334" fill="none" stroke="#e8e8e8" stroke-width="4"/>
+    <path d="M230,326 L242,334 L230,342 Z" fill="#e8e8e8"/>
+    <!-- "where": a pin on the tallest peak -->
+    <path d="M222,82 C200,82 186,98 186,118 C186,142 222,166 222,166 C222,166 258,142 258,118 C258,98 244,82 222,82 Z"
+          fill="#ff5a36" stroke="#1b1f2a" stroke-width="4"/>
+    <circle cx="222" cy="117" r="12" fill="#1b1f2a"/>
+  </g>
+  <text x="260" y="470" text-anchor="middle" fill="#fff100"
+        font-family="'DejaVu Sans Mono', 'Menlo', 'Consolas', monospace" font-size="40" font-weight="700">duckpeakwhere</text>
+  <text x="260" y="506" text-anchor="middle" fill="#e8e8e8"
+        font-family="'DejaVu Sans', 'Helvetica', 'Arial', sans-serif" font-size="20">SQL over DuckHTS</text>
+  <polygon points="260,6 514,153 514,447 260,594 6,447 6,153" fill="none" stroke="#fff100" stroke-width="12" stroke-linejoin="round"/>
+</svg>

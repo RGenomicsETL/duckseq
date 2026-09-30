@@ -1,0 +1,2 @@
+# A chromosome length must be an integer; 1000.5 must not round to 1001.
+F	1000.5

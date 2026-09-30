@@ -1,0 +1,5 @@
+# chrF [0,150) contains promoter [100,101), exon [101,150) = 49 bp,
+# intergenic [0,100). chrG [0,100) contains no features. Total 250:
+# promoter 1, exon 49, intergenic 200. Peaks retain their full coordinates.
+F	150
+G	100

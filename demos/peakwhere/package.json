@@ -1,0 +1,29 @@
+{
+  "name": "duckpeakwhere",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "devDependencies": {
+    "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
+    "@observablehq/plot": "0.6.17",
+    "esbuild": "0.25.12",
+    "playwright-core": "1.60.0"
+  },
+  "description": "Where do your peaks land? peakwhere ported to SQL over DuckHTS in duckdb-wasm.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sounkou-bioinfo/duckpeakwhere.git"
+  },
+  "scripts": {
+    "stage": "node scripts/stage-duckhts.mjs",
+    "stage:dev": "node scripts/stage-duckhts-dev.mjs",
+    "stage:peek": "node scripts/stage-peek-examples.mjs",
+    "vendor": "node scripts/vendor.mjs",
+    "serve": "node scripts/serve.mjs",
+    "test": "node --test \"test/*.test.js\""
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

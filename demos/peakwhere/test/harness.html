@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>duckpeakwhere test harness</title>
+<div id="where-results"><details class="executed-sql"><summary>Show the SQL</summary><pre></pre><button data-action="copy">Copy</button><button data-action="open">Open in console</button></details></div>
+<div id="peek-results"><details class="executed-sql"><summary>Show the SQL</summary><pre></pre><button data-action="copy">Copy</button><button data-action="open">Open in console</button></details></div>
+<textarea id="sql-input"></textarea>
+<script type="module">
+  import { openDatabase } from "../src/db.js";
+  import { annotate } from "../src/annotate.js";
+  import { peek } from "../src/peek.js";
+  import { createSession } from "../src/session.js";
+  import { createSqlConsole } from "../src/sql-console.js";
+  import { mountExecutedSql } from "../src/executed-sql.js";
+  const ready = openDatabase();
+  const queries = [], plans = [];
+  const session = ready.then(({ conn }) => createSession({ async query(sql) {
+    queries.push(sql);
+    if (sql.includes("FROM peek_bin_grid b LEFT JOIN") || sql.includes("covered AS MATERIALIZED")) {
+      plans.push({ kind: sql.includes("peek_bin_grid") ? "histogram" : "bp",
+        plan: (await conn.query(`EXPLAIN (FORMAT JSON) ${sql}`)).toArray().map((r) => r.explain_value).join("\n") });
+    }
+    return conn.query(sql);
+  } }));
+  const sqlConsole = session.then((s) => createSqlConsole(s));
+  window.runSql = async (sql) => (await sqlConsole).runQuery(sql);
+  window.sqlExamples = async (selection) => (await sqlConsole).examples({ ...selection, live: (await session).context() });
+  const showSql = Object.fromEntries(["where", "peek"].map((view) =>
+    [view, mountExecutedSql(document.querySelector(`#${view}-results .executed-sql`),
+      { load(sql) { document.querySelector("#sql-input").value = sql; } })]));
+  window.runSession = async (view, request) => {
+    const result = await (await session).run(view, request);
+    showSql[view]((await session).executedStatements());
+    return result;
+  };
+  window.executedStatements = async () => (await session).executedStatements();
+  window.sessionQuery = async (sql) => (await session).query(sql);
+  window.clearSession = async () => (await session).clear();
+  window.takeQueries = () => queries.splice(0);
+  window.takePlans = () => plans.splice(0);
+  window.annotateUrls = async (request) => {
+    const { conn } = await ready;
+    const absolute = (u) => new URL(u, location.href).href;
+    return annotate(conn, {
+      ...request,
+      annotation: absolute(request.annotation),
+      peaks: request.peaks.map((p) => ({ ...p, url: absolute(p.url) })),
+    });
+  };
+  // How a dropped file reaches DuckDB: registered with duckdb-wasm, or as a blob: URL.
+  window.probeLocalFile = async (path) => {
+    const { db, conn } = await ready;
+    const blob = await (await fetch(path)).blob();
+    const attempt = async (name) => {
+      try {
+        const rows = (await conn.query(`SELECT count(*) AS n FROM read_bed('${name}')`)).toArray();
+        return { ok: true, rows: Number(rows[0].n) };
+      } catch (error) {
+        return { ok: false, error: String(error.message) };
+      }
+    };
+    await db.registerFileBuffer("registered.bed", new Uint8Array(await blob.arrayBuffer()));
+    const core = (await conn.query("SELECT count(*) AS n FROM read_csv('registered.bed', comment = '#')")).toArray();
+    const url = URL.createObjectURL(blob);
+    try {
+      return {
+        coreReader: Number(core[0].n),
+        registered: await attempt("registered.bed"),
+        blobUrl: await attempt(url),
+      };
+    } finally {
+      URL.revokeObjectURL(url);
+      await db.dropFile("registered.bed");
+    }
+  };
+  window.runPeek = async (request) => {
+    const { conn } = await ready;
+    return peek(conn, request);
+  };
+  window.query = async (sql) => {
+    const { conn } = await ready;
+    return (await conn.query(sql)).toArray().map((row) => row.toJSON());
+  };
+  window.databaseInfo = async () => {
+    const { conn, platform, version } = await ready;
+    const unsigned = String((await conn.query("SELECT current_setting('allow_unsigned_extensions') AS v")).toArray()[0].v);
+    return { platform, version, unsigned };
+  };
+</script>

@@ -1,0 +1,19 @@
+# Against gene-types.gtf with promoter 0/0: chrF [100,101) is promoter,
+# [101,200) is exon. Eight [190,230) midpoints are 210 (intergenic),
+# two [80,120) midpoints are 100 (promoter): default 2 promoter + 8 intergenic.
+# Valid summits: 190+0=190 exon, 190+9=199 exon, 190+10=200 intergenic,
+# 80+0=80 intergenic, 80+39=119 exon. The other five offsets (-1,40,-2,
+# missing,9999999999) fall back to 210. Summit totals: 3 exon + 7 intergenic.
+# Width counting ignores summits: 8*(10 exon + 30 intergenic) plus
+# 2*(20 intergenic + 1 promoter + 19 exon) = 118 exon + 280 intergenic
+# + 2 promoter = 400 bp.
+chrF	190	230	first	0	.	1.5	2.5	3.5	0
+chrF	190	230	last_exon	0	.	1.5	2.5	3.5	9
+chrF	190	230	first_intergenic	0	.	1.5	2.5	3.5	10
+chrF	190	230	unknown	0	.	1.5	2.5	3.5	-1
+chrF	190	230	at_end	0	.	1.5	2.5	3.5	40
+chrF	190	230	negative	0	.	1.5	2.5	3.5	-2
+chrF	190	230	missing	0	.	1.5	2.5	3.5
+chrF	80	120	zero	0	.	1.5	2.5	3.5	0
+chrF	80	120	last_base	0	.	1.5	2.5	3.5	39
+chrF	190	230	far_past_end	0	.	1.5	2.5	3.5	9999999999

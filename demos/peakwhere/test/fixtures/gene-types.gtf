@@ -1,0 +1,16 @@
+# 1-based closed exons become [100,200), [400,500), [700,800) on chrF,
+# and [100,200) on chrG. With a 0/0 promoter, centres 150,450,750,150
+# are exonic. Gene types retain only chrF's first and third transcripts:
+# coding-only = 2 exon + 2 intergenic; all transcripts = 4 exon.
+# g1 is reused on chrG; it must not inherit chrF's protein_coding type.
+chrF	test	gene	101	200	.	+	.	gene_id "g1"; gene_biotype "protein_coding";
+chrF	test	transcript	101	200	.	+	.	gene_id "g1"; transcript_id "t1";
+chrF	test	exon	101	200	.	+	.	gene_id "g1"; transcript_id "t1";
+chrF	test	gene	401	500	.	+	.	gene_id "g2"; gene_type "lncRNA";
+chrF	test	transcript	401	500	.	+	.	gene_id "g2"; transcript_id "t2";
+chrF	test	exon	401	500	.	+	.	gene_id "g2"; transcript_id "t2";
+chrF	test	gene	701	800	.	+	.	gene_id "g3"; gene_type "protein_coding";
+chrF	test	exon	701	800	.	+	.	gene_id "g3"; transcript_id "t3";
+chrG	test	gene	101	200	.	+	.	gene_id "g1"; gene_type "lncRNA";
+chrG	test	transcript	101	200	.	+	.	gene_id "g1"; transcript_id "t1";
+chrG	test	exon	101	200	.	+	.	gene_id "g1"; transcript_id "t1";

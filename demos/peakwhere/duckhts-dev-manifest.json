@@ -1,0 +1,23 @@
+{
+  "source": {
+    "repository": "RGenomicsETL/duckhts",
+    "run": 35898454297,
+    "commit": "41d5e899b3d2771a47c130ee003a49ddb4a2c4e2",
+    "url": "https://github.com/RGenomicsETL/duckhts/actions/runs/35898454297"
+  },
+  "signed": false,
+  "files": {
+    "wasm_mvp": {
+      "artifact": "duckhts-v1.5.0-extension-wasm_mvp",
+      "sha256": "10e5c12e38879063d44d3474409a3372ed013a78d951c39b8a19185c8377eff7"
+    },
+    "wasm_eh": {
+      "artifact": "duckhts-v1.5.0-extension-wasm_eh",
+      "sha256": "7aba6423a66aa98e6d0613df5fdf186449d4dbf777040420cec2219b6a3ec193"
+    },
+    "wasm_threads": {
+      "artifact": "duckhts-v1.5.0-extension-wasm_threads",
+      "sha256": "10b8413a29698a63d1b6a7d4e9d01f7104b9f8aeeaa82d2e3aae0deb51a38cbc"
+    }
+  }
+}

@@ -1,0 +1,243 @@
+---
+output: github_document
+---
+
+<!-- Render with `make performance`; timing receipts come from `Rscript bench/run.R`. -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment = "")
+source("../bench/report.R")
+results <- jsonlite::read_json("results.json", simplifyVector = FALSE)
+```
+
+# Performance comparison
+
+[Issue #1](https://github.com/sounkou-bioinfo/duckpeakwhere/issues/1) compares
+[duckpeakwhere](../README.md)'s SQL in duckdb-wasm and native DuckDB with
+ChIPseeker `annotatePeak`. Sean Davis's peakwhere is not timed: its
+`src/pipeline.js` is a stub. The independent base-R oracle is a correctness
+reference, not a timing competitor. These are local measurements, not CI benchmarks.
+
+## Headline
+
+Seconds, **median [min–max] of five runs**, after one discarded warm-up. Total
+means the two analysis phases, excluding engine startup; native totals sum DuckDB's
+per-statement wall timers. See process wall times below for startup-inclusive native
+and R measurements. ChIPseeker performs additional nearest-transcript annotation and
+has different category rules, so this is not an equal-output speedup claim.
+
+```{r headline}
+knitr::kable(headline(results), row.names = FALSE)
+```
+
+W1 contains all 7,220 bundled mouse thymus chr19 peaks in five files, against
+GENCODE M25 basic chr19 (mm10/GRCm38). W2 requests the full versions of those same
+GENCODE and ENCODE files. A failed workload has no timing entries.
+
+## Reproduce
+
+From the repository root, with the app's vendor files staged, the DuckDB CLI,
+`/usr/bin/time`, headless Chromium, and R packages ChIPseeker, txdbmaker,
+GenomicFeatures, jsonlite, processx, BiocManager, knitr and rmarkdown installed:
+
+```bash
+node bench/stage.mjs W1
+Rscript bench/run.R W1
+Rscript bench/run.R W2
+make performance
+make readme
+```
+
+[`bench/manifest.json`](../bench/manifest.json) pins the signed native DuckHTS
+archive and all six full-genome input URLs and SHA-256s. `bench/run.R` calls the
+staging script before the workload; `node bench/stage.mjs W2` also stages W2 directly.
+Staging verifies the compressed bytes on every invocation
+and extracts to `duckhts.duckdb_extension` (the basename determines the init symbol).
+Downloads stay in ignored `bench/.cache/`. [`results.json`](results.json) contains
+per-run receipts, including the discarded warm-up, counts, source/input SHA-256s,
+versions, native statement timings and `/usr/bin/time -v` output. Native reports
+DuckHTS 1.5.2 in `duckdb_extensions()`. That version field is blank in wasm, whose
+release identity is instead established by checking the staged artifact against
+`duckhts-manifest.json`'s pinned SHA-256 before every run. Rendering reads these
+receipts; it does not rerun engines or download data.
+
+## Measurement contract
+
+- One warm-up and five measured runs per workload and engine, in fixed order:
+  wasm, native-1t, native-nt, ChIPseeker. Each native/R run is a fresh process;
+  each wasm run is a fresh page (and browser). OS caches are not flushed. Engines
+  run serially. Each engine has a 600-second wall limit, including warm-up.
+- Browser timing uses `performance.now()` at phase boundaries in the actual
+  `annotate()` call. Phase **partition** starts before annotation header reading
+  and includes feature/category construction and the partition index. Phase
+  **count** includes all five peak files, chromosome diagnostics, genome background,
+  metadata queries and index destruction, exactly as in the app. Rendering and
+  database/extension startup are excluded.
+- The browser captures the SQL issued by `src/annotate.js`. Native replays that
+  text, rather than maintaining a SQL copy. The three engines' statement/phase
+  SHA-256s must match for each repetition. Native uses the **same local HTTP URLs**
+  while the browser's server remains alive; thus path literals also match exactly.
+  No remote requests occur during analysis. Native local-file performance is not
+  measured. Whole-file DuckHTS reads use `scan_mode := 'sequential'`.
+- Native **partition/count/total** sum CLI `.timer on` real seconds per statement
+  (printed at millisecond precision; small statements can round to zero). CLI
+  stdout is retained: it includes the deprecated-lambda warning from the app SQL.
+  Only the non-empty priority/count result sets are parsed for the native gate.
+  **process_wall** measures the entire `/usr/bin/time ... duckdb` invocation,
+  including loading, transport, CLI JSON serialization, and shutdown. The native
+  SQL thread setting is either 1 or the CLI default; it is recorded, not assumed.
+- ChIPseeker **partition** is GFF3 → TxDb; **count** reads the five BED files,
+  constructs one-base centres, calls `annotatePeak`, and tabulates categories.
+  **total** sums those phases. Package loading is outside analysis total but inside
+  **process_wall**, which covers the fresh Rscript invocation and receipt writing.
+  Annotation feature caches are shared across the five files within one run only.
+- Native and R peak RSS come from `/usr/bin/time -v`, over the whole process.
+  Browser memory is **not measured**. The host is shared with unrelated processes,
+  with no CPU affinity or exclusive reservation. This single-machine, fixed-order
+  sample has no confidence intervals and does not isolate CPU kernels from I/O or startup.
+
+## Correctness gates and measurements
+
+No workload timing is published unless all of its SQL correctness gates pass.
+Every run, including warm-up, is checked. W1 requires the six counts for each file
+to equal `test/fixtures/thymus-expected.json` exactly, with zero unmatched peaks;
+`test/oracle.R` must reproduce that fixture byte for byte. W2 requires exact count
+and unmatched-peak agreement among all three SQL engines, across all repetitions,
+and exact count agreement with the independent oracle if it finishes within
+**120 seconds**. An oracle timeout is reported explicitly; an oracle error or a
+count mismatch stops the workload. `test/oracle.R` accepts annotation, peak-directory
+and output paths, using the same base-R algorithm as W1. A failed workload writes
+a failure receipt and exits nonzero; `make performance` can then render the failure
+without any partial timings. ChIPseeker is not required to match SQL: input totals,
+recognized category labels, and repeatability are checked,
+with dropped peaks reported separately. Its disagreement is never used to relax the
+SQL gate.
+
+The brute-force oracle has a chromosome-scope limit: `category_of()` assigns a
+chromosome absent from its interval list to intergenic, while SQL excludes
+annotation-unmatched peaks. W2 includes 23 such peaks. This is an additional reason
+not to claim independent W2 validation: a completed oracle remains subject to exact
+comparison, with no exception for those peaks. The oracle's chromosome rule is not
+used as a substitute for peakwhere's tested exclusion rule.
+
+```{r measurements, results='asis'}
+for (w in names(results)) {
+  r <- results[[w]]
+  cat("\n### ", w, "\n\n", sep = "")
+  cat("Measured/attempted: ", r$date, "\n\n", sep = "")
+  if (!is.null(r$oracle)) {
+    cat("Oracle: **", r$oracle$status, "**; limit ", r$oracle$limit_seconds, " seconds.\n\n", sep = "")
+    if (r$oracle$status == "timeout") {
+      cat("No independent counts were obtained.\n\n```text\n", r$oracle$command,
+          "\nexit_status: ", r$oracle$exit_status,
+          "\nstdout: ", if (nzchar(r$oracle$log)) r$oracle$log else "(empty)",
+          "\nstderr: ", if (nzchar(r$oracle$stderr)) r$oracle$stderr else "(empty)", "\n```\n\n", sep = "")
+    }
+  }
+  if (r$status != "passed") {
+    cat("**No timings reported.** ", r$skipped, "\n\n```text\n", r$failure, "\n```\n", sep = "")
+    next
+  }
+  cat(r$gate, "\n\nInput peaks: ", sum(unlist(r$runs[[1]]$engines$chipseeker$input_n)), ".\n\n", sep = "")
+  chroms <- sort(unique(unlist(lapply(r$runs[[1]]$engines$wasm$result$results, `[[`, "unmatchedChroms"))))
+  if (length(chroms) > 0L) cat("SQL unmatched contigs: `", paste(chroms, collapse = "`, `"), "`.\n\n", sep = "")
+  cat(knitr::kable(timing_table(r), row.names = FALSE), sep = "\n")
+  cat("\n\n")
+  cat(knitr::kable(memory_table(r), row.names = FALSE), sep = "\n")
+  cat("\n\n")
+}
+```
+
+## ChIPseeker agreement
+
+Configuration: ChIPseeker 1.48.0; TxDb constructed from the **same GFF3**;
+`level = 'transcript'`; `tssRegion = c(-1000, 1000)`;
+`genomicAnnotationPriority = c('Promoter', '5UTR', '3UTR', 'Exon', 'Intron', 'Intergenic')`;
+`ignoreDownstream = TRUE`. A BED interval `[s,e)` becomes a one-base GRanges interval
+at `s + (e-s) %/% 2 + 1` (one-based). There is no summit-based or whole-peak counting.
+
+Relevant rule differences, checked in the installed ChIPseeker functions
+`annotatePeak`, `getNearestFeatureIndicesAndDistances` and `getGenomicAnnotation`:
+
+- Both use transcript-level features here; **gene-level TSS is not the chosen
+  setting**. SQL assigns promoter if *any* eligible transcript's ±1 kb interval
+  contains the centre. ChIPseeker assigns promoter from its selected nearest-feature
+  distance. In 1.48.0, `ignoreDownstream=TRUE` selects the `follow()` candidate on
+  unstranded genomic coordinates (with TSS-overlap handling), not the minimum
+  absolute distance of the two flanking TSS candidates. This can change promoters.
+- `ignoreDownstream` does **not** disable downstream output labels. ChIPseeker's
+  category function still labels remaining intergenic centres within its default
+  3 kb downstream distance. Those labels are explicitly folded into **intergenic**;
+  the number folded is shown below. SQL has no downstream category.
+- SQL uses explicit GFF3 five/three-prime UTR features. TxDb represents CDS/exon
+  structure and ChIPseeker obtains UTRs from `fiveUTRsByTranscript` and
+  `threeUTRsByTranscript`; the annotation representations need not coincide.
+- SQL treats transcript spans as intronic after higher-priority intervals are
+  removed. ChIPseeker uses exon-gap introns from TxDb. TxDb transcript recognition
+  and validation can differ from SQL's rule (a transcript is a parent of an exon).
+  Construction warnings and transcript counts are retained in the receipts.
+- Exon and intron transcript IDs/numbers and promoter distance labels are collapsed
+  to their six category names, not compared as strings. Neither engine filters
+  protein-coding transcripts or requires peak strand. SQL normalizes contig names
+  and reports unmatched chromosomes; ChIPseeker uses TxDb sequence names and may
+  omit centres lacking usable features. Such omissions are reported, not imputed.
+
+An untimed W2 diagnostic replay with `options(warn = 1)` reproduced the recorded
+ChIPseeker counts and dropped totals exactly. Its 20 annotation warnings came from
+`.merge_two_Seqinfo_objects`: the peak files contain random/unplaced contigs absent
+from TxDb, while TxDb contains chrM (and, for some files, chrY) absent from the peaks.
+The SQL-unmatched contigs are listed above. TxDb construction also warns that
+stop-codon phase values are ignored and genome-version metadata is unavailable;
+the GRCm38 identity here comes from the pinned source provenance, not TxDb metadata.
+
+Differences below are **ChIPseeker − SQL**. These are marginal category counts,
+not per-peak concordance: equal totals do not prove the same peaks received a category.
+No individual discrepancy is claimed to have been causally decomposed.
+
+```{r agreement, results='asis'}
+for (w in names(results)) {
+  r <- results[[w]]
+  if (r$status != "passed") next
+  cat("\n### ", w, "\n\n", sep = "")
+  cat(knitr::kable(agreement_table(r), row.names = FALSE), sep = "\n")
+  chip <- r$runs[[1]]$engines$chipseeker
+  cat("\n\n")
+  cat(knitr::kable(data.frame(Mark = names(chip$input_n),
+    Input = unlist(chip$input_n), `SQL unmatched` = unlist(r$runs[[1]]$engines$wasm$unmatched),
+    `ChIPseeker dropped` = unlist(chip$dropped),
+    `Downstream folded to intergenic` = unlist(chip$downstream), check.names = FALSE), row.names = FALSE), sep = "\n")
+  cat("\n\nSQL transcripts: ", r$runs[[1]]$engines$wasm$result$meta$transcripts,
+      "; TxDb transcripts: ", chip$transcripts, ".\n\n", sep = "")
+}
+```
+
+## Environment and provenance
+
+Source hashes in the receipts identify the measured working-tree files; the Git
+revision alone is the base commit, not a claim that uncommitted benchmark code was
+already part of that commit. Input hashes identify the exact compressed files.
+
+```{r environment, results='asis'}
+for (w in names(results)) {
+  r <- results[[w]]
+  if (r$status != "passed") next
+  engines <- r$runs[[1]]$engines
+  cat("\n### ", w, "\n\nMeasured: ", r$date, "\n\n", sep = "")
+  versions <- c(Node = trimws(r$environment$node),
+    `duckdb-wasm package` = r$environment$duckdb_wasm,
+    `wasm DuckDB` = engines$wasm$version, Chromium = engines$wasm$chromium,
+    `wasm platform` = engines$wasm$platform,
+    `native DuckDB` = engines$`native-1t`$version, DuckHTS = r$environment$duckhts$version,
+    R = engines$chipseeker$R, Bioconductor = engines$chipseeker$bioconductor,
+    unlist(engines$chipseeker$packages))
+  cat(knitr::kable(data.frame(Component = names(versions), Version = unname(versions)), row.names = FALSE), sep = "\n")
+  cat("\n\nThreads: wasm ", engines$wasm$threads, "; native-1t ", engines$`native-1t`$threads,
+      "; native-nt ", engines$`native-nt`$threads, ". Signed DuckHTS loaded with ",
+      "`allow_unsigned_extensions=false` in all SQL engines.\n\n", sep = "")
+  cpu <- strsplit(r$environment$cpu, "\n")[[1]]
+  cpu <- cpu[grepl("^(Model name|CPU\\(s\\)|Core\\(s\\) per socket|Socket\\(s\\)|Thread\\(s\\) per core):", cpu)]
+  cat("```text\n", paste(c(cpu, unlist(r$environment$os), trimws(r$environment$kernel)), collapse = "\n"), "\n```\n\n", sep = "")
+  cat(knitr::kable(data.frame(File = names(r$input_sha256), SHA256 = unlist(r$input_sha256)), row.names = FALSE), sep = "\n")
+  cat("\n\n")
+}
+```
