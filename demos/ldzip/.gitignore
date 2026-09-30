@@ -1,0 +1,7 @@
+.ldzip/
+.rlib/
+.cache/
+ext/
+work/
+*.Rout
+*.log
