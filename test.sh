@@ -37,14 +37,19 @@ for sample in a b; do
   [[ "$sql_junction" == "$oracle_junction" ]] || { echo "junction mismatch sample_${sample}: SQL=$sql_junction AIE=$oracle_junction"; exit 1; }
 done
 
-printf 'AAAAAAAAAAAAAAAA\n' > work/cells-a.txt
-for version in v1 v2; do
-  "$AIE" replay-rows work/sample_a.aie --gtf "fixture/annotation-${version}.gtf" \
-    --barcodes work/cells-a.txt --out-dir "work/replay-a-${version}" > "work/replay-${version}.log" 2>&1
+for sample in a b; do
+  cell=$(if [[ "$sample" == a ]]; then printf AAAAAAAAAAAAAAAA; else printf CCCCCCCCCCCCCCCC; fi)
+  printf '%s\n' "$cell" > "work/cells-${sample}.txt"
+  for version in v1 v2; do
+    "$AIE" replay-rows "work/sample_${sample}.aie" --gtf "fixture/annotation-${version}.gtf" \
+      --barcodes "work/cells-${sample}.txt" --out-dir "work/replay-${sample}-${version}" \
+      > "work/replay-${sample}-${version}.log" 2>&1
+  done
+  "$AIE" compare-annotations "work/sample_${sample}.aie" --annotation-a fixture/annotation-v1.gtf \
+    --annotation-b fixture/annotation-v2.gtf --assembly GRCh38-fixture \
+    --annotation-a-label v1 --annotation-b-label v2 --format json \
+    > "work/annotation-comparison-${sample}.json"
 done
-"$AIE" compare-annotations work/sample_a.aie --annotation-a fixture/annotation-v1.gtf \
-  --annotation-b fixture/annotation-v2.gtf --assembly GRCh38-fixture \
-  --annotation-a-label v1 --annotation-b-label v2 --format json > work/annotation-comparison.json
 "$AIE" query work/sample_a.aie jset --include chr1:14-24 --exclude chr1:29-39 \
   --format tsv --top 0 > work/aie-jset.tsv 2> work/aie-jset.log
 
@@ -55,24 +60,32 @@ aie_include=$(sed -n 's/^# summary=//p' work/aie-jset.tsv | jq -r '.totals.inclu
 [[ "$sql_include" == "$aie_include" ]] || { echo "jset include-only mismatch: SQL=$sql_include AIE=$aie_include"; exit 1; }
 
 parity=0
-for version in v1 v2; do
-  awk -F '[ \t]+' 'FNR==NR {gene[FNR]=$1; next} FNR<=3 {next} NF==3 {count[$1]+=$3} END {for (i in count) print gene[i] "," count[i]}' \
-    "work/replay-a-${version}/features.tsv" "work/replay-a-${version}/matrix.mtx" | sort > "work/aie-annotation-${version}.csv"
-done
-printf 'AIE compare-annotations signed deltas: '
-jq -c '.data.count_deltas.rows' work/annotation-comparison.json
-printf 'Observed SQL-vs-AIE annotation results (sample_a):\n'
-for version in v1 v2; do
-  column=4
-  [[ "$version" == v2 ]] && column=5
-  awk -F, -v c="$column" '$1=="sample_a" && $c+0>0 {print $3 "," $c}' work/sql-annotation_counts.csv | sort > "work/sql-annotation-${version}.csv"
-  if ! diff -u "work/aie-annotation-${version}.csv" "work/sql-annotation-${version}.csv"; then
+for sample in a b; do
+  for version in v1 v2; do
+    awk -F '[ \t]+' 'FNR==NR {gene[FNR]=$1; next} FNR<=3 {next} NF==3 {count[$1]+=$3} END {for (i in count) print gene[i] "," count[i]}' \
+      "work/replay-${sample}-${version}/features.tsv" "work/replay-${sample}-${version}/matrix.mtx" | sort \
+      > "work/aie-annotation-${sample}-${version}.csv"
+    column=4
+    [[ "$version" == v2 ]] && column=5
+    awk -F, -v s="sample_${sample}" -v c="$column" '$1==s && $c+0>0 {print $3 "," $c}' \
+      work/sql-annotation_counts.csv | sort > "work/sql-annotation-${sample}-${version}.csv"
+    if ! diff -u "work/aie-annotation-${sample}-${version}.csv" \
+        "work/sql-annotation-${sample}-${version}.csv"; then
+      parity=1
+    fi
+  done
+  jq -r '.data.count_deltas.rows[] | select(.[7] != 0) | .[2] + "," + (.[7] | tostring)' \
+    "work/annotation-comparison-${sample}.json" | sort > "work/aie-delta-${sample}.csv"
+  awk -F, -v s="sample_${sample}" '$1==s && $6+0!=0 {print $3 "," $6}' \
+    work/sql-annotation_counts.csv | sort > "work/sql-delta-${sample}.csv"
+  if ! diff -u "work/aie-delta-${sample}.csv" "work/sql-delta-${sample}.csv"; then
     parity=1
   fi
+  printf 'AIE compare-annotations signed deltas sample_%s: ' "$sample"
+  jq -c '.data.count_deltas.rows' "work/annotation-comparison-${sample}.json"
 done
 if (( parity )); then
-  echo 'Annotation comparison failed: SQL overlap/UMI aggregation differs from Gravlax replay.'
-  echo 'Gravlax requires transcript-concordant junction assignment, its locus-level representative rules, and per-gene one-mismatch UMI collapse.'
+  echo 'Annotation comparison failed: SQL counts differ from Gravlax replay.'
   exit 1
 fi
-printf 'PASS region, junction, jset, and annotation counts match Gravlax\n'
+printf 'PASS region, junction, jset, and annotation counts match Gravlax for both samples\n'
