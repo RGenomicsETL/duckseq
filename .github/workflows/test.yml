@@ -68,7 +68,7 @@ jobs:
       - name: Oracle output is up to date
         run: |
           Rscript test/oracle.R
-          git diff --exit-code demos/peakwhere/test/fixtures/thymus-expected.json
+          git diff --exit-code -- test/fixtures/thymus-expected.json
       - run: npm test
 
   aie:

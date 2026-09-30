@@ -51,17 +51,22 @@ if [[ -n "${DUCKHTS_EXTENSION:-}" ]]; then
 else
   r_lib="$PWD/.cache/R/library"
   mkdir -p "$r_lib"
+  # Rduckhts comes from r-universe; its CRAN dependencies (duckdb, DBI) come from
+  # a CRAN mirror, preferring the binary mirror in RSPM when CI provides one.
   R_LIBS_USER="$r_lib" Rscript --vanilla -e '
     lib <- Sys.getenv("R_LIBS_USER")
+    cran <- Sys.getenv("RSPM", "https://cloud.r-project.org")
     if (!requireNamespace("Rduckhts", quietly = TRUE, lib.loc = lib)) {
-      install.packages("Rduckhts", repos = "https://rgenomicsetl.r-universe.dev", lib = lib)
+      install.packages("Rduckhts", lib = lib,
+                       repos = c(rgenomicsetl = "https://rgenomicsetl.r-universe.dev", CRAN = cran))
     }
+    if (!requireNamespace("Rduckhts", quietly = TRUE, lib.loc = lib)) stop("installing Rduckhts failed")
   ' > .cache/r-install.log 2>&1 || { cat .cache/r-install.log >&2; exit 1; }
   R_LIBS_USER="$r_lib" Rscript --vanilla -e '
     path <- system.file("duckhts_extension", "build", "duckhts.duckdb_extension", package = "Rduckhts", lib.loc = Sys.getenv("R_LIBS_USER"))
     if (!nzchar(path) || !file.exists(path)) stop("Rduckhts did not provide the DuckHTS extension")
     cat(normalizePath(path))
-  ' > .cache/extension-path 2> .cache/r-install.log || { cat .cache/r-install.log >&2; exit 1; }
+  ' > .cache/extension-path 2> .cache/r-extension.log || { cat .cache/r-install.log .cache/r-extension.log >&2; exit 1; }
   extension_path=$(<.cache/extension-path)
 fi
 ln -sfn "$extension_path" ext/duckhts.duckdb_extension
