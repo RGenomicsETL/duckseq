@@ -1,8 +1,4 @@
 #!/usr/bin/env Rscript
-suppressPackageStartupMessages({
-  library(DBI)
-  library(duckdb)
-})
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 5L) stop("Usage: bench_query.R <region-prefix> <bits> <engine> <operation> <replicate>")
 prefix <- args[[1L]]
@@ -11,11 +7,25 @@ engine <- args[[3L]]
 operation <- args[[4L]]
 replicate <- as.integer(args[[5L]])
 stopifnot(engine %in% c("ldzip", "dbi", "cli"))
+if (engine == "ldzip") {
+  suppressPackageStartupMessages(library(LDZipMatrix))
+} else {
+  suppressPackageStartupMessages({
+    library(DBI)
+    library(duckdb)
+  })
+}
 parquet_dir <- paste0(prefix, "-b", bits, "-parquet-rg122880-z3")
 ld_path <- normalizePath(file.path(parquet_dir, "ld.parquet"))
 variants_path <- normalizePath(file.path(parquet_dir, "variants.parquet"))
-con <- dbConnect(duckdb(), dbdir = ":memory:")
-variants <- dbGetQuery(con, sprintf("SELECT idx, chrom, pos, id FROM read_parquet('%s') ORDER BY idx", variants_path))
+if (engine == "ldzip") {
+  ld <- LDZipMatrix(paste0(prefix, "-b", bits))
+  variants <- fetchVariants(ld, seq_len(dim(ld)[1L]))
+  names(variants)[names(variants) == "CHROM"] <- "chrom"
+} else {
+  con <- dbConnect(duckdb(), dbdir = ":memory:")
+  variants <- dbGetQuery(con, sprintf("SELECT idx, chrom, pos, id FROM read_parquet('%s') ORDER BY idx", variants_path))
+}
 region_number <- as.integer(sub(".*region-(1|2|4)x$", "\\1", prefix))
 size <- c(pair_1000 = 1000L, pair_10000 = 10000L, tags_100 = 100L,
           submatrix_1000 = 1000L, submatrix_5000 = 5000L)[[operation]]
@@ -51,8 +61,6 @@ sql_sub <- sprintf(
 query_sql <- switch(type, pairs = sql_pairs, tags = sql_tags, submatrix = sql_sub)
 elapsed <- system.time({
   if (engine == "ldzip") {
-    suppressPackageStartupMessages(library(LDZipMatrix))
-    ld <- LDZipMatrix(paste0(prefix, "-b", bits))
     if (type == "pairs") {
       ord <- order(query$i)
       fetchLD(ld, query$i[ord], query$j[ord], types = "UNPHASED_R", pairwise = TRUE)
@@ -64,7 +72,7 @@ elapsed <- system.time({
     }
   } else if (engine == "dbi") {
     result <- dbGetQuery(con, query_sql)
-    nrow(result)
+    if (type == "submatrix") matrix(result$r_q, nrow = size, byrow = TRUE) else nrow(result)
   } else {
     cli <- normalizePath(".cache/duckdb", mustWork = TRUE)
     cli_sql <- if (type == "submatrix") sprintf("COPY (%s) TO '/dev/null' (FORMAT CSV, HEADER false);", query_sql) else query_sql
@@ -85,5 +93,5 @@ elapsed <- system.time({
   }
 })
 cat(sprintf("%s\t%.3f\tNA\n", operation, elapsed[["elapsed"]] * 1000))
-dbDisconnect(con, shutdown = TRUE)
+if (engine != "ldzip") dbDisconnect(con, shutdown = TRUE)
 unlink(query_file)
