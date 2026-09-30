@@ -4,6 +4,24 @@ cd "$(dirname "$0")"
 GRAVLAX_COMMIT=75b8d6c01064ba92af295543d50230429774e170
 DUCKDB_VERSION=1.5.1
 
+resolve_path() {
+  if command -v realpath >/dev/null 2>&1; then
+    realpath "$1"
+  else
+    local dir
+    dir=$(cd "$(dirname "$1")" && pwd -P)
+    printf '%s/%s\n' "$dir" "$(basename "$1")"
+  fi
+}
+
+sha256_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    shasum -a 256 "$1" | awk '{print $1}'
+  fi
+}
+
 mkdir -p .cache ext
 if [[ -n "${DUCKDB:-}" ]]; then
   duckdb_path=$(command -v "$DUCKDB" 2>/dev/null || printf '%s' "$DUCKDB")
@@ -28,7 +46,7 @@ else
 fi
 
 if [[ -n "${DUCKHTS_EXTENSION:-}" ]]; then
-  extension_path=$(realpath "$DUCKHTS_EXTENSION")
+  extension_path=$(resolve_path "$DUCKHTS_EXTENSION")
   [[ -f "$extension_path" ]] || { echo "DUCKHTS_EXTENSION does not exist: $DUCKHTS_EXTENSION" >&2; exit 1; }
 else
   r_lib="$PWD/.cache/R/library"
@@ -57,7 +75,7 @@ if [[ ! -x .gravlax/target/release/aie ]]; then
 fi
 
 duckdb_version=$("$duckdb_path" --version | head -n 1)
-extension_sha=$(sha256sum "$extension_path" | awk '{print $1}')
+extension_sha=$(sha256_file "$extension_path")
 package_extension=""
 if [[ -d .cache/R/library/Rduckhts ]]; then
   package_extension=$(R_LIBS_USER="$PWD/.cache/R/library" Rscript --vanilla -e '
@@ -70,7 +88,7 @@ else
   extension_source="Rduckhts $(R_LIBS_USER="$PWD/.cache/R/library" Rscript --vanilla -e 'cat(as.character(packageVersion("Rduckhts")))')"
 fi
 duckhts_library_path="$(dirname "$extension_path")/../htslib/lib"
-if [[ ! -d "$duckhts_library_path" ]]; then duckhts_library_path=; else duckhts_library_path=$(realpath "$duckhts_library_path"); fi
+if [[ ! -d "$duckhts_library_path" ]]; then duckhts_library_path=; else duckhts_library_path=$(resolve_path "$duckhts_library_path"); fi
 cat > EXTENSIONS.txt <<EOF
 DuckDB CLI: $duckdb_version
 DuckHTS extension source: $extension_source
