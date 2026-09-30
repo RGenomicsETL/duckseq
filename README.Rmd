@@ -5,9 +5,14 @@ output: github_document
 
 # duckseq
 
-Genomic tools often build bespoke formats and engines. duckseq tests one alternative: standard formats such as Parquet and DuckLake, DuckDB SQL over DuckHTS readers, and small native kernels where SQL is not the right fit.
+**Genomics keeps writing its own file formats, parsers and query engines. Most of them are not needed.** Standard formats (Parquet, DuckLake), DuckDB SQL over [DuckHTS](https://github.com/RGenomicsETL/duckhts) readers, and the occasional small native kernel give the same answers.
 
-Each demo is measured against a tool built by hand. Exact parity on the tool's own tests or tutorial is the first bar. Mutation tests check that the comparison can catch wrong rules. Performance uses DuckHTS `STYLE.md`: 1×, 2× and 4× inputs, three fresh processes, peak RSS, and budgets declared before measurement. Every report includes an honest contrast, including where the original wins.
+duckseq shows this one tool at a time. Each demo takes a tool that was built by hand and holds to four rules:
+
+- **Exact parity:** the same answers on the tool's own tests or tutorial.
+- **Mutation tests:** the comparison fails when a rule is implemented wrong, so passing means something.
+- **Measured performance:** DuckHTS `STYLE.md` rules, with 1×, 2× and 4× inputs, three fresh processes, peak RSS, and budgets declared before measuring.
+- **An honest contrast:** including where the original tool wins.
 
 | Demo | Original tool | What is compared | Status and headline result |
 |---|---|---|---|
