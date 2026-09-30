@@ -1,5 +1,3 @@
-duckseq
-================
 
 # duckseq
 

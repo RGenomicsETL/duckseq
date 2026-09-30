@@ -1,5 +1,4 @@
 ---
-title: "duckseq"
 output: github_document
 ---
 

@@ -43,11 +43,11 @@ jobs:
           Rscript -e 'install.packages(c("rmarkdown", "knitr"), repos = "https://cloud.r-project.org")'
           Rscript -e 'rmarkdown::render("README.Rmd", output_format = "github_document", quiet = TRUE)'
           rm -f README.html
-          pandoc README.md --from=gfm --to=html5 --standalone --metadata title=duckseq --output=_site/index.html
+          pandoc README.md --from=gfm --to=html5 --standalone --metadata pagetitle=duckseq --output=_site/index.html
           mkdir -p _site/peakwhere/test
           cp -r demos/peakwhere/index.html demos/peakwhere/src demos/peakwhere/vendor demos/peakwhere/examples demos/peakwhere/man _site/peakwhere/
           cp -r demos/peakwhere/test/fixtures _site/peakwhere/test/
-          pandoc demos/aie/REPORT.md --from=gfm --to=html5 --standalone --metadata title='AIE parity in DuckDB SQL' --output=_site/aie/index.html
+          pandoc demos/aie/REPORT.md --from=gfm --to=html5 --standalone --metadata pagetitle='AIE parity in DuckDB SQL' --output=_site/aie/index.html
       - name: Check site files
         run: node scripts/check-site.mjs ../../_site/peakwhere
         working-directory: demos/peakwhere
