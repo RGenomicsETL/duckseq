@@ -15,7 +15,10 @@ if (engine == "ldzip") {
     library(duckdb)
   })
 }
-parquet_dir <- paste0(prefix, "-b", bits, "-parquet-rg122880-z3")
+row_group <- as.integer(Sys.getenv("LDZIP_ROW_GROUP", "262144"))
+zstd_level <- as.integer(Sys.getenv("LDZIP_ZSTD_LEVEL", "9"))
+parquet_dir <- paste0(prefix, "-b", bits, "-parquet-rg", row_group, "-z", zstd_level)
+scale <- 2^(bits - 1L) - 1L
 ld_path <- normalizePath(file.path(parquet_dir, "ld.parquet"))
 variants_path <- normalizePath(file.path(parquet_dir, "variants.parquet"))
 if (engine == "ldzip") {
@@ -53,11 +56,13 @@ sql_pairs <- sprintf(
   "SELECT q.qid, l.r_q FROM read_csv_auto('%s') q LEFT JOIN read_parquet('%s') l USING (i,j) ORDER BY q.qid",
   query_file, ld_path)
 sql_tags <- sprintf(
-  "SELECT t.qid, l.j FROM read_csv_auto('%s') t JOIN read_parquet('%s') qv ON qv.idx=t.i JOIN read_parquet('%s') l ON l.i=t.i JOIN read_parquet('%s') nv ON nv.idx=l.j WHERE abs(l.r_q)>=%.17g AND nv.chrom=qv.chrom AND nv.pos BETWEEN qv.pos-100000 AND qv.pos+100000 ORDER BY t.qid,l.j",
-  query_file, variants_path, ld_path, variants_path, sqrt(0.8))
+  "SELECT t.qid, l.j FROM read_csv_auto('%s') t JOIN read_parquet('%s') qv ON qv.idx=t.i JOIN read_parquet('%s') l ON l.i=t.i JOIN read_parquet('%s') nv ON nv.idx=l.j WHERE abs(l.r_q::DOUBLE/%d)>=%.17g AND nv.chrom=qv.chrom AND nv.pos BETWEEN qv.pos-100000 AND qv.pos+100000 ORDER BY t.qid,l.j",
+  query_file, variants_path, ld_path, variants_path, scale, sqrt(0.8))
+lo <- 1L
+hi <- size
 sql_sub <- sprintf(
-  "SELECT coalesce(l.r_q,0) AS r_q FROM range(1,%d) a(i) CROSS JOIN range(1,%d) b(j) LEFT JOIN read_parquet('%s') l ON l.i=a.i AND l.j=b.j ORDER BY a.i,b.j",
-  size + 1L, size + 1L, ld_path)
+  "SELECT i,j,CAST(CAST(r_q AS REAL) / %d AS REAL) AS r FROM read_parquet('%s') WHERE i BETWEEN %d AND %d AND j BETWEEN %d AND %d ORDER BY i,j",
+  scale, ld_path, lo, hi, lo, hi)
 query_sql <- switch(type, pairs = sql_pairs, tags = sql_tags, submatrix = sql_sub)
 elapsed <- system.time({
   if (engine == "ldzip") {
@@ -72,7 +77,12 @@ elapsed <- system.time({
     }
   } else if (engine == "dbi") {
     result <- dbGetQuery(con, query_sql)
-    if (type == "submatrix") matrix(result$r_q, nrow = size, byrow = TRUE) else nrow(result)
+    if (type == "submatrix") {
+      m <- matrix(0, size, size)
+      if (nrow(result)) m[cbind(result$i - lo + 1L, result$j - lo + 1L)] <- as.numeric(result$r)
+      diag(m) <- 1
+      m
+    } else nrow(result)
   } else {
     cli <- normalizePath(".cache/duckdb", mustWork = TRUE)
     cli_sql <- if (type == "submatrix") sprintf("COPY (%s) TO '/dev/null' (FORMAT CSV, HEADER false);", query_sql) else query_sql
