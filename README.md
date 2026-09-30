@@ -1,3 +1,65 @@
+duckseq
+================
+
 # duckseq
 
-Work in progress.
+Genomic tools often build bespoke formats and engines. duckseq tests one
+alternative: standard formats such as Parquet and DuckLake, DuckDB SQL
+over DuckHTS readers, and small native kernels where SQL is not the
+right fit.
+
+Each demo is measured against a tool built by hand. Exact parity on the
+tool’s own tests or tutorial is the first bar. Mutation tests check that
+the comparison can catch wrong rules. Performance uses DuckHTS
+`STYLE.md`: 1×, 2× and 4× inputs, three fresh processes, peak RSS, and
+budgets declared before measurement. Every report includes an honest
+contrast, including where the original wins.
+
+| Demo                                                           | Original tool                                        | What is compared                                                                                     | Status and headline result                                                                                                                                                                                                                   |
+|----------------------------------------------------------------|------------------------------------------------------|------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [peakwhere](https://rgenomicsetl.github.io/duckseq/peakwhere/) | peakwhere and PeakPeek; ChIPseeker for the benchmark | Peak annotation and peak-file summaries against checked fixtures, hand-worked results and ChIPseeker | Exact upstream category counts on the full-genome comparison. On W1, native DuckDB totals 0.401 s (1 thread) / 0.370 s (multithreaded), versus ChIPseeker’s 2.776 s; native multithreaded peak RSS is 335 MiB versus ChIPseeker’s 1,198 MiB. |
+| [AIE](https://rgenomicsetl.github.io/duckseq/aie/)             | Gravlax AIE 0.2.3                                    | Region, junction, jset and annotation replay counts on the checked-in synthetic fixture              | Exact parity for both samples, including seven mutation tests; no performance benchmark yet.                                                                                                                                                 |
+
+The peakwhere numbers are from its [performance
+report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/peakwhere/benchmarks/performance.md).
+See the [AIE
+report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/aie/REPORT.md)
+for its fixture scope and limits. Performance coverage is not yet
+complete across the 1×/2×/4× protocol; do not infer a general speed or
+memory advantage from the reported cases.
+
+## Run a demo
+
+Peakwhere runs in a browser with its vendored DuckDB-Wasm and DuckHTS
+builds:
+
+``` sh
+cd demos/peakwhere
+npm ci
+npm run stage && npm run stage:peek && npm run vendor
+npm run serve
+npm test
+```
+
+AIE builds its pinned Gravlax oracle and obtains the DuckDB CLI and
+DuckHTS extension on first run. Requirements include Rust/Cargo, R,
+samtools, jq, curl and unzip:
+
+``` sh
+cd demos/aie
+./setup.sh
+./test.sh
+./mutation_test.sh
+```
+
+The Pages site is <https://rgenomicsetl.github.io/duckseq/>. Peakwhere
+runs at [/peakwhere/](https://rgenomicsetl.github.io/duckseq/peakwhere/)
+and AIE’s report at
+[/aie/](https://rgenomicsetl.github.io/duckseq/aie/).
+
+## Licensing
+
+The repository is GPL-2.0-or-later. `demos/peakwhere` retains its MIT
+licence. Gravlax is BSD-3-Clause and is built from its pinned upstream
+source; it is not vendored. See each demo’s source and licence notices
+for data and upstream attribution.

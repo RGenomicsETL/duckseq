@@ -1,0 +1,64 @@
+name: pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'README.Rmd'
+      - 'README.md'
+      - 'demos/peakwhere/**'
+      - 'demos/aie/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: demos/peakwhere/package-lock.json
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - run: npm ci
+        working-directory: demos/peakwhere
+      - run: npm run stage && npm run stage:peek && npm run vendor
+        working-directory: demos/peakwhere
+      - name: Render pages
+        run: |
+          mkdir -p _site/peakwhere _site/aie
+          Rscript -e 'install.packages(c("rmarkdown", "knitr"), repos = "https://cloud.r-project.org")'
+          Rscript -e 'rmarkdown::render("README.Rmd", output_format = "html_document", output_file = "index.html", output_dir = "_site", quiet = TRUE)'
+          mkdir -p _site/peakwhere/test
+          cp -r demos/peakwhere/index.html demos/peakwhere/src demos/peakwhere/vendor demos/peakwhere/examples demos/peakwhere/man _site/peakwhere/
+          cp -r demos/peakwhere/test/fixtures _site/peakwhere/test/
+          pandoc demos/aie/REPORT.md --from=gfm --to=html5 --standalone --metadata title='AIE parity in DuckDB SQL' --output=_site/aie/index.html
+      - name: Check site files
+        run: node scripts/check-site.mjs ../../_site/peakwhere
+        working-directory: demos/peakwhere
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
