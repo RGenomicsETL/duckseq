@@ -58,7 +58,13 @@ fi
 
 duckdb_version=$("$duckdb_path" --version | head -n 1)
 extension_sha=$(sha256sum "$extension_path" | awk '{print $1}')
-if [[ -n "${DUCKHTS_EXTENSION:-}" ]]; then
+package_extension=""
+if [[ -d .cache/R/library/Rduckhts ]]; then
+  package_extension=$(R_LIBS_USER="$PWD/.cache/R/library" Rscript --vanilla -e '
+    cat(normalizePath(system.file("duckhts_extension", "build", "duckhts.duckdb_extension", package = "Rduckhts", lib.loc = Sys.getenv("R_LIBS_USER"))))
+  ')
+fi
+if [[ -n "${DUCKHTS_EXTENSION:-}" && "$extension_path" != "$package_extension" ]]; then
   extension_source="DUCKHTS_EXTENSION override"
 else
   extension_source="Rduckhts $(R_LIBS_USER="$PWD/.cache/R/library" Rscript --vanilla -e 'cat(as.character(packageVersion("Rduckhts")))')"
