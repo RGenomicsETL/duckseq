@@ -1,0 +1,5 @@
+# SHA-256; source URL and role are documented in README.md.
+c2624c726c6cb27e288fe5908621125740379a3d523299dd07c13abf97645e4b  chr20.vcf.gz
+b4023dc6ee2d62ee89c8d4d347db4d348e65518d66d346574cdae7a4bbd76858  samples.panel
+671e8d707060ff141ad577a31fc71ef43b96f4dde1ce6e042ebaf27f39c02cc3  plink2_linux_x86_64.zip
+08c0ca117111fcede14239d0093792352befdc174218c344d232c13279643d05  duckdb_cli-linux-amd64.zip

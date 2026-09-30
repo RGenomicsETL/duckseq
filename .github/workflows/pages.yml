@@ -8,6 +8,7 @@ on:
       - 'README.md'
       - 'demos/peakwhere/**'
       - 'demos/aie/**'
+      - 'demos/ldzip/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -37,12 +38,13 @@ jobs:
         working-directory: demos/peakwhere
       - name: Render pages
         run: |
-          mkdir -p _site/peakwhere _site/aie
+          mkdir -p _site/peakwhere _site/aie _site/ldzip
           pandoc README.md --from=gfm --to=html5 --standalone --metadata pagetitle=duckseq --output=_site/index.html
           mkdir -p _site/peakwhere/test
           cp -r demos/peakwhere/index.html demos/peakwhere/src demos/peakwhere/vendor demos/peakwhere/examples demos/peakwhere/man _site/peakwhere/
           cp -r demos/peakwhere/test/fixtures _site/peakwhere/test/
           pandoc demos/aie/REPORT.md --from=gfm --to=html5 --standalone --metadata pagetitle='AIE parity in DuckDB SQL' --output=_site/aie/index.html
+          pandoc demos/ldzip/REPORT.md --from=gfm --to=html5 --standalone --metadata pagetitle='LDZip in DuckDB SQL' --output=_site/ldzip/index.html
       - name: Check site files
         run: node scripts/check-site.mjs ../../_site/peakwhere
         working-directory: demos/peakwhere
