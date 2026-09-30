@@ -19,18 +19,21 @@ built by hand and holds to four rules:
   measuring.
 - **An honest contrast:** including where the original tool wins.
 
-| Demo                                                           | Original tool                                        | What is compared                                                                                     | Status and headline result                                                                                                                                                                                                            |
-|----------------------------------------------------------------|------------------------------------------------------|------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [peakwhere](https://rgenomicsetl.github.io/duckseq/peakwhere/) | peakwhere and PeakPeek; ChIPseeker for the benchmark | Peak annotation and peak-file summaries against checked fixtures, hand-worked results and ChIPseeker | Exact output against the independent W1 oracle (7,220 peaks). Native DuckDB totals 0.401 s (1 thread) / 0.370 s (multithreaded), versus ChIPseeker’s 2.776 s; native multithreaded peak RSS is 335 MiB versus ChIPseeker’s 1,198 MiB. |
-| [AIE](https://rgenomicsetl.github.io/duckseq/aie/)             | Gravlax AIE 0.2.3                                    | Region, junction, jset and annotation replay counts on the checked-in synthetic fixture              | Exact parity for both samples, including seven mutation tests; no performance benchmark yet.                                                                                                                                          |
+| Demo                                                           | Original tool                                        | What is compared                                                                                               | Status and headline result                                                                                                                                                                                                            |
+|----------------------------------------------------------------|------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [peakwhere](https://rgenomicsetl.github.io/duckseq/peakwhere/) | peakwhere and PeakPeek; ChIPseeker for the benchmark | Peak annotation and peak-file summaries against checked fixtures, hand-worked results and ChIPseeker           | Exact output against the independent W1 oracle (7,220 peaks). Native DuckDB totals 0.401 s (1 thread) / 0.370 s (multithreaded), versus ChIPseeker’s 2.776 s; native multithreaded peak RSS is 335 MiB versus ChIPseeker’s 1,198 MiB. |
+| [AIE](https://rgenomicsetl.github.io/duckseq/aie/)             | Gravlax AIE 0.2.3                                    | Region, junction, jset and annotation replay counts on the checked-in synthetic fixture                        | Exact parity for both samples, including seven mutation tests; no performance benchmark yet.                                                                                                                                          |
+| [LDZip](https://rgenomicsetl.github.io/duckseq/ldzip/)         | LDZip / LDZipMatrix                                  | PLINK 2 LD matrices represented by quantized values and allele-aware variant lookups in Parquet and DuckDB SQL | Chr20 1000 Genomes tutorial data; results and the measured scope are in the [LDZip report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/ldzip/REPORT.md).                                                                  |
 
 The peakwhere numbers are from its [performance
 report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/peakwhere/benchmarks/performance.md).
 See the [AIE
 report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/aie/REPORT.md)
-for its fixture scope and limits. Performance coverage is not yet
-complete across the 1×/2×/4× protocol; do not infer a general speed or
-memory advantage from the reported cases.
+and [LDZip
+report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/ldzip/REPORT.md)
+for fixture scope and limits. Performance coverage is not yet complete
+across the 1×/2×/4× protocol; do not infer a general speed or memory
+advantage from the reported cases.
 
 ## Run a demo
 
@@ -56,10 +59,30 @@ cd demos/aie
 ./mutation_test.sh
 ```
 
+LDZip’s small CI fixture check needs R, a C++ toolchain, `make`, `curl`
+and `unzip`:
+
+``` sh
+cd demos/ldzip
+./setup.sh --no-data
+./test.sh
+```
+
+The full chr20 benchmark downloads the tutorial VCF and builds nested
+regions:
+
+``` sh
+cd demos/ldzip
+./full_test.sh
+./measure_build.sh
+./measure_queries.sh
+```
+
 The Pages site is <https://rgenomicsetl.github.io/duckseq/>. Peakwhere
-runs at [/peakwhere/](https://rgenomicsetl.github.io/duckseq/peakwhere/)
-and AIE’s report at
-[/aie/](https://rgenomicsetl.github.io/duckseq/aie/).
+runs at
+[/peakwhere/](https://rgenomicsetl.github.io/duckseq/peakwhere/), with
+reports at [/aie/](https://rgenomicsetl.github.io/duckseq/aie/) and
+[/ldzip/](https://rgenomicsetl.github.io/duckseq/ldzip/).
 
 ## Licensing
 

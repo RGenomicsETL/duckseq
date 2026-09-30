@@ -1,0 +1,125 @@
+---
+title: "LDZip matrices in DuckDB SQL"
+output: github_document
+---
+
+# LDZip matrices in DuckDB SQL
+
+## Question and scope
+
+LDZip (MIT, commit `f8e363af03b2101b04e56b142595a16a060856b6`) stores sparse quantized LD values in `.x.*.bin`, `.i.bin`, `.p.bin`, and index files, with a separate SQLite variant index. This demo tests whether the same tutorial-derived matrix and variant keys can be stored in sorted Parquet and queried through DuckDB SQL. It does not claim that this conversion replaces LDZip's general-purpose pipeline or all of its metadata.
+
+The input is the LDZip 1000 Genomes chr20 tutorial VCF, checksummed in `checksums.txt`, and the tutorial's EUR sample panel. The checked regions are nested spans from 20,000,000 bp: 250 kb, 500 kb and 1 Mb. They contain 5,764, 11,590 and 22,833 variants; these are region spans, not claims of exact 1×/2×/4× row scaling. The PLINK options match the tutorial pipeline: `--ld-window-kb 1000 --ld-window-r2 0.01 --r-unphased ref-based cols=id,ref,alt` after extracting each region's variants and retaining EUR samples (503 samples).
+
+The chr20 VCF is 763 MiB compressed. The initial 1×/2×/4× source conversion used 2.1 GiB on disk; `df` showed 54 GiB available before generating derived outputs. The full source and all derived data are ignored under `work/`.
+
+Environment: Ubuntu 24.04, Linux 6.8, Intel Core i5-13500 (20 logical CPUs reported; 64 GiB RAM), R 4.6.0, PLINK 2 `v2.0.0-a.7.10LM` (archive SHA-256 in `checksums.txt`), DuckDB CLI and R package 1.5.5, and DuckHTS extension SHA-256 `9a39da4da6da65b5cc6b2a2be38b7cabfe72b493ba4a4fb59809fc581af39484`. The DuckDB R package emitted a build-version warning because it was compiled under R 4.6.1 and run under R 4.6.0; the parity checks completed. PLINK was limited to 2 threads; DuckDB used its default thread setting.
+
+## Representation and quantization
+
+The `.vcor` file from PLINK is the shared input to both paths. LDZip is compressed with `--bits 8` and `--bits 16`, `--min 0.0001`, and `--min_col UNPHASED_R`. C++ scales by `(1 << (bits - 1)) - 1`, converts the PLINK value to `float`, then rounds the scaled value with `std::llround` (half away from zero). Parquet reproduces the float32 parse, threshold, scale and rounding, stores decoded float32 `r_q`, adds reverse-direction rows and the diagonal, and writes `ld(i,j,r_q)` ordered by `(i,j)`. The `variants(idx, chrom, pos, id, ref, alt)` table is sorted by `idx`; joins resolve the full ID/ref/alt template.
+
+Both triangles are counted in the Parquet size because neighbor lookups need rows in either direction. LDZip reports full-matrix storage for this PLINK tabular import as well. Missing sparse entries are interpreted as zero in SQL submatrix queries.
+
+The initial Parquet setting is `COPY ... (FORMAT PARQUET, COMPRESSION ZSTD, COMPRESSION_LEVEL 3, ROW_GROUP_SIZE 122880)`; DuckDB chooses column encodings automatically. Per-column encoding alternatives were not tested, so this is not evidence that the automatic encoding is optimal. The 1× layout trial varied row-group size and zstd level:
+
+| Row-group rows | Zstd level | R build wall time | Peak RSS | Parquet bytes (LD + variants) |
+|---:|---:|---:|---:|---:|
+| 32,768 | 1 | 1.50 s | 372 MiB | 1,120,506 |
+| 122,880 | 3 | 1.55 s | 367 MiB | 650,295 |
+| 262,144 | 6 | 1.53 s | 379 MiB | 554,154 |
+
+These are one-process exploratory trials, not the repeated benchmark. The final build settings remain row-group 122,880 and zstd 3; the 262,144/zstd-6 trial was smaller on this fixture, but the latency matrix used only the selected setting, so lookup-latency effects of row-group changes remain unmeasured. `measure_build.sh` records three fresh processes per build cell at the selected settings.
+
+## Parity and mutation checks
+
+`parity_regions.R` compares all reported PLINK pair values against both LDZip decode and Parquet for each bit depth; it also checks 100 tag queries at `r² >= 0.8`, 200 ID-resolved pairs through the SQL `variants` join, a region extraction through SQL, and complete 1,000- and 5,000-variant submatrices. The script compares decoded float32 values exactly. The 48-variant fixture test in `parity.R` independently exercises LDZip compression and Parquet round-tripping at both bit depths.
+
+Mutation checks cover ties-to-even instead of half-away rounding, a one-based index shift, upper-triangle-only storage for a reverse-direction lookup, a `1e-3` threshold in place of `1e-4`, and an ID-only lookup that ignores the allele template. These are small discriminating unit examples; they do not patch and rerun the full `parity_regions.R` pipeline with five mutated implementations.
+
+| Check | Result |
+|---|---|
+| 48-variant fixture, 8-bit and 16-bit quantization and Parquet round-trip | PASS |
+| Full PLINK pair values, 8-bit and 16-bit | PASS for 336,425 / 733,100 / 1,806,989 emitted pairs at 1× / 2× / 4× |
+| `getNeighbors`, 100 variants at `r² >= 0.8` | PASS at both bit depths and all three region sizes |
+| SQL ID and region lookups | PASS against SQLite-backed `LDZipMatrix` lookups at both bit depths and all three region sizes |
+| 1,000- and 5,000-variant submatrices | PASS at both bit depths and all three region sizes |
+| Five mutation controls | PASS for discriminating unit examples |
+
+## Performance
+
+Budgets declared before the repeated measurements: at most 300 seconds wall time, 16 GiB peak RSS, and 10 GiB temporary output per process. The initial `df` check showed about 54 GiB available; after the benchmark, 50 GiB remained with 3.5 GiB under `work/`. Each build cell runs in three fresh processes. Input sizes are the three nested chr20 regions above. `measure_build.sh` captures elapsed time, peak RSS and per-run output bytes for LDZip compression and the DuckDB/R `COPY` pipeline. The SQL build time includes reading and mapping the PLINK table and writing both Parquet files; LDZip's time is `ldzip compress` alone. The SQLite index is separately built for query parity and counted in the on-disk size table.
+
+### On-disk size
+
+| Region | Variants | LDZip 8-bit + SQLite | Parquet 8-bit | LDZip 16-bit + SQLite | Parquet 16-bit |
+|---|---:|---:|---:|---:|---:|
+| 1×, 250 kb | 5,764 | 8,018,616 B | 650,295 B | 8,314,349 B | 1,435,297 B |
+| 2×, 500 kb | 11,590 | 16,415,840 B | 2,138,551 B | 17,217,954 B | 3,985,924 B |
+| 4×, 1 Mb | 22,833 | 33,277,051 B | 6,101,039 B | 35,132,546 B | 10,417,336 B |
+
+The LDZip side includes its `.vars.txt`; the imported PLINK PVAR carries INFO annotations that the requested Parquet `variants` schema does not retain. This makes the size comparison conservative for Parquet and is a material metadata-scope difference, not compression alone. The SQL layout stores both directions and the variant table; neither is omitted from its size.
+
+### Build time and peak RSS
+
+| Region | Bits | LDZip compress: median time / peak RSS / bytes | DuckDB/R table + COPY: median time / peak RSS / bytes |
+|---|---:|---:|---:|
+| 1× | 8 | 0.14 s / 9.3 MiB / 7,604,920 B | 1.56 s / 369.1 MiB / 650,295 B |
+| 1× | 16 | 0.15 s / 9.3 MiB / 7,900,653 B | 1.57 s / 364.9 MiB / 1,435,297 B |
+| 2× | 8 | 0.31 s / 12.2 MiB / 15,604,832 B | 3.06 s / 572.6 MiB / 2,138,551 B |
+| 2× | 16 | 0.32 s / 12.5 MiB / 16,406,946 B | 3.08 s / 575.0 MiB / 3,985,924 B |
+| 4× | 8 | 0.79 s / 18.7 MiB / 31,704,187 B | 6.79 s / 1,278.0 MiB / 6,101,039 B |
+| 4× | 16 | 0.82 s / 18.7 MiB / 33,559,682 B | 6.78 s / 1,281.3 MiB / 10,417,336 B |
+
+Each value is the median of three fresh processes. The scratch size for LDZip compression excludes the SQLite index; the on-disk table above includes it. Build timings include R startup and mapping / DuckDB table staging on the SQL side, but only `ldzip compress` on the LDZip side. The main asymmetry is setup and materialization: SQL allocates substantially more transient memory and takes longer to build, while the persisted Parquet pair is smaller in these slices.
+
+### Query latency
+
+| Region | Bits | Query | LDZip R (ms / MiB) | DuckDB DBI (ms / MiB) | DuckDB CLI (ms / MiB) |
+|---|---:|---|---:|---:|---:|
+| 1× | 8 | 1,000 random pairs | 35 / 127.9 | 15 / 115.9 | 20 / 41.7 |
+| 1× | 8 | 10,000 random pairs | 323 / 128.1 | 23 / 116.6 | 20 / 43.0 |
+| 1× | 8 | 100 tag queries | 216 / 129.7 | 30 / 135.7 | 40 / 65.3 |
+| 1× | 8 | 1,000 submatrix | 3 / 135.4 | 224 / 200.8 | 180 / 147.5 |
+| 1× | 8 | 5,000 submatrix | 103 / 318.6 | 5,344 / 1,666.3 | 3,740 / 1,256.7 |
+| 1× | 16 | 1,000 random pairs | 41 / 127.9 | 15 / 116.6 | 30 / 43.6 |
+| 1× | 16 | 10,000 random pairs | 388 / 128.1 | 23 / 117.9 | 30 / 44.8 |
+| 1× | 16 | 100 tag queries | 212 / 130.2 | 30 / 136.5 | 60 / 66.7 |
+| 1× | 16 | 1,000 submatrix | 4 / 135.6 | 226 / 194.0 | 280 / 146.6 |
+| 1× | 16 | 5,000 submatrix | 101 / 318.9 | 6,130 / 1,684.8 | 6,790 / 1,282.6 |
+| 2× | 8 | 1,000 random pairs | 81 / 129.1 | 52 / 122.3 | 20 / 47.8 |
+| 2× | 8 | 10,000 random pairs | 589 / 129.4 | 25 / 122.9 | 30 / 49.1 |
+| 2× | 8 | 100 tag queries | 230 / 130.8 | 21 / 128.0 | 30 / 56.2 |
+| 2× | 8 | 1,000 submatrix | 4 / 137.5 | 131 / 229.1 | 120 / 162.4 |
+| 2× | 8 | 5,000 submatrix | 105 / 320.1 | 5,681 / 1,709.9 | 3,870 / 1,282.8 |
+| 2× | 16 | 1,000 random pairs | 54 / 129.3 | 16 / 124.0 | 20 / 52.0 |
+| 2× | 16 | 10,000 random pairs | 523 / 129.4 | 24 / 125.6 | 30 / 52.7 |
+| 2× | 16 | 100 tag queries | 230 / 131.3 | 21 / 129.9 | 30 / 59.6 |
+| 2× | 16 | 1,000 submatrix | 4 / 137.1 | 122 / 228.9 | 120 / 164.3 |
+| 2× | 16 | 5,000 submatrix | 108 / 320.0 | 5,586 / 1,618.6 | 3,940 / 1,283.0 |
+| 4× | 8 | 1,000 random pairs | 57 / 130.9 | 20 / 130.0 | 20 / 56.7 |
+| 4× | 8 | 10,000 random pairs | 549 / 130.9 | 31 / 131.7 | 30 / 58.7 |
+| 4× | 8 | 100 tag queries | 234 / 132.3 | 30 / 143.5 | 30 / 73.8 |
+| 4× | 8 | 1,000 submatrix | 4 / 138.6 | 114 / 231.5 | 130 / 162.4 |
+| 4× | 8 | 5,000 submatrix | 109 / 321.8 | 5,745 / 1,706.1 | 4,090 / 1,342.4 |
+| 4× | 16 | 1,000 random pairs | 68 / 131.5 | 19 / 135.6 | 30 / 63.0 |
+| 4× | 16 | 10,000 random pairs | 665 / 131.4 | 29 / 137.5 | 30 / 64.4 |
+| 4× | 16 | 100 tag queries | 220 / 133.1 | 33 / 147.2 | 30 / 78.1 |
+| 4× | 16 | 1,000 submatrix | 4 / 139.0 | 114 / 231.0 | 110 / 163.7 |
+| 4× | 16 | 5,000 submatrix | 104 / 322.4 | 5,540 / 1,687.7 | 3,910 / 1,335.6 |
+
+Each latency is the median of three fresh processes. CLI RSS is measured in the CLI child; LDZip and DBI RSS are measured for their R process. Random-pair inputs use a fixed seed, tag inputs contain 100 distinct variants, and submatrix materialization returns every cell (including sparse zeros). LDZip requires row indices in ascending order, so its random-pair timing includes sorting the same generated pairs used by SQL. DBI and CLI execute the same SQL against the same CSV query input and Parquet files; CLI timing includes starting DuckDB, while DBI reuses its connection in the fresh R process. CLI submatrices stream CSV to `/dev/null`; DBI fetches all cells and reshapes them to a dense R matrix, while LDZip returns its matrix directly. Output materialization is included in the recorded latency.
+
+## Contrast and limits
+
+DuckDB SQL makes matrix rows and variant resolution composable with joins and genomic predicates, and the two Parquet files are smaller in these slices even after storing both triangles. SQL pair lookups and 100-tag batches were faster here; LDZip won dense 1,000- and 5,000-variant submatrix extraction, with a much larger advantage at 5,000 variants and lower peak RSS. LDZip also built faster and used much less transient memory, while Parquet occupied less space. This is a trade-off, not an overall winner. The narrow Parquet variant schema omits PVAR INFO metadata retained by the LDZip side, and the small mutation harness does not patch and rerun the full parity pipeline.
+
+## Reproduction
+
+```sh
+cd demos/ldzip
+./test.sh
+./full_test.sh
+./measure_build.sh
+./measure_queries.sh
+```
