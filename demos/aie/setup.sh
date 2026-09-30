@@ -36,9 +36,11 @@ else
   R_LIBS_USER="$r_lib" Rscript --vanilla -e '
     lib <- Sys.getenv("R_LIBS_USER")
     if (!requireNamespace("Rduckhts", quietly = TRUE, lib.loc = lib)) {
-      invisible(capture.output(install.packages("Rduckhts", repos = "https://rgenomicsetl.r-universe.dev", lib = lib)))
+      install.packages("Rduckhts", repos = "https://rgenomicsetl.r-universe.dev", lib = lib)
     }
-    path <- system.file("duckhts_extension", "build", "duckhts.duckdb_extension", package = "Rduckhts", lib.loc = lib)
+  ' > .cache/r-install.log 2>&1 || { cat .cache/r-install.log >&2; exit 1; }
+  R_LIBS_USER="$r_lib" Rscript --vanilla -e '
+    path <- system.file("duckhts_extension", "build", "duckhts.duckdb_extension", package = "Rduckhts", lib.loc = Sys.getenv("R_LIBS_USER"))
     if (!nzchar(path) || !file.exists(path)) stop("Rduckhts did not provide the DuckHTS extension")
     cat(normalizePath(path))
   ' > .cache/extension-path 2> .cache/r-install.log || { cat .cache/r-install.log >&2; exit 1; }
