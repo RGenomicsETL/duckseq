@@ -1,0 +1,8 @@
+Warning message:
+package 'duckdb' was built under R version 4.6.1 
+duckdb is storing downloaded extensions and secrets under ~/.duckdb:
+i /root/.duckdb
+This persists across sessions and is shared with the DuckDB CLI and other clients.
+i Run duckdb(shared_home = FALSE) to use a temporary directory instead.
+i See ?duckdb_storage for details and alternatives.
+METRIC	0.023	0.49	12	5.422	451.8333333	4000	1.6e+07	1.28e+08	364214	NA	NA	0.446	1.5.5	1.0

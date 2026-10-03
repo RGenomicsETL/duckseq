@@ -27,11 +27,8 @@ samples).
 The chr20 VCF is 763 MiB compressed. The initial 1×/2×/4× source
 conversion used 2.1 GiB on disk; `df` showed 54 GiB available before
 generating derived outputs. The PGEN contains 1,647,102 chr20 variants,
-but the full-chromosome LD output was not built: its size and compute
-cost were not measured, and a speculative extrapolation would not
-establish whether it fits the remaining disk budget. The nested slices
-are a bounded benchmark scope, not evidence that a full chr20 matrix
-cannot fit. The full source and all derived data are ignored under
+but the full-chromosome LD output was not built, so its size and compute
+cost are unknown. The full source and all derived data are ignored under
 `work/`.
 
 Environment: Ubuntu 24.04, Linux 6.8, Intel Core i5-13500 (20 logical
@@ -197,11 +194,11 @@ The DBI path fetches only the stored pairs inside the index bounds and
 fills a dense R matrix. The CLI path streams the sparse rows and does
 not build a dense matrix.
 
-| Region | DBI sparse fetch + dense R matrix | CLI sparse stream | LDZip dense R matrix |
-|--------|----------------------------------:|------------------:|---------------------:|
-| 1×     |                  189 ms / 528 MiB |    50 ms / 74 MiB |     107 ms / 318 MiB |
-| 2×     |                  197 ms / 531 MiB |    50 ms / 76 MiB |     107 ms / 320 MiB |
-| 4×     |                  189 ms / 535 MiB |    50 ms / 81 MiB |     111 ms / 322 MiB |
+| Region | Bits | DBI sparse fetch + dense R matrix | CLI sparse stream | LDZip dense R matrix |
+|--------|-----:|----------------------------------:|------------------:|---------------------:|
+| 1×     |    8 |                  189 ms / 528 MiB |    50 ms / 74 MiB |     107 ms / 318 MiB |
+| 2×     |    8 |                  197 ms / 531 MiB |    50 ms / 76 MiB |     107 ms / 320 MiB |
+| 4×     |    8 |                  189 ms / 535 MiB |    50 ms / 81 MiB |     111 ms / 322 MiB |
 
 LDZip returns the dense matrix faster and with less memory.
 
@@ -248,25 +245,41 @@ and is not semantically the same output operation.
 
 DBI and CLI execute the same SQL for pair and tag queries against the
 same generated inputs. CLI timing includes starting DuckDB; DBI reuses
-its connection within each fresh R process. LDZip’s random-pair timing
-includes sorting the same generated indices into the order required by
-its API. All measured cells stayed within the declared wall-time, RSS
-and temporary-output budgets.
+its connection within each fresh R process. All measured cells stayed
+within the declared wall-time, RSS and temporary-output budgets.
+
+### Comparator limits
+
+The pair SQL returns nullable quantized `r_q`, while LDZip returns
+decoded correlations and zero-fills absent pairs. The LDZip pair path
+sorts by row index, although its native API batches adjacent column
+indices; a fair batched comparator needs `order(query$j, query$i)` and
+restoration of query order. The large pair gap does not establish an
+inherent SQL advantage.
+
+The tag comparison is one SQL batch against 100 `getNeighbors()` calls,
+including LDZip’s SQLite-based resolution. The SQLite index is required
+but its construction is excluded from compression timing and not
+performed by `measure_queries.sh`. Dense DBI extraction is a same-value
+comparison, but its R diagonal assignment copies the full matrix. The
+[performance review](REVIEW.md) has the allocation and pair-grouping
+diagnostics. The separate [native report](NATIVE_REPORT.md) measures
+SQL-resident matrices, direct C-buffer consumption and resource failures
+under explicit 1/4-thread settings. Its output representations differ
+from this DBI workload; it does not measure GEMM performance.
 
 ## Contrast and limits
 
 One SQL file reproduces LDZip’s quantized matrix exactly at both bit
 depths in every tested region, and the stored pairs, allele-aware
-variant keys, joins and genomic predicates stay composable in SQL. SQL
-pair and tag queries are faster in these slices, and the variant table
-is much smaller. LDZip is faster and leaner for dense 1,000- and
-5,000-variant extraction, builds with far less memory, builds faster at
-the smallest scale, and stores a smaller 16-bit matrix. CLI sparse
-streaming is fast but does not return the dense result a SuSiE user
-consumes. This is a scoped trade-off, not an overall winner.
-
-A full-chromosome run remains possible future work; it was not
-attempted. The unmeasured full-chromosome cost is an open question.
+variant keys, joins and genomic predicates stay composable in SQL. The
+pair and tag timings do not establish equivalent-workload speedups: they
+use different batching, value contracts and setup work. The Parquet
+variant table is about 15 times smaller than LDZip’s text and SQLite
+index. LDZip is faster and leaner for dense 1,000- and 5,000-variant
+extraction, builds with far less memory, builds faster at the smallest
+scale, and stores a smaller 16-bit matrix. CLI sparse streaming returns
+sparse `(i,j,r)` rows, not a dense matrix.
 
 ## Reproduction
 

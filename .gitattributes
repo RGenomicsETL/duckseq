@@ -1,0 +1,3 @@
+# Verbatim command-output receipts retain emitted whitespace.
+demos/ldzip/evidence/native/blas-link.txt -whitespace
+demos/ldzip/evidence/native/**/*.log -whitespace

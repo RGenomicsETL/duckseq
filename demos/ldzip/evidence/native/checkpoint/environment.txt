@@ -1,0 +1,80 @@
+Protocol: demos/ldzip/NATIVE_PROTOCOL.md
+Complete dimension ladder: NO (explicit scope override)
+Overrides: NATIVE_SIZES,NATIVE_BITS
+Engines: sql,tinycc,ldzip
+Sizes: 5000
+Bits: 16
+SQL threads: 1,4
+Repetitions: 3
+Minimum measured seconds/process: 5
+Per-process timeout: 60 seconds (external /usr/bin/timeout)
+DuckDB limits: memory_limit=1GiB; max_temp_directory_size=512MiB
+RSS ceiling bytes: 512*1024^2 + 3*32*n*n; equal for all engines at each n
+R: 4.6.0
+DuckDB R package: 1.5.5
+LDZipMatrix: 1.0
+DuckTinyCC extension: /root/DuckTinyCC/build/release/ducktinycc.duckdb_extension
+DuckTinyCC SHA256: 30054a7da930905f7b530f0ba3c2dce8a1c3ea698c581c6cf7c9c227ed634b49
+DuckDB CLI version (context only): v1.5.5 (Variegata) d8cdaa33fd
+OS: Linux 6.8.0-78-generic x86_64
+CPU: model name	: 13th Gen Intel(R) Core(TM) i5-13500
+Thread controls: OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 BLIS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+DuckDB endpoints: SQL-resident j,vals DOUBLE[]; LDZip endpoint: returned R matrix
+Input file: work/derived/region-4x-b{8,16}-parquet-rg262144-z9/ld.parquet
+SQL templates:
+ WITH cfg AS (
+  SELECT getvariable('matrix_n')::BIGINT AS n,
+         getvariable('quant_scale')::BIGINT AS scale
+),
+grid AS (
+  SELECT rows.i::BIGINT AS i, columns.j::BIGINT AS j
+  FROM range(1, (SELECT n FROM cfg) + 1) AS rows(i)
+  CROSS JOIN range(1, (SELECT n FROM cfg) + 1) AS columns(j)
+),
+sparse AS (
+  SELECT i::BIGINT AS i, j::BIGINT AS j, r_q::BIGINT AS r_q
+  FROM read_parquet(getvariable('ld_path'))
+  WHERE i BETWEEN 1 AND (SELECT n FROM cfg)
+    AND j BETWEEN 1 AND (SELECT n FROM cfg)
+)
+SELECT grid.j,
+       list(CASE WHEN grid.i = grid.j THEN 1.0::DOUBLE
+                 ELSE coalesce(
+                   CAST(CAST(sparse.r_q AS REAL) /
+                        (SELECT scale::REAL FROM cfg) AS REAL)::DOUBLE,
+                   0.0::DOUBLE)
+            END ORDER BY grid.i) AS vals
+FROM grid
+LEFT JOIN sparse ON sparse.i = grid.i AND sparse.j = grid.j
+GROUP BY grid.j
+ORDER BY grid.j;
+WITH cfg AS (
+  SELECT getvariable('matrix_n')::BIGINT AS n,
+         getvariable('quant_scale')::BIGINT AS scale
+),
+seed_rows AS (
+  SELECT 0::BIGINT AS i, columns.j::BIGINT AS j, 0::BIGINT AS q,
+         cfg.n AS n, cfg.scale AS scale
+  FROM cfg
+  CROSS JOIN range(1, cfg.n + 1) AS columns(j)
+),
+sparse_rows AS (
+  SELECT i::BIGINT AS i, j::BIGINT AS j, r_q::BIGINT AS q,
+         cfg.n AS n, cfg.scale AS scale
+  FROM read_parquet(getvariable('ld_path'))
+  CROSS JOIN cfg
+  WHERE i BETWEEN 1 AND cfg.n AND j BETWEEN 1 AND cfg.n
+),
+aggregate_input AS (
+  SELECT i, j, q, n, scale FROM seed_rows
+  UNION ALL
+  SELECT i, j, q, n, scale FROM sparse_rows
+)
+SELECT j, ld_dense_column(i, j, q, n, scale) AS vals
+FROM aggregate_input
+GROUP BY j
+ORDER BY j
+Template SHA256: cc15c4523633f0963b19a9f45df9ea48656344633f4fac6ff49d95482fd380c2
+C source SHA256: f44b11d856827394a0fb9f1953af72389d8b23aac5a9bf5b32d960e8671aff91
+LD input SHA256 b 16 : 302eabea9b0037455a57701b32f1f7a41b09c87f0731d69109b3ad8c98af1ee9
+Variants input SHA256 b 16 : c158cf222ea9a49276aef527e6ec6bdd990b082b0215d38931393437c23f3e08

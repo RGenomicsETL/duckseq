@@ -5,3 +5,4 @@ ext/
 work/
 *.Rout
 *.log
+!/evidence/native/**/*.log

@@ -1,0 +1,48 @@
+Warning message:
+package 'duckdb' was built under R version 4.6.1 
+duckdb is storing downloaded extensions and secrets under ~/.duckdb:
+i /root/.duckdb
+This persists across sessions and is shared with the DuckDB CLI and other clients.
+i Run duckdb(shared_home = FALSE) to use a temporary directory instead.
+i See ?duckdb_storage for details and alternatives.
+Error in `duckdb_result()`:
+! Invalid Error: Out of Memory Error: failed to pin block of size 256.0 KiB (1023.9 MiB/1.0 GiB used)
+
+Possible solutions:
+* Reducing the number of threads (SET threads=X)
+* Disabling insertion-order preservation (SET preserve_insertion_order=false)
+* Increasing the memory limit (SET memory_limit='...GB')
+
+See also https://duckdb.org/docs/stable/guides/performance/how_to_tune_workloads
+i Context: rapi_execute
+i Error type: INVALID
+Backtrace:
+     x
+  1. +-global worker(args[-1L])
+  2. | \-run_one()
+  3. |   +-DBI::dbExecute(...)
+  4. |   \-DBI::dbExecute(...)
+  5. |     +-DBI::dbSendStatement(conn, statement, ...)
+  6. |     \-DBI::dbSendStatement(conn, statement, ...)
+  7. |       +-DBI::dbSendQuery(conn, statement, ...)
+  8. |       \-duckdb::dbSendQuery(conn, statement, ...)
+  9. |         \-duckdb (local) .local(conn, statement, ...)
+ 10. |           \-duckdb:::duckdb_result(connection = conn, stmt_lst = stmt_lst, arrow = arrow)
+ 11. |             \-duckdb:::duckdb_execute(res)
+ 12. |               \-duckdb:::rethrow_rapi_execute(...)
+ 13. |                 +-rlang::try_fetch(...)
+ 14. |                 | +-base::tryCatch(...)
+ 15. |                 | | \-base (local) tryCatchList(expr, classes, parentenv, handlers)
+ 16. |                 | |   \-base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])
+ 17. |                 | |     \-base (local) doTryCatch(return(expr), name, parentenv, handler)
+ 18. |                 | \-base::withCallingHandlers(...)
+ 19. |                 \-duckdb:::rapi_execute(stmt, convert_opts)
+ 20. +-duckdb (local) `<fn>`(...)
+ 21. | \-rlang::abort(error_parts, class = "duckdb_error", !!!fields)
+ 22. |   \-rlang:::signal_abort(cnd, .file)
+ 23. |     \-base::signalCondition(cnd)
+ 24. \-rlang (local) `<fn>`(`<dckdb_rr>`)
+ 25.   \-handlers[[1L]](cnd)
+ 26.     \-duckdb:::rethrow_error_from_rapi(e, call)
+ 27.       \-rlang::abort(msg, call = call)
+Execution halted

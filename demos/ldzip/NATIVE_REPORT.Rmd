@@ -1,0 +1,139 @@
+---
+title: "Native LD matrix measurements"
+output:
+  github_document:
+    html_preview: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+scale <- read.delim("work/perf/native/summary.tsv")
+checkpoint <- read.delim("work/perf/native-checkpoint/summary.tsv")
+raw <- rbind(read.delim("work/perf/native/raw.tsv"), read.delim("work/perf/native-checkpoint/raw.tsv"))
+admission <- read.delim("work/perf/native-admission.tsv")
+pretty <- function(x) {
+  data.frame(Variants = x$n, Bits = x$bits,
+    Endpoint = c(sql = "SQL grid", tinycc = "TinyCC SQL matrix", ldzip = "LDZip R matrix")[x$engine],
+    Threads = x$threads,
+    `Warm mean ms: median [min, max]` = ifelse(is.na(x$median_process_mean_ms), "not qualified",
+      sprintf("%.1f [%.1f, %.1f]", x$median_process_mean_ms, x$min_process_mean_ms, x$max_process_mean_ms)),
+    `Max RSS MiB` = round(x$max_peak_rss_bytes / 1024^2, 1), Status = x$cell_status,
+    check.names = FALSE, row.names = NULL)
+}
+boundary <- do.call(rbind, lapply(c(1L,4L), function(threads) do.call(rbind,
+  lapply(1:3, function(rep) {
+    stem <- sprintf("work/perf/native-boundary/t%d-r%d", threads, rep)
+    line <- grep("^METRIC\\t", readLines(paste0(stem,".log")), value=TRUE)
+    stopifnot(length(line)==1L)
+    values <- as.numeric(strsplit(line,"\t",fixed=TRUE)[[1L]][2:8])
+    times <- scan(paste0(stem,".time"),quiet=TRUE)
+    profile <- jsonlite::fromJSON(paste0(stem,".json"),simplifyVector=FALSE)
+    ceiling <- 512*1024^2 + 3*32*5000^2
+    stopifnot(values[[3L]]>=5, times[[1L]]<=60, times[[2L]]*1024<=ceiling,
+      profile$system_peak_temp_dir_size<=512*1024^2,
+      all(file.info(paste0(stem,c(".log",".json")))$size<=10*1024^2))
+    data.frame(threads, replicate=rep, iterations=values[[2L]], measured_s=values[[3L]],
+      mean_ms=values[[4L]], setup_s=values[[5L]], first_s=values[[6L]], checksum=values[[7L]],
+      elapsed_s=times[[1L]], peak_rss_bytes=times[[2L]]*1024,
+      profile_buffer_bytes=profile$system_peak_buffer_memory,
+      spill_bytes=profile$system_peak_temp_dir_size)
+  }))))
+write.table(boundary,"work/perf/native-boundary/raw.tsv",sep="\t",row.names=FALSE,quote=FALSE)
+```
+
+## Result
+
+Keeping the matrix out of R does not by itself make this implementation faster. The DuckTinyCC aggregate beats the built-in ordered-grid SQL at the qualified small sizes, but exporting a complete dense matrix as SQL lists is substantially slower than LDZip's R-matrix endpoint. Consuming the same constructed columns inside C is much cheaper than exporting and retaining them as SQL values.
+
+The [protocol](NATIVE_PROTOCOL.md) declares the workloads and budgets. The full dimension ladder contains **90 fresh measured processes**, plus **15** for the 5,000-variant checkpoint. Each qualified process executes repeated complete operations for at least five measured seconds. Tables show the median and range of the **three process-average latencies**, not individual-operation medians. Peak RSS is the maximum of the three fresh processes, including runtime/setup and the final profiling operation.
+
+## What the endpoints do
+
+- **SQL grid:** generate every requested `(i,j)` cell, left-join selected Parquet correlations, float32-equivalent decode, zero fill, unit diagonal, and ordered column lists.
+- **TinyCC SQL matrix:** aggregate compact selected cells by column, construct each full double column in C, copy it into DuckDB's composite output and retain the complete `j, vals DOUBLE[]` relation.
+- **LDZip R matrix:** `fetchLD()` returns the complete dense R matrix through its native reader.
+
+Every timed operation constructs, fully consumes and releases the result. SQL uses `sum(list_sum(vals))`; LDZip uses `sum(m)`, without a second full-matrix checksum temporary or forced GC per operation. R orchestrates the SQL endpoints and receives only scalar metrics, not matrix values. The two SQL endpoints are directly comparable; the LDZip endpoint has a different output representation and is compatibility context.
+
+## Dimension ladder
+
+The fixed source is the public chr20 tutorial's nested 4× region, at both quantizations. Requested dimensions grow 1,000 → 2,000 → 4,000 variants: 1×/2×/4× per axis, with 1×/4×/16× required dense output cells. This is not a file-row-count ladder. Repeated operations intentionally use warm OS cache and reused connections; first operations and setup costs are separately recorded in the raw evidence.
+
+### 16-bit
+
+```{r table16, results='asis'}
+knitr::kable(pretty(subset(scale,bits==16L)),format="pipe")
+```
+
+### 8-bit
+
+```{r table8, results='asis'}
+knitr::kable(pretty(subset(scale,bits==8L)),format="pipe")
+```
+
+At 2,000 variants/four threads, SQL completes but all six processes exceed the declared **879 MiB RSS ceiling**. At 4,000 variants, SQL cannot construct the matrix within the **1 GiB DuckDB buffer limit**. These cells do not receive qualified latency values. All TinyCC and LDZip matrix cells pass their declared resource budgets; qualified SQL profiles report no spill. Failed SQL allocations do not have valid completed profiles.
+
+## 5,000-variant, 16-bit checkpoint
+
+```{r checkpoint, results='asis'}
+knitr::kable(pretty(checkpoint),format="pipe")
+```
+
+The TinyCC matrix endpoint takes **1,039.4 ms** on one thread or **734.1 ms** on four threads; LDZip's R endpoint takes **108.9 ms**. Their maximum RSS values are **625.4**, **930.5** and **267.3 MiB**, respectively. Built-in ordered-grid SQL fails the 1 GiB buffer limit at both thread counts.
+
+## Native-buffer consumption diagnostic
+
+This variant reuses the selected-cell state and the full C column constructor, consumes every double inside C, releases the temporary buffer, and returns only a scalar column checksum. It does **not** retain a complete matrix in SQL or R. Each thread count uses three fresh processes and at least five measured seconds per process under the same byte and wall ceilings.
+
+```{r boundary, results='asis'}
+summary <- do.call(rbind,lapply(split(boundary,boundary$threads),function(x)
+  data.frame(Threads=x$threads[[1L]],
+    `Mean ms: median [min, max]`=sprintf("%.1f [%.1f, %.1f]",median(x$mean_ms),min(x$mean_ms),max(x$mean_ms)),
+    `Max RSS MiB`=round(max(x$peak_rss_bytes)/1024^2,1),
+    `Max DuckDB buffer MiB`=round(max(x$profile_buffer_bytes)/1024^2,1),
+    `Spill bytes`=max(x$spill_bytes),check.names=FALSE)))
+knitr::kable(summary,format="pipe",row.names=FALSE)
+```
+
+The matrix and checksum endpoints return different results. This diagnostic combines changes to composite-value export, buffer lifetime, SQL retention and consumption; it cannot attribute their individual costs or establish a matrix-export or GEMM speedup. It does show that TinyCC's arithmetic alone is not the complete cost of the SQL matrix endpoint.
+
+## Correctness and native-library linkage
+
+The admission checks compare every available output cell against independently decoded sparse values, including zero fill and the diagonal. TinyCC passes all 16 size/bit-depth/thread combinations through 5,000 variants. SQL passes the eight combinations at 1,000 and 2,000; the eight larger combinations are explicit resource failures, not parity passes. Both endpoints also match actual LDZip matrices exactly at 1,000 variants and both bit depths. Seeded empty columns, bad coordinates/quantization, visible NULL failure and a changed diagonal are checked separately from measured processes.
+
+`probe_blas_link.R` passes all four entries of a small DGEMM using both explicit BLAS linking and `dlopen()`/`dlsym()` of R's actual OpenBLAS 0.3.26 provider. It uses R's integer and Fortran character-length ABI declarations; the real-only header shim avoids an unused C99 `_Complex` declaration unsupported by TinyCC. This glibc exposes the dynamic-loader symbols through libc. It is an ABI/linkage test on a small matrix, **not a GEMM performance measurement**. TinyCC compiles the C glue; the linked OpenBLAS provider supplies the numerical routine. No BLAS or SIMD throughput was measured.
+
+The actual measured environment is R **4.6.0**, DuckDB R **1.5.5**, LDZipMatrix **1.0**, Linux x86-64 on an **Intel Core i5-13500**. The local DuckTinyCC build is identified by SHA256 `30054a7da930905f7b530f0ba3c2dce8a1c3ea698c581c6cf7c9c227ed634b49`; its capabilities were checked in the loaded runtime. Input/source hashes, complete settings, process metrics and profiles are retained with the evidence.
+
+## Reproduce
+
+Prepare the existing public-region artifacts with `full_test.sh`, and provide a recent local DuckTinyCC build with aggregate support. Compilation runs trusted, unsandboxed C. The installed community extension may have different capabilities; the local artifact is supplied explicitly.
+
+```sh
+cd demos/ldzip
+export DUCKTINYCC_EXTENSION="$HOME/DuckTinyCC/build/release/ducktinycc.duckdb_extension"
+Rscript --vanilla check_native.R
+Rscript --vanilla measure_native.R
+NATIVE_OUT_DIR=work/perf/native-checkpoint NATIVE_SIZES=5000 NATIVE_BITS=16 \
+  Rscript --vanilla measure_native.R
+
+mkdir -p work/perf/native-boundary
+for threads in 1 4; do
+  for rep in 1 2 3; do
+    stem="work/perf/native-boundary/t${threads}-r${rep}"
+    OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 timeout 60s \
+      /usr/bin/time -f '%e %M' -o "$stem.time" \
+      Rscript --vanilla probe_native_boundary.R "$threads" "$stem.json" \
+      > "$stem.log" 2>&1
+done; done
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 Rscript --vanilla probe_blas_link.R
+Rscript --vanilla -e 'rmarkdown::render("NATIVE_REPORT.Rmd")'
+```
+
+The matrix suites exit nonzero because SQL budget failures are retained. Inspect `work/perf/native/raw.tsv`, `work/perf/native-checkpoint/raw.tsv`, `work/perf/native-admission.tsv` and `work/perf/native-boundary/raw.tsv`; the scoped raw snapshots and manifests are also in [evidence/native](evidence/native).
+
+## Not measured
+
+No end-to-end chunk-to-GEMM pipeline, SQL-to-R matrix handoff, cold-cache latency, downstream SuSiE run, whole-chromosome workload or optimized matrix-extension alternative is measured here. The timings characterize these specific queries and the generic TinyCC aggregate bridge, not the best possible DuckDB-native implementation.
+
+Rducks' public R batches copy values. A consumer that reads DuckDB chunks into a native buffer before that conversion, completing borrowed-vector access before chunk destruction, is proposed but not implemented.
