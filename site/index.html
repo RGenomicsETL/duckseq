@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>duckseq: genomics tools rebuilt as SQL, with the evidence</title>
+<meta name="description" content="duckseq tests whether standard genomic formats, DuckDB SQL over DuckHTS readers and small native kernels can match purpose-built tools, and publishes where they do not.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="frame">
+<aside class="rail">
+  <a class="brand" href="./" aria-label="duckseq home">duck<span>seq</span></a>
+  <nav aria-label="Site">
+    <ul>
+      <li><a href="#claim" aria-current="true">The claim</a></li>
+      <li><a href="#flow">Data flow</a></li>
+      <li><a href="#run">Run it</a></li>
+      <li><a href="#demos">Three demos</a></li>
+      <li><a href="#standards">Four standards</a></li>
+      <li><a href="#ledger">Evidence ledger</a></li>
+      <li><a href="#gaps">What is missing</a></li>
+    </ul>
+    <p class="group">Open directly</p>
+    <ul>
+      <li><a href="peakwhere/">peakwhere app</a></li>
+      <li><a href="peakwhere/performance/">peakwhere performance</a></li>
+      <li><a href="aie/">AIE report</a></li>
+      <li><a href="ldzip/">LDZip report</a></li>
+    </ul>
+  </nav>
+  <p class="foot"><a href="https://github.com/RGenomicsETL/duckseq">Source on GitHub</a><br>GPL-2.0-or-later; peakwhere is MIT.</p>
+</aside>
+
+<main id="main">
+<header class="hero" id="claim">
+  <h1>Three genomics tools rebuilt in DuckDB SQL, checked against the originals</h1>
+  <p class="lede">duckseq rebuilds hand-written genomics tools from three parts: standard formats such as Parquet, DuckDB SQL over <a href="https://github.com/RGenomicsETL/duckhts">DuckHTS</a> readers, and, where SQL alone is not enough, a small native kernel. Each demo reports exact comparisons, measurements, and where its evidence stops.</p>
+  <p class="actions">
+    <a class="btn" href="peakwhere/">Open the peakwhere app</a>
+    <a class="btn alt" href="#ledger">Read the evidence ledger</a>
+  </p>
+
+  <table class="lanes">
+    <caption>How each demo moves data. The columns are what that demo does, taken from its source; the &ldquo;native kernel&rdquo; is only listed where the demo uses one.</caption>
+    <thead>
+      <tr><th scope="col">Demo</th><th scope="col">Standard files in</th><th scope="col">Readers</th><th scope="col">What SQL does</th><th scope="col">What comes out</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">peakwhere</th>
+        <td data-label="Standard files in">GFF3 or GTF annotation; BED, narrowPeak and broadPeak peaks</td>
+        <td data-label="Readers"><code>read_gff</code>, <code>read_gtf</code>, <code>read_bed</code><span class="kernel">Native kernel: DuckHTS cgranges interval index</span></td>
+        <td data-label="What SQL does">Cuts the genome into priority regions and counts peak centres or base pairs in each</td>
+        <td data-label="What comes out">Category counts per file, in a browser tab (DuckDB-Wasm) or the DuckDB CLI</td>
+      </tr>
+      <tr>
+        <th scope="row">AIE</th>
+        <td data-label="Standard files in">Aligned BAM; two GTF annotation versions</td>
+        <td data-label="Readers"><code>read_bam</code>, <code>read_gtf</code>, <code>cigar_aligned_blocks</code></td>
+        <td data-label="What SQL does">Collapses one-mismatch UMIs with <code>WITH RECURSIVE</code>, unions multimapper placements, classifies junction evidence</td>
+        <td data-label="What comes out">Parquet relations and region, junction, jset and annotation counts compared with Gravlax</td>
+      </tr>
+      <tr>
+        <th scope="row">LDZip</th>
+        <td data-label="Standard files in">PLINK 2 <code>.pvar</code> and <code>.vcor</code> text from the chr20 tutorial</td>
+        <td data-label="Readers"><code>read_csv</code> with explicit column types (the build uses no DuckHTS reader)<span class="kernel">Optional measured kernel: DuckTinyCC dense assembly</span></td>
+        <td data-label="What SQL does">Resolves both endpoints on ID, REF and ALT, quantizes to 8 or 16 bits, writes both triangles</td>
+        <td data-label="What comes out">Sorted Parquet <code>ld</code> and <code>variants</code> tables, queried through DBI or the CLI</td>
+      </tr>
+    </tbody>
+  </table>
+</header>
+
+<section id="flow" aria-labelledby="flow-h">
+  <h2 id="flow-h">The same step is a few lines of SQL</h2>
+  <p>Reading, joining and writing are ordinary SQL statements. These excerpts are copied unchanged from the repository, so each one is also something you can run.</p>
+
+  <figure class="code">
+    <figcaption>peakwhere: peak widths straight from narrowPeak files, as in <a href="https://github.com/RGenomicsETL/duckseq/blob/main/demos/peakwhere/README.Rmd">its README</a>.</figcaption>
+<pre><code><span class="k">SELECT</span> <span class="s">'CTCF'</span> <span class="k">AS</span> mark, <span class="f">count</span>(*) <span class="k">AS</span> peaks, <span class="f">median</span>(<span class="s">"end"</span> - start) <span class="k">AS</span> median_width
+<span class="k">FROM</span> <span class="f">read_bed</span>(<span class="s">'examples/thymus_CTCF_ENCFF714WDP.chr19.narrowPeak.gz'</span>, scan_mode := <span class="s">'sequential'</span>)
+<span class="k">UNION ALL</span>
+<span class="k">SELECT</span> <span class="s">'H3K4me3'</span>, <span class="f">count</span>(*), <span class="f">median</span>(<span class="s">"end"</span> - start)
+<span class="k">FROM</span> <span class="f">read_bed</span>(<span class="s">'examples/thymus_H3K4me3_ENCFF674JZY.chr19.narrowPeak.gz'</span>, scan_mode := <span class="s">'sequential'</span>);</code></pre>
+  </figure>
+
+  <div class="code-pair">
+    <figure class="code">
+      <figcaption>AIE: each CIGAR string becomes ordered operation rows, in <a href="https://github.com/RGenomicsETL/duckseq/blob/main/demos/aie/sql/load.sql"><code>sql/load.sql</code></a>.</figcaption>
+<pre><code><span class="k">COPY</span> (
+  <span class="k">SELECT</span> sample_id, QNAME <span class="k">AS</span> read_id, flag, RNAME <span class="k">AS</span> contig, POS <span class="k">AS</span> pos_1based,
+         <span class="f">unnest</span>(<span class="f">regexp_extract_all</span>(cigar, <span class="s">'[0-9]+[MIDNSHP=X]'</span>)) <span class="k">AS</span> operation_token,
+         <span class="f">generate_subscripts</span>(<span class="f">regexp_extract_all</span>(cigar, <span class="s">'[0-9]+[MIDNSHP=X]'</span>), 1)::UINTEGER <span class="k">AS</span> operation_order
+  <span class="k">FROM</span> bam_rows
+  <span class="k">ORDER BY</span> sample_id, contig, pos_1based, read_id, flag
+) <span class="k">TO</span> <span class="s">'work/cigar_operations.parquet'</span> (FORMAT PARQUET);</code></pre>
+    </figure>
+    <figure class="code">
+      <figcaption>LDZip: both LD endpoints resolved on the full allele key, in <a href="https://github.com/RGenomicsETL/duckseq/blob/main/demos/ldzip/build.sql"><code>build.sql</code></a>.</figcaption>
+<pre><code><span class="k">CREATE TEMP TABLE</span> pairs <span class="k">AS</span>
+<span class="k">SELECT</span> a.idx <span class="k">AS</span> i, b.idx <span class="k">AS</span> j, v.UNPHASED_R <span class="k">AS</span> r
+<span class="k">FROM</span> <span class="f">read_csv</span>(<span class="s">'@VCOR@'</span>, delim = <span class="s">'\t'</span>, header = true,
+              columns = {<span class="s">'ID_A'</span>: <span class="s">'VARCHAR'</span>, <span class="s">'REF_A'</span>: <span class="s">'VARCHAR'</span>, <span class="s">'ALT_A'</span>: <span class="s">'VARCHAR'</span>, <span class="s">'ID_B'</span>: <span class="s">'VARCHAR'</span>,
+                         <span class="s">'REF_B'</span>: <span class="s">'VARCHAR'</span>, <span class="s">'ALT_B'</span>: <span class="s">'VARCHAR'</span>, <span class="s">'UNPHASED_R'</span>: <span class="s">'FLOAT'</span>}) v
+<span class="k">LEFT JOIN</span> variants a <span class="k">ON</span> a.id = v.ID_A <span class="k">AND</span> a.ref = v.REF_A <span class="k">AND</span> a.alt = v.ALT_A
+<span class="k">LEFT JOIN</span> variants b <span class="k">ON</span> b.id = v.ID_B <span class="k">AND</span> b.ref = v.REF_B <span class="k">AND</span> b.alt = v.ALT_B;</code></pre>
+    </figure>
+  </div>
+  <p>The join key is ID, REF and ALT together, so two alleles at one position stay distinct. LDZip aborts on duplicate IDs such as <code>CHROM:POS</code>; this build accepts them.</p>
+</section>
+
+<section id="run" aria-labelledby="run-h">
+  <h2 id="run-h">What you can run</h2>
+  <p>Each demo has a command you can run from a clone of the repository. Only peakwhere runs without a toolchain, because it is a web page.</p>
+  <div class="runs">
+    <div>
+      <h3>peakwhere</h3>
+      <p>In a browser, <a href="peakwhere/">on this site</a>. Files stay on your computer and the page makes no requests outside its own origin. To serve it locally:</p>
+<pre><code>cd demos/peakwhere
+npm ci
+npm run stage &amp;&amp; npm run stage:peek &amp;&amp; npm run vendor
+npm run serve
+npm test</code></pre>
+    </div>
+    <div>
+      <h3>AIE</h3>
+      <p>Builds the pinned Gravlax oracle with Cargo, then replays the fixture. Needs Rust, R, samtools, jq, curl and unzip.</p>
+<pre><code>cd demos/aie
+./setup.sh
+./test.sh
+./mutation_test.sh</code></pre>
+    </div>
+    <div>
+      <h3>LDZip</h3>
+      <p>The small fixture check needs R, a C++ toolchain, make, curl and unzip. The full chr20 benchmark is separate.</p>
+<pre><code>cd demos/ldzip
+./setup.sh --no-data
+./test.sh
+
+# full chr20 benchmark
+./full_test.sh
+./measure_build.sh
+./measure_queries.sh</code></pre>
+    </div>
+  </div>
+</section>
+
+<section id="demos" aria-labelledby="demos-h">
+  <h2 id="demos-h">Three demos, three different amounts of evidence</h2>
+  <p>The demos are at different stages. What each page below claims is limited to what its report verified.</p>
+
+  <article class="demo" id="peakwhere" aria-labelledby="pw-h">
+    <div class="demo-id">
+      <h3 id="pw-h">peakwhere</h3>
+      <dl>
+        <dt>Original</dt><dd>peakwhere and PeakPeek (Sean Davis); ChIPseeker only as the timing comparison</dd>
+        <dt>Question</dt><dd>Where do ChIP-seq peaks fall relative to genes?</dd>
+        <dt>Scope</dt><dd>W1: 7,220 mouse thymus chr19 peaks in five files against GENCODE M25 basic chr19</dd>
+      </dl>
+    </div>
+    <div class="demo-body">
+      <p>The SQL reproduces the independent base-R oracle on W1 exactly, with zero unmatched peaks. Native DuckDB took 0.401 s on one thread and 0.370 s multithreaded, against 2.776 s for ChIPseeker&rsquo;s <code>annotatePeak</code>, and used less memory.</p>
+      <div class="bars" role="group" aria-label="W1 results, DuckDB versus ChIPseeker">
+        <h5>W1 analysis time, seconds (median of five runs)</h5>
+        <div class="bar"><span class="lbl">DuckDB, 1 thread</span><span class="track"><span class="fill us" style="--v:14.4"></span></span><span class="val">0.401 s</span></div>
+        <div class="bar"><span class="lbl">DuckDB, multithreaded</span><span class="track"><span class="fill us" style="--v:13.3"></span></span><span class="val">0.370 s</span></div>
+        <div class="bar"><span class="lbl">DuckDB-Wasm</span><span class="track"><span class="fill us" style="--v:26.2"></span></span><span class="val">0.728 s</span></div>
+        <div class="bar"><span class="lbl">ChIPseeker</span><span class="track"><span class="fill them" style="--v:100"></span></span><span class="val">2.776 s</span></div>
+        <h5>W1 peak RSS, MiB (median of five runs)</h5>
+        <div class="bar"><span class="lbl">DuckDB, 1 thread</span><span class="track"><span class="fill us" style="--v:14.9"></span></span><span class="val">178.6 MiB</span></div>
+        <div class="bar"><span class="lbl">DuckDB, multithreaded</span><span class="track"><span class="fill us" style="--v:28"></span></span><span class="val">335.3 MiB</span></div>
+        <div class="bar"><span class="lbl">ChIPseeker</span><span class="track"><span class="fill them" style="--v:100"></span></span><span class="val">1,198.4 MiB</span></div>
+        <p class="legend"><span class="sw" style="background:var(--perf)"></span>DuckDB SQL <span class="sw" style="background:var(--contrast);margin-left:1rem"></span>ChIPseeker. Wasm peak memory was not measured.</p>
+      </div>
+      <p class="note"><strong>This is not an equal-output speedup.</strong> ChIPseeker also finds the nearest transcript and uses different category rules. On W1 the two differ in all six category totals, most of all in promoters (2,176 in SQL, 1,266 in ChIPseeker); the report compares marginal counts and does not decompose why. Timings cover the two analysis phases, not startup. Including process startup, the native runs take 0.454 s and 0.431 s and ChIPseeker 8.289 s.</p>
+      <h4>Where the original wins</h4>
+      <p>On the larger W2 workload (221,308 peaks, full GENCODE M25 and ENCODE files), native DuckDB is still faster (9.699 s and 7.395 s against 25.782 s) but uses more memory: 3,297 MiB and 4,903 MiB against ChIPseeker&rsquo;s 2,143 MiB. The W2 oracle timed out at 120 s, so W2 has no independent count check; only the three SQL engines agree with each other.</p>
+      <p><a href="peakwhere/">Open the app</a> &middot; <a href="peakwhere/performance/">Performance report</a> &middot; <a href="https://github.com/RGenomicsETL/duckseq/tree/main/demos/peakwhere">Source</a></p>
+    </div>
+  </article>
+
+  <article class="demo" id="aie" aria-labelledby="aie-h">
+    <div class="demo-id">
+      <h3 id="aie-h">AIE</h3>
+      <dl>
+        <dt>Original</dt><dd>Gravlax <code>aie</code> 0.2.3, built from a pinned commit</dd>
+        <dt>Question</dt><dd>Can BAM evidence become Parquet relations whose SQL counts match Gravlax?</dd>
+        <dt>Scope</dt><dd>The checked-in synthetic fixture, two samples, two annotation versions</dd>
+      </dl>
+    </div>
+    <div class="demo-body">
+      <div class="stat-row">
+        <div class="stat"><b>Exact</b><span>region, junction, jset and annotation-replay counts match Gravlax for both samples</span></div>
+        <div class="stat"><b>7</b><span>mutation checks, each of which fails when an annotation rule is altered</span></div>
+        <div class="stat"><b>None</b><span>performance benchmarks have been run</span></div>
+      </div>
+      <p>The fixture was written to separate rules that a naive query would blur: UMI chains versus ties, multimappers that span genes versus ones confined to one, and a read that supports two junction predicates at once.</p>
+      <p class="note gap"><strong>Scope limit.</strong> The fixture uses twelve-base ACGT UMIs. Gravlax orders packed numeric keys and SQL orders text; they agree for equal-length UMIs, but UMIs of differing lengths with leading A bases have not been tested. This is not parity over all Gravlax input modes, and the fixture is not performance evidence.</p>
+      <p><a href="aie/">Read the report</a> &middot; <a href="https://github.com/RGenomicsETL/duckseq/tree/main/demos/aie">Source</a></p>
+    </div>
+  </article>
+
+  <article class="demo" id="ldzip" aria-labelledby="ld-h">
+    <div class="demo-id">
+      <h3 id="ld-h">LDZip</h3>
+      <dl>
+        <dt>Original</dt><dd>LDZip and LDZipMatrix, commit <code>f8e363a</code></dd>
+        <dt>Question</dt><dd>Can one SQL file build an equivalent LD matrix and allele-aware variant keys in Parquet?</dd>
+        <dt>Scope</dt><dd>Nested chr20 tutorial regions from 20,000,000 bp: 250 kb, 500 kb and 1 Mb (5,764, 11,590 and 22,833 variants), 503 EUR samples</dd>
+      </dl>
+    </div>
+    <div class="demo-body">
+      <div class="stat-row">
+        <div class="stat"><b>Exact</b><span>8-bit and 16-bit matrices at all three region sizes, against LDZip decode</span></div>
+        <div class="stat"><b>6</b><span>mutation checks, including an ID-only join that returns 1,170,740 rows instead of 678,614 at 1&times;</span></div>
+        <div class="stat"><b>171</b><span><code>CHROM:POS</code> IDs collide in the 1&times; region; LDZip aborts on them and the SQL build accepts them</span></div>
+      </div>
+      <p>The comparison queries Parquet through DuckDB. It includes no compressed LDZip reader built on DuckDB, and no claim that Parquet replaces LDZip&rsquo;s general pipeline. Each build and query cell ran in three fresh processes, within budgets declared beforehand: 300 s wall time, 16 GiB peak RSS and 10 GiB temporary output.</p>
+      <div class="bars" role="group" aria-label="LDZip measurements, DuckDB versus LDZip">
+        <h5>Dense 5,000-variant extraction, 8-bit, milliseconds (median of three processes)</h5>
+        <div class="bar"><span class="lbl">1&times; DuckDB via DBI</span><span class="track"><span class="fill us" style="--v:95.9"></span></span><span class="val">189 ms</span></div>
+        <div class="bar"><span class="lbl">1&times; LDZip</span><span class="track"><span class="fill them" style="--v:54.3"></span></span><span class="val">107 ms</span></div>
+        <div class="bar"><span class="lbl">2&times; DuckDB via DBI</span><span class="track"><span class="fill us" style="--v:100"></span></span><span class="val">197 ms</span></div>
+        <div class="bar"><span class="lbl">2&times; LDZip</span><span class="track"><span class="fill them" style="--v:54.3"></span></span><span class="val">107 ms</span></div>
+        <div class="bar"><span class="lbl">4&times; DuckDB via DBI</span><span class="track"><span class="fill us" style="--v:95.9"></span></span><span class="val">189 ms</span></div>
+        <div class="bar"><span class="lbl">4&times; LDZip</span><span class="track"><span class="fill them" style="--v:56.3"></span></span><span class="val">111 ms</span></div>
+        <h5>Build peak RSS, 8-bit, MiB (median of three processes)</h5>
+        <div class="bar"><span class="lbl">1&times; SQL build</span><span class="track"><span class="fill us" style="--v:28.3"></span></span><span class="val">182.7 MiB</span></div>
+        <div class="bar"><span class="lbl">1&times; ldzip compress</span><span class="track"><span class="fill them" style="--v:1.4"></span></span><span class="val">9.3 MiB</span></div>
+        <div class="bar"><span class="lbl">4&times; SQL build</span><span class="track"><span class="fill us" style="--v:100"></span></span><span class="val">644.8 MiB</span></div>
+        <div class="bar"><span class="lbl">4&times; ldzip compress</span><span class="track"><span class="fill them" style="--v:2.9"></span></span><span class="val">18.6 MiB</span></div>
+        <p class="legend"><span class="sw" style="background:var(--perf)"></span>DuckDB SQL <span class="sw" style="background:var(--contrast);margin-left:1rem"></span>LDZip. The DBI path returns a dense R matrix, as LDZipMatrix does.</p>
+      </div>
+      <p class="note"><strong>LDZip wins these.</strong> It returns the dense 5,000-variant matrix faster and with less memory, and the SQL build uses 20 to 35 times its peak memory. It also stores a smaller 16-bit matrix (6,406,716 B against 8,023,822 B at 4&times;). The SQL build is slower at 1&times;, level at 2&times; and faster at 4&times; (0.57 s against 0.79 s).</p>
+      <p>Its Parquet variant table is about 15 times smaller than LDZip&rsquo;s text and SQLite index. <strong>The pair-speed comparison needs a fair rerun:</strong> LDZip requests are grouped along the wrong axis, and SQL returns encoded nullable values rather than decoded zero-filled correlations. Tag timings compare a SQL batch with 100 LDZip API calls. The regions are nested spans, not exact 1&times;/2&times;/4&times; row scaling, and the full chr20 matrix was not built.</p>
+      <p class="note"><strong>Native execution has an output cost.</strong> In the separate 5,000-variant/16-bit experiment, TinyCC exporting and retaining SQL matrix lists takes 1,039 ms (one thread) or 734 ms (four); LDZip&rsquo;s R matrix takes 109 ms. Direct C-buffer consumption takes 103/39.5 ms but returns checksums, not a retained matrix. Built-in dense-grid SQL fails its 1 GiB buffer limit. BLAS linkage is verified; GEMM performance is unmeasured.</p>
+      <p><a href="ldzip/">Read the report</a> &middot; <a href="ldzip/review/">Performance review and reproducible probes</a> &middot; <a href="ldzip/native/">Budgeted native measurements</a> &middot; <a href="https://github.com/RGenomicsETL/duckseq/tree/main/demos/ldzip">Source</a></p>
+    </div>
+  </article>
+</section>
+
+<section id="standards" aria-labelledby="std-h">
+  <h2 id="std-h">Four standards every demo is held to</h2>
+  <p>A demo is complete only when it has all four. The ledger below shows which demos do.</p>
+  <div class="standards">
+    <div class="std parity">
+      <h3>Upstream parity</h3>
+      <p>The same answers on the original tool&rsquo;s own test data or tutorial, compared exactly rather than approximately.</p>
+    </div>
+    <div class="std mutation">
+      <h3>Mutation checks</h3>
+      <p>Each rule is deliberately implemented wrongly, and the comparison has to fail.</p>
+    </div>
+    <div class="std perf">
+      <h3>Measured performance</h3>
+      <p>Under DuckHTS <code>STYLE.md</code>: 1&times;, 2&times; and 4&times; inputs, three fresh processes, peak RSS, and budgets declared before measuring.</p>
+    </div>
+    <div class="std contrast">
+      <h3>Contrast with the original</h3>
+      <p>A table that includes the cases where the original tool is faster, leaner or smaller.</p>
+    </div>
+  </div>
+</section>
+
+<section id="ledger" aria-labelledby="ledger-h">
+  <h2 id="ledger-h">Evidence ledger</h2>
+  <p>Each cell summarizes the demo&rsquo;s report. &ldquo;Not reported&rdquo; means the report has no such result.</p>
+  <div class="table-wrap" role="region" aria-label="Evidence ledger, scrollable" tabindex="0">
+  <table class="ledger">
+    <caption>Status of each standard per demo. &ldquo;Complete&rdquo; marks the standard as met within the stated scope only.</caption>
+    <thead>
+      <tr>
+        <th scope="col">Demo</th>
+        <th scope="col" style="--c:var(--parity)"><span></span>Upstream parity</th>
+        <th scope="col" style="--c:var(--mutation)"><span></span>Mutation checks</th>
+        <th scope="col" style="--c:var(--perf)"><span></span>1&times;/2&times;/4&times;, three processes, RSS, budgets</th>
+        <th scope="col" style="--c:var(--contrast)"><span></span>Contrast with the original</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">peakwhere</th>
+        <td><span class="st full"><span class="g" aria-hidden="true">&#9679;</span>Complete on W1</span>Exact match to <code>thymus-expected.json</code> and the independent base-R oracle (7,220 peaks). On W2 the oracle timed out.</td>
+        <td><span class="st none"><span class="g" aria-hidden="true">&#9675;</span>Not reported</span>The performance report describes correctness gates, not mutation tests.</td>
+        <td><span class="st part"><span class="g" aria-hidden="true">&#9680;</span>Partial</span>Two workloads (W1, W2), one warm-up and five measured runs each, peak RSS for native and R. No 1&times;/2&times;/4&times; ladder; only a 600 s wall limit is declared. Browser memory not measured.</td>
+        <td><span class="st part"><span class="g" aria-hidden="true">&#9680;</span>Partial</span>Category differences with ChIPseeker are tabulated, and W2 memory favours ChIPseeker. Differences are not decomposed.</td>
+      </tr>
+      <tr>
+        <th scope="row">AIE</th>
+        <td><span class="st part"><span class="g" aria-hidden="true">&#9680;</span>Exact custom-fixture parity</span>Both samples and both annotations. Upstream test/tutorial data and wider input modes are untested.</td>
+        <td><span class="st full"><span class="g" aria-hidden="true">&#9679;</span>Seven checks</span>Altered annotation rules are caught.</td>
+        <td><span class="st none"><span class="g" aria-hidden="true">&#9675;</span>None</span>No performance benchmark has been run.</td>
+        <td><span class="st none"><span class="g" aria-hidden="true">&#9675;</span>Not reported</span>The report lists limits, not a table of where Gravlax wins.</td>
+      </tr>
+      <tr>
+        <th scope="row">LDZip</th>
+        <td><span class="st full"><span class="g" aria-hidden="true">&#9679;</span>Complete</span>Exact 8/16-bit matrices at nested 1&times;/2&times;/4&times; regions; allele-aware keys.</td>
+        <td><span class="st full"><span class="g" aria-hidden="true">&#9679;</span>Six checks</span>Five rule mutants and the ID-only join, on the CI slice and the 1&times; region.</td>
+        <td><span class="st part"><span class="g" aria-hidden="true">&#9680;</span>Measured, comparator gaps</span>Three fresh processes per cell, peak RSS and predeclared budgets. Pair batching/value contracts need correction; regions are nested spans, not exact row ratios.</td>
+        <td><span class="st full"><span class="g" aria-hidden="true">&#9679;</span>Complete</span>LDZip is faster and leaner at dense extraction and build memory, and smaller at 16 bits.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section id="gaps" aria-labelledby="gaps-h">
+  <h2 id="gaps-h">Where the evidence is incomplete</h2>
+  <ul class="gaps">
+    <li><strong>No demo has shown a general speed or memory advantage.</strong> Each result belongs to its fixture, region set and machine (one Intel Core i5-13500 host in the LDZip and peakwhere reports).</li>
+    <li><strong>peakwhere</strong> has no mutation checks reported and no 1&times;/2&times;/4&times; scaling. Its W2 independent oracle timed out, so W2 is cross-checked only among the SQL engines. ChIPseeker applies different rules, so its timing is not an equal-output speedup.</li>
+    <li><strong>AIE</strong> has no performance measurement and no contrast table. Parity is for one synthetic fixture with equal-length UMIs; other Gravlax input modes are untested.</li>
+    <li><strong>LDZip</strong> covers three nested chr20 spans. The full-chromosome matrix was not built, so its cost is unknown. Pair batching and output semantics need a fair rerun; the <a href="ldzip/review/">review</a> identifies an avoidable 200 MB dense-matrix copy and comparator gaps. The report does not claim equivalent indexes or a compressed LDZip reader built on DuckDB.</li>
+    <li><strong>Reproduction.</strong> Receipts for peakwhere are in its <a href="https://github.com/RGenomicsETL/duckseq/blob/main/demos/peakwhere/benchmarks/results.json">results.json</a>. The AIE and LDZip scripts regenerate their derived data from checked-in fixtures or checksummed inputs.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>duckseq is <a href="LICENSE">GPL-2.0-or-later</a>. <code>demos/peakwhere</code> keeps its <a href="https://github.com/RGenomicsETL/duckseq/blob/main/demos/peakwhere/LICENSE">MIT licence</a>. Gravlax is BSD-3-Clause and is built from a pinned upstream commit rather than vendored. This site loads no external fonts, scripts or analytics; the peakwhere app keeps its same-origin-only behaviour.</p>
+  <p><a href="https://github.com/RGenomicsETL/duckseq">github.com/RGenomicsETL/duckseq</a></p>
+</footer>
+</main>
+</div>
+</body>
+</html>

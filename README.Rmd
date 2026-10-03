@@ -1,29 +1,48 @@
 ---
-output: github_document
+output:
+  github_document:
+    html_preview: false
 ---
+
+<!-- README.md is generated from README.Rmd. Edit this file and render it with
+     Rscript -e 'rmarkdown::render("README.Rmd")'. -->
 
 # duckseq
 
-**Genomics keeps writing its own file formats, parsers and query engines. Most of them are not needed.** Standard formats (Parquet, DuckLake), DuckDB SQL over [DuckHTS](https://github.com/RGenomicsETL/duckhts) readers, and the occasional small native kernel give the same answers.
+duckseq rebuilds genomics tools using standard formats such as Parquet, [DuckDB](https://duckdb.org) SQL over [DuckHTS](https://github.com/RGenomicsETL/duckhts) readers, and, where SQL alone is not enough, a small native kernel. Each demo rebuilds one purpose-built tool this way, checks it against the original, and reports where the original still wins.
 
-duckseq shows this one tool at a time. Each demo takes a tool that was built by hand and holds to four rules:
+**Site and reports: <https://rgenomicsetl.github.io/duckseq/>**
 
-- **Exact parity:** the same answers on the tool's own tests or tutorial.
-- **Mutation tests:** the comparison fails when a rule is implemented wrong, so passing means something.
-- **Measured performance:** DuckHTS `STYLE.md` rules, with 1×, 2× and 4× inputs, three fresh processes, peak RSS, and budgets declared before measuring.
-- **An honest contrast:** including where the original tool wins.
+![For each demo, standard files go through readers and SQL to outputs. peakwhere reads GFF3, GTF and BED with DuckHTS; AIE reads BAM and GTF; LDZip reads PLINK 2 text with read_csv.](site/assets/overview.svg)
 
-| Demo | Original tool | What is compared | Status and headline result |
+## What the evidence shows
+
+Each result is limited to the fixture, workload and machine named in its report.
+
+| Demo | Original | Established | Not established |
 |---|---|---|---|
-| [peakwhere](https://rgenomicsetl.github.io/duckseq/peakwhere/) | peakwhere and PeakPeek; ChIPseeker for the benchmark | Peak annotation and peak-file summaries against checked fixtures, hand-worked results and ChIPseeker | Exact output against the independent W1 oracle (7,220 peaks). Native DuckDB totals 0.401 s (1 thread) / 0.370 s (multithreaded), versus ChIPseeker's 2.776 s; native multithreaded peak RSS is 335 MiB versus ChIPseeker's 1,198 MiB. |
-| [AIE](https://rgenomicsetl.github.io/duckseq/aie/) | Gravlax AIE 0.2.3 | Region, junction, jset and annotation replay counts on the checked-in synthetic fixture | Exact parity for both samples, including seven mutation tests; no performance benchmark yet. |
-| [LDZip](https://rgenomicsetl.github.io/duckseq/ldzip/) | LDZip / LDZipMatrix | PLINK 2 LD matrices represented by quantized values and allele-aware variant lookups in Parquet and DuckDB SQL | One SQL file reproduces LDZip's 8/16-bit matrix exactly at 1×/2×/4× and accepts `CHROM:POS` IDs that LDZip rejects. SQL pair and tag queries are faster; LDZip is faster for dense 5,000-variant extraction (107 ms vs 189 ms via DBI) and builds with 20–35× less memory. See the [LDZip report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/ldzip/REPORT.md). |
+| [peakwhere](https://rgenomicsetl.github.io/duckseq/peakwhere/) ([performance report](https://rgenomicsetl.github.io/duckseq/peakwhere/performance/)) | peakwhere and PeakPeek; ChIPseeker for timing | W1 (7,220 mouse thymus chr19 peaks, GENCODE M25 basic chr19): output matches the independent base-R oracle exactly. Analysis time 0.401 s on one DuckDB thread and 0.370 s multithreaded, against ChIPseeker's 2.776 s; peak RSS 335 MiB multithreaded against 1,198 MiB. | Not an equal-output speedup: ChIPseeker uses different category rules and also finds the nearest transcript. On the larger W2 workload DuckDB is faster but uses more memory (3,297 and 4,903 MiB against 2,143 MiB), and the W2 oracle timed out. No mutation checks reported; no 1×/2×/4× ladder. |
+| [AIE](https://rgenomicsetl.github.io/duckseq/aie/) | Gravlax AIE 0.2.3 | Exact parity on the checked-in synthetic fixture for both samples and both annotation versions; seven mutation checks. | No performance benchmark. Parity is limited to the fixture's equal-length UMIs; other Gravlax input modes are untested. |
+| [LDZip](https://rgenomicsetl.github.io/duckseq/ldzip/) | LDZip / LDZipMatrix | Exact 8-bit and 16-bit matrices at nested 1×/2×/4× chr20 regions (250 kb, 500 kb, 1 Mb); six mutation checks; allele-aware composite keys that accept the `CHROM:POS` IDs LDZip rejects. Three fresh processes per cell with predeclared budgets. | LDZip wins dense 5,000-variant extraction (107 ms against 189 ms through DBI at 1×/8-bit) and builds with 20 to 35 times less memory. Pair timings need corrected LDZip batching and equivalent decoded outputs; tag paths include different API/setup work. No compressed LDZip reader on DuckDB; no full-chromosome run. |
 
-The peakwhere numbers are from its [performance report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/peakwhere/benchmarks/performance.md). See the [AIE report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/aie/REPORT.md) and [LDZip report](https://github.com/RGenomicsETL/duckseq/blob/main/demos/ldzip/REPORT.md) for fixture scope and limits. Performance coverage is not yet complete across the 1×/2×/4× protocol; do not infer a general speed or memory advantage from the reported cases.
+The regions are nested spans, not exact row ratios.
+
+## Four standards
+
+A demo is complete only when it has all four. The site's [evidence ledger](https://rgenomicsetl.github.io/duckseq/#ledger) shows which demos meet which.
+
+1. **Upstream parity:** exact agreement on the original tool's own test data or tutorial.
+2. **Mutation checks:** each rule is implemented wrongly on purpose, and the comparison must fail.
+3. **Measured performance:** DuckHTS `STYLE.md` rules, with 1×, 2× and 4× inputs, three fresh processes, peak RSS, and budgets declared before measuring.
+4. **Honest contrast:** a table that includes the cases where the original tool wins.
+
+LDZip reports a three-process nested-region scale ladder with RSS and budgets, but its pair comparator needs correction and remeasurement. peakwhere has partial measurements and AIE has none. See the [LDZip performance review](demos/ldzip/REVIEW.md) for the verified bottlenecks and comparator limits. The separate [native measurements](demos/ldzip/NATIVE_REPORT.md) test SQL-resident matrices at 1/4 threads: at 5,000 variants/16-bit, TinyCC's SQL matrix takes 1,039 ms on one thread or 734 ms on four, against 109 ms for LDZip's R matrix. Direct C consumption takes 103/39.5 ms but returns only checksums. BLAS linking and `dlopen()` pass a small DGEMM correctness check; GEMM throughput is unmeasured.
 
 ## Run a demo
 
-Peakwhere runs in a browser with its vendored DuckDB-Wasm and DuckHTS builds:
+All commands run from a clone of this repository.
+
+Peakwhere runs in a browser with vendored DuckDB-Wasm and DuckHTS builds. Files stay on your computer and the page makes no requests outside its own origin:
 
 ```sh
 cd demos/peakwhere
@@ -33,7 +52,7 @@ npm run serve
 npm test
 ```
 
-AIE builds its pinned Gravlax oracle and obtains the DuckDB CLI and DuckHTS extension on first run. Requirements include Rust/Cargo, R, samtools, jq, curl and unzip:
+AIE builds its pinned Gravlax oracle and fetches the DuckDB CLI and DuckHTS extension on first run. It needs Rust and Cargo, R, samtools, jq, curl and unzip:
 
 ```sh
 cd demos/aie
@@ -42,7 +61,7 @@ cd demos/aie
 ./mutation_test.sh
 ```
 
-LDZip's small CI fixture check needs R, a C++ toolchain, `make`, `curl` and `unzip`:
+LDZip's fixture check needs R, a C++ toolchain, `make`, `curl` and `unzip`:
 
 ```sh
 cd demos/ldzip
@@ -50,7 +69,7 @@ cd demos/ldzip
 ./test.sh
 ```
 
-The full chr20 benchmark downloads the tutorial VCF and builds nested regions:
+Its nested-region benchmark downloads the chr20 tutorial VCF:
 
 ```sh
 cd demos/ldzip
@@ -59,7 +78,22 @@ cd demos/ldzip
 ./measure_queries.sh
 ```
 
-The Pages site is <https://rgenomicsetl.github.io/duckseq/>. Peakwhere runs at [/peakwhere/](https://rgenomicsetl.github.io/duckseq/peakwhere/), with reports at [/aie/](https://rgenomicsetl.github.io/duckseq/aie/) and [/ldzip/](https://rgenomicsetl.github.io/duckseq/ldzip/).
+## Build the site locally
+
+The site is static HTML and CSS in `site/`, with no framework, external font or script. `scripts/render-site.sh` assembles it, rendering the evidence reports with Pandoc, and `scripts/check-site.mjs` verifies routes, links, same-origin assets and required page content:
+
+```sh
+(cd demos/peakwhere && npm ci && npm run stage && npm run stage:peek && npm run vendor)
+scripts/render-site.sh _site
+node scripts/check-site.mjs _site
+```
+
+## Where to read more
+
+- [peakwhere performance report](demos/peakwhere/benchmarks/performance.md), with receipts in [`results.json`](demos/peakwhere/benchmarks/results.json)
+- [AIE report](demos/aie/REPORT.md), [schema](demos/aie/SCHEMA.md) and [fixture notes](demos/aie/fixture/README.md)
+- [LDZip report](demos/ldzip/REPORT.md), [performance review](demos/ldzip/REVIEW.md) and [native measurements](demos/ldzip/NATIVE_REPORT.md)
+- [Contributor rules](AGENTS.md), including how claims are kept to their evidence
 
 ## Licensing
 

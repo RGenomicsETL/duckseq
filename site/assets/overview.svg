@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 358" role="img" aria-labelledby="t d" font-family="Charter, Georgia, 'DejaVu Serif', serif">
+<title id="t">How each duckseq demo moves data</title>
+<desc id="d">Three rows, one per demo. Each row runs left to right from standard files through readers and SQL to outputs.</desc>
+<rect width="1120" height="358" fill="#f2f5f4"/>
+<line x1="20" y1="18" x2="1100" y2="18" stroke="#14202b" stroke-width="2"/>
+<text x="150" y="44" font-size="15" font-weight="700" fill="#475763">Standard files in</text>
+<text x="380" y="44" font-size="15" font-weight="700" fill="#475763">Readers</text>
+<text x="660" y="44" font-size="15" font-weight="700" fill="#475763">What SQL does</text>
+<text x="900" y="44" font-size="15" font-weight="700" fill="#475763">What comes out</text>
+<line x1="20" y1="54" x2="1100" y2="54" stroke="#14202b"/>
+<text x="24" y="96" font-size="20" font-weight="700" fill="#14202b">peakwhere</text>
+<text x="150" y="92" font-size="15" fill="#14202b">GFF3 / GTF annotation</text>
+<text x="150" y="114" font-size="15" fill="#14202b">BED, narrowPeak peaks</text>
+<text x="380" y="92" fill="#14202b" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="13">read_gff, read_gtf, read_bed</text>
+<text x="380" y="114" fill="#14202b" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="13">+ cgranges interval index</text>
+<path d="M336 88 h30 m-7 -5 l7 5 l-7 5" fill="none" stroke="#2458a6" stroke-width="2"/>
+<text x="660" y="92" font-size="15" fill="#14202b">priority regions,</text>
+<text x="660" y="114" font-size="15" fill="#14202b">peak centre counts</text>
+<path d="M616 88 h30 m-7 -5 l7 5 l-7 5" fill="none" stroke="#2458a6" stroke-width="2"/>
+<text x="900" y="92" font-size="15" fill="#14202b">category counts per file</text>
+<text x="900" y="114" font-size="15" fill="#14202b">(browser or CLI)</text>
+<path d="M856 88 h30 m-7 -5 l7 5 l-7 5" fill="none" stroke="#2458a6" stroke-width="2"/>
+<line x1="20" y1="146" x2="1100" y2="146" stroke="#b9c6cc"/>
+<text x="24" y="188" font-size="20" font-weight="700" fill="#14202b">AIE</text>
+<text x="150" y="184" font-size="15" fill="#14202b">aligned BAM</text>
+<text x="150" y="206" font-size="15" fill="#14202b">two GTF versions</text>
+<text x="380" y="184" fill="#14202b" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="13">read_bam, read_gtf,</text>
+<text x="380" y="206" fill="#14202b" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="13">cigar_aligned_blocks</text>
+<path d="M336 180 h30 m-7 -5 l7 5 l-7 5" fill="none" stroke="#2458a6" stroke-width="2"/>
+<text x="660" y="184" font-size="15" fill="#14202b">UMI collapse,</text>
+<text x="660" y="206" font-size="15" fill="#14202b">junction classes</text>
+<path d="M616 180 h30 m-7 -5 l7 5 l-7 5" fill="none" stroke="#2458a6" stroke-width="2"/>
+<text x="900" y="184" font-size="15" fill="#14202b">Parquet relations,</text>
+<text x="900" y="206" font-size="15" fill="#14202b">counts vs Gravlax</text>
+<path d="M856 180 h30 m-7 -5 l7 5 l-7 5" fill="none" stroke="#2458a6" stroke-width="2"/>
+<line x1="20" y1="238" x2="1100" y2="238" stroke="#b9c6cc"/>
+<text x="24" y="280" font-size="20" font-weight="700" fill="#14202b">LDZip</text>
+<text x="150" y="276" font-size="15" fill="#14202b">PLINK 2 .pvar, .vcor</text>
+<text x="150" y="298" font-size="15" fill="#14202b">(chr20 tutorial)</text>
+<text x="380" y="276" fill="#14202b" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="13">read_csv</text>
+<text x="380" y="298" fill="#14202b" font-family="ui-monospace, Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="13">(no DuckHTS reader)</text>
+<path d="M336 272 h30 m-7 -5 l7 5 l-7 5" fill="none" stroke="#2458a6" stroke-width="2"/>
+<text x="660" y="276" font-size="15" fill="#14202b">allele-key join,</text>
+<text x="660" y="298" font-size="15" fill="#14202b">8/16-bit quantization</text>
+<path d="M616 272 h30 m-7 -5 l7 5 l-7 5" fill="none" stroke="#2458a6" stroke-width="2"/>
+<text x="900" y="276" font-size="15" fill="#14202b">sorted Parquet</text>
+<text x="900" y="298" font-size="15" fill="#14202b">ld + variants</text>
+<path d="M856 272 h30 m-7 -5 l7 5 l-7 5" fill="none" stroke="#2458a6" stroke-width="2"/>
+<line x1="20" y1="330" x2="1100" y2="330" stroke="#b9c6cc"/>
+</svg>

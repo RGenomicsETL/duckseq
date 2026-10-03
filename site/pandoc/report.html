@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$pagetitle$ | duckseq</title>
+<meta name="description" content="$scope$">
+<link rel="icon" href="$root$assets/favicon.svg" type="image/svg+xml">
+$for(css)$
+<link rel="stylesheet" href="$css$">
+$endfor$
+</head>
+<body>
+<a class="skip" href="#main">Skip to the report</a>
+<div class="frame">
+<aside class="rail">
+  <a class="brand" href="$root$" aria-label="duckseq home">duck<span>seq</span></a>
+  <nav aria-label="Site">
+    <ul>
+      <li><a href="$root$">Overview</a></li>
+      <li><a href="$root$#ledger">Evidence ledger</a></li>
+    </ul>
+    <p class="group">Demos</p>
+    <ul>
+      <li><a href="$root$peakwhere/"$if(current-peakwhere-app)$ aria-current="page"$endif$>peakwhere app</a></li>
+      <li><a href="$root$peakwhere/performance/"$if(current-peakwhere)$ aria-current="page"$endif$>peakwhere performance</a></li>
+      <li><a href="$root$aie/"$if(current-aie)$ aria-current="page"$endif$>AIE report</a></li>
+      <li><a href="$root$ldzip/"$if(current-ldzip)$ aria-current="page"$endif$>LDZip report</a></li>
+      <li><a href="$root$ldzip/review/"$if(current-ldzip-review)$ aria-current="page"$endif$>LDZip performance review</a></li>
+    </ul>
+  </nav>
+  <p class="foot"><a href="https://github.com/RGenomicsETL/duckseq">Source on GitHub</a><br>GPL-2.0-or-later; peakwhere is MIT.</p>
+</aside>
+<main id="main" class="report">
+<header class="masthead">
+  <p class="where">Evidence report: $pagetitle$</p>
+  <p class="scope">$scope$</p>
+  <p class="src">Rendered from <a href="$source-url$"><code>$source-path$</code></a>. Relative links to source files point to the repository on GitHub.</p>
+</header>
+<div class="report-grid">
+$if(toc)$
+<nav class="toc" id="TOC" aria-label="On this page">
+<p class="toc-title">On this page</p>
+$table-of-contents$
+</nav>
+$endif$
+<article class="prose">
+$body$
+</article>
+</div>
+</main>
+</div>
+</body>
+</html>
