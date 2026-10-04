@@ -34,7 +34,8 @@ render() {
     --variable source-path="$src" --variable source-url="$repo_url/blob/main/$src" \
     --variable scope="$scope" \
     --output="$out/$route/index.html" <<<"repo-dir: $repo_dir
-repo-url: $repo_url"
+repo-url: $repo_url
+site-root: '$up'"
 }
 
 cp -r "$root/site/index.html" "$root/site/assets" "$out/"
@@ -52,9 +53,9 @@ render demos/peakwhere/benchmarks/performance.md peakwhere/performance demos/pea
   "peakwhere performance" \
   "DuckDB-Wasm and native DuckDB against ChIPseeker on peakwhere's W1 workload (7,220 mouse thymus chr19 peaks) and the larger W2 workload. Local single-machine measurements; not an equal-output speedup claim." \
   peakwhere
-render demos/aie/REPORT.md aie demos/aie \
-  "AIE parity in DuckDB SQL" \
-  "Exact parity with Gravlax AIE 0.2.3 on the checked-in synthetic fixture for both samples, with seven mutation checks and no performance benchmark." \
+render demos/aie/PRODUCT_REPORT.md aie demos/aie \
+  "AIE: queryable raw evidence on real PBMC inputs" \
+  "Real 1M/2M/4M primary-record BAMs, one/four threads and three fresh processes. SQL raw-UMI labels and overlap families differ from Gravlax classes; these are capability/cost contrasts, not equal-output speedups." \
   aie
 render demos/ldzip/REPORT.md ldzip demos/ldzip \
   "LDZip in DuckDB SQL" \

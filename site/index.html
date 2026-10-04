@@ -187,18 +187,20 @@ npm test</code></pre>
       <h3 id="aie-h">AIE</h3>
       <dl>
         <dt>Original</dt><dd>Gravlax <code>aie</code> 0.2.3, built from a pinned commit</dd>
-        <dt>Question</dt><dd>Can BAM evidence become Parquet relations whose SQL counts match Gravlax?</dd>
-        <dt>Scope</dt><dd>The checked-in synthetic fixture, two samples, two annotation versions</dd>
+        <dt>Question</dt><dd>Can standard BAM become inspectable evidence and reusable SQL queries?</dd>
+        <dt>Scope</dt><dd>Real PBMC prefixes with 1M, 2M and 4M genuine primary records; separate fixture compatibility surface</dd>
       </dl>
     </div>
     <div class="demo-body">
       <div class="stat-row">
-        <div class="stat"><b>Exact</b><span>region, junction, jset and annotation-replay counts match Gravlax for both samples</span></div>
-        <div class="stat"><b>7</b><span>mutation checks, each of which fails when an annotation rule is altered</span></div>
-        <div class="stat"><b>None</b><span>performance benchmarks have been run</span></div>
+        <div class="stat"><b>144</b><span>fresh real-input CLI processes within declared wall/RSS budgets</span></div>
+        <div class="stat"><b>4</b><span>independent evidence-policy mutants rejected by scalar/graph oracles</span></div>
+        <div class="stat"><b>1M / 2M / 4M</b><span>actual primary records, not duplicated synthetic cells</span></div>
       </div>
-      <p>The fixture was written to separate rules that a naive query would blur: UMI chains versus ties, multimappers that span genes versus ones confined to one, and a read that supports two junction predicates at once.</p>
-      <p class="note gap"><strong>Scope limit.</strong> The fixture uses twelve-base ACGT UMIs. Gravlax orders packed numeric keys and SQL orders text; they agree for equal-length UMIs, but UMIs of differing lengths with leading A bases have not been tested. This is not parity over all Gravlax input modes, and the fixture is not performance evidence.</p>
+      <figure class="benchmark-chart"><img src="assets/charts/aie-real-prepare-t4-latency.svg" alt="Real PBMC preparation latency at four threads: Gravlax retains UMI classes; SQL retains raw observations and overlap families." loading="lazy"></figure>
+      <p>The cache computes geometry once and offers distinct raw-UMI-label and overlap-family counts. Supplied CB assignments are trusted; raw UR and corrected UB remain separate. The original&rsquo;s correction and UMI-classing rules are a comparator, not the default counting contract.</p>
+      <p class="note"><strong>Gravlax wins preparation.</strong> At 4M records/four threads it takes 5.13 s versus 13.10 s for the richer SQL cache. Full-chr1 queries take 249 ms for Gravlax classes, 383 ms for SQL labels and 141 ms for SQL families. <strong>Different count definitions mean these are cost contrasts, not equal-output speedups.</strong></p>
+      <p class="note gap"><strong>Scope limit.</strong> These are restricted NH=1 primary-record prefixes, not whole-cohort annotation or general multimapper performance. Short queries remain CLI diagnostics; full STYLE qualification is unverified.</p>
       <p><a href="aie/">Read the report</a> &middot; <a href="https://github.com/RGenomicsETL/duckseq/tree/main/demos/aie">Source</a></p>
     </div>
   </article>
@@ -247,8 +249,8 @@ npm test</code></pre>
   <p>A demo is complete only when it has all four. The ledger below shows which demos do.</p>
   <div class="standards">
     <div class="std parity">
-      <h3>Upstream parity</h3>
-      <p>The same answers on the original tool&rsquo;s own test data or tutorial, compared exactly rather than approximately.</p>
+      <h3>Shared-surface parity</h3>
+      <p>Declared shared semantics match the original tool&rsquo;s data exactly. Independently test product policies and explain intentional differences.</p>
     </div>
     <div class="std mutation">
       <h3>Mutation checks</h3>
@@ -274,7 +276,7 @@ npm test</code></pre>
     <thead>
       <tr>
         <th scope="col">Demo</th>
-        <th scope="col" style="--c:var(--parity)"><span></span>Upstream parity</th>
+        <th scope="col" style="--c:var(--parity)"><span></span>Shared-surface parity</th>
         <th scope="col" style="--c:var(--mutation)"><span></span>Mutation checks</th>
         <th scope="col" style="--c:var(--perf)"><span></span>1&times;/2&times;/4&times;, three processes, RSS, budgets</th>
         <th scope="col" style="--c:var(--contrast)"><span></span>Contrast with the original</th>
@@ -291,9 +293,9 @@ npm test</code></pre>
       <tr>
         <th scope="row">AIE</th>
         <td><span class="st part"><span class="g" aria-hidden="true">&#9680;</span>Exact custom-fixture parity</span>Both samples and both annotations. Upstream test/tutorial data and wider input modes are untested.</td>
-        <td><span class="st full"><span class="g" aria-hidden="true">&#9679;</span>Seven checks</span>Altered annotation rules are caught.</td>
-        <td><span class="st none"><span class="g" aria-hidden="true">&#9675;</span>None</span>No performance benchmark has been run.</td>
-        <td><span class="st none"><span class="g" aria-hidden="true">&#9675;</span>Not reported</span>The report lists limits, not a table of where Gravlax wins.</td>
+        <td><span class="st full"><span class="g" aria-hidden="true">&#9679;</span>Four independent checks</span>Cursor, arbitrary-gap merging, strand loss and secondary inclusion disagree with scalar/graph oracles.</td>
+        <td><span class="st part"><span class="g" aria-hidden="true">&#9680;</span>Real-input cost contrast</span>1M/2M/4M genuine records; one/four threads, three fresh processes, RSS and declared budgets. Short queries are diagnostics; full STYLE qualification is unverified.</td>
+        <td><span class="st part"><span class="g" aria-hidden="true">&#9680;</span>Scoped contrast</span>Gravlax wins preparation and the restricted-window query. Raw labels, overlap families and Gravlax classes have different count meanings.</td>
       </tr>
       <tr>
         <th scope="row">LDZip</th>
@@ -312,7 +314,7 @@ npm test</code></pre>
   <ul class="gaps">
     <li><strong>No demo has shown a general speed or memory advantage.</strong> Each result belongs to its fixture, region set and machine (one Intel Core i5-13500 host in the LDZip and peakwhere reports).</li>
     <li><strong>peakwhere</strong> has no mutation checks reported and no 1&times;/2&times;/4&times; scaling. Its W2 independent oracle timed out, so W2 is cross-checked only among the SQL engines. ChIPseeker applies different rules, so its timing is not an equal-output speedup.</li>
-    <li><strong>AIE</strong> has no performance measurement and no contrast table. Parity is for one synthetic fixture with equal-length UMIs; other Gravlax input modes are untested.</li>
+    <li><strong>AIE</strong> has controlled fresh-CLI measurements and a contrast table, but no public-transcriptome timing verdict. Parity is for a synthetic fixture with equal-length UMIs; other Gravlax input modes are untested.</li>
     <li><strong>LDZip</strong> covers three nested chr20 spans. The full-chromosome matrix was not built, so its cost is unknown. Pair batching and output semantics need a fair rerun; the <a href="ldzip/review/">review</a> identifies an avoidable 200 MB dense-matrix copy and comparator gaps. The report does not claim equivalent indexes or a compressed LDZip reader built on DuckDB.</li>
     <li><strong>Reproduction.</strong> Receipts for peakwhere are in its <a href="https://github.com/RGenomicsETL/duckseq/blob/main/demos/peakwhere/benchmarks/results.json">results.json</a>. The AIE and LDZip scripts regenerate their derived data from checked-in fixtures or checksummed inputs.</li>
   </ul>

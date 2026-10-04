@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 550 440">
+<title id="title">16-bit matrices · 4 SQL threads</title><desc id="desc">SQL and TinyCC retain SQL lists; LDZip returns an R matrix. These representations differ. Red crosses mark failed resource qualification; failed timings are not shown. Three fresh processes, at least five measured seconds each; whiskers are ranges of process-average latencies.</desc>
+<rect width="550" height="440" fill="#f2f5f4"/>
+<g font-family="system-ui,sans-serif" fill="#14202b" font-size="17">
+<text x="24" y="30" font-size="21" font-weight="650">16-bit matrices · 4 SQL threads</text>
+<text x="24" y="57" font-size="15">Milliseconds / operation · lower is better</text>
+<path d="M78 315.00 H498" stroke="#cbd5d9"/>
+<text x="65" y="320.00" text-anchor="end" font-size="15">0</text>
+<path d="M78 266.11 H498" stroke="#cbd5d9"/>
+<text x="65" y="271.11" text-anchor="end" font-size="15">200</text>
+<path d="M78 217.22 H498" stroke="#cbd5d9"/>
+<text x="65" y="222.22" text-anchor="end" font-size="15">400</text>
+<path d="M78 168.33 H498" stroke="#cbd5d9"/>
+<text x="65" y="173.33" text-anchor="end" font-size="15">600</text>
+<path d="M78 119.44 H498" stroke="#cbd5d9"/>
+<text x="65" y="124.44" text-anchor="end" font-size="15">800</text>
+<text x="78.00" y="341" text-anchor="middle" font-size="15">1000</text>
+<text x="178.00" y="341" text-anchor="middle" font-size="15">2000</text>
+<text x="378.00" y="341" text-anchor="middle" font-size="15">4000</text>
+<text x="478.00" y="341" text-anchor="middle" font-size="15">5000</text>
+<text x="285" y="368" text-anchor="middle">Requested variants per matrix axis</text>
+<path d="M78.00 290.94 V290.31 M73.00 290.94 h10 M73.00 290.31 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="78.00" cy="290.86" r="4.5" fill="#8f6200"/>
+<text x="178.00" y="97.00" fill="#ad3028" text-anchor="middle" font-size="15">× fail</text>
+<text x="378.00" y="97.00" fill="#ad3028" text-anchor="middle" font-size="15">× fail</text>
+<text x="478.00" y="97.00" fill="#ad3028" text-anchor="middle" font-size="15">× fail</text>
+<path d="M24 395 h20" stroke="#8f6200" stroke-width="3"/><text x="50" y="400" font-size="14">SQL grid</text>
+<polyline fill="none" stroke="#2458a6" stroke-width="2.5" points="78.00,307.53 178.00,285.45 378.00,203.77 478.00,135.54"/>
+<path d="M78.00 308.04 V307.48 M73.00 308.04 h10 M73.00 307.48 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="78.00" cy="307.53" r="4.5" fill="#2458a6"/>
+<path d="M178.00 285.70 V285.39 M173.00 285.70 h10 M173.00 285.39 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="178.00" cy="285.45" r="4.5" fill="#2458a6"/>
+<path d="M378.00 204.30 V203.66 M373.00 204.30 h10 M373.00 203.66 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="378.00" cy="203.77" r="4.5" fill="#2458a6"/>
+<path d="M478.00 136.83 V133.97 M473.00 136.83 h10 M473.00 133.97 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="478.00" cy="135.54" r="4.5" fill="#2458a6"/>
+<path d="M284 395 h20" stroke="#2458a6" stroke-width="3"/><text x="310" y="400" font-size="14">TinyCC SQL matrix</text>
+<polyline fill="none" stroke="#1b744a" stroke-width="2.5" points="78.00,314.06 178.00,311.37 378.00,296.37 478.00,288.37"/>
+<path d="M78.00 314.06 V314.05 M73.00 314.06 h10 M73.00 314.05 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="78.00" cy="314.06" r="4.5" fill="#1b744a"/>
+<path d="M178.00 311.38 V311.33 M173.00 311.38 h10 M173.00 311.33 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="178.00" cy="311.37" r="4.5" fill="#1b744a"/>
+<path d="M378.00 296.52 V296.21 M373.00 296.52 h10 M373.00 296.21 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="378.00" cy="296.37" r="4.5" fill="#1b744a"/>
+<path d="M478.00 288.48 V288.15 M473.00 288.48 h10 M473.00 288.15 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="478.00" cy="288.37" r="4.5" fill="#1b744a"/>
+<path d="M24 416 h20" stroke="#1b744a" stroke-width="3"/><text x="50" y="421" font-size="14">LDZip R matrix</text>
+</g></svg>

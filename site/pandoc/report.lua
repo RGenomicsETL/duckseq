@@ -24,6 +24,7 @@ end
 function Pandoc(doc)
   local base = pandoc.utils.stringify(doc.meta["repo-dir"])
   local repo = pandoc.utils.stringify(doc.meta["repo-url"])
+  local root = pandoc.utils.stringify(doc.meta["site-root"])
   -- A report may repeat its title as a second identical H1; keep the first.
   local seen = {}
   local blocks = pandoc.List()
@@ -37,6 +38,15 @@ function Pandoc(doc)
     if not drop then blocks:insert(b) end
   end
   doc.blocks = blocks
+  local function local_chart(image)
+    if image.src:match("^%a[%w+.-]*:") then return nil end
+    local parts = normalise(base, image.src)
+    if parts[1] == "site" and parts[2] == "assets" and parts[3] == "charts" then
+      image.src = root .. table.concat(parts, "/", 2)
+      image.attributes["loading"] = "lazy"
+    end
+    return image
+  end
   return doc:walk({
     Link = function(link)
       local t = link.target
@@ -49,9 +59,17 @@ function Pandoc(doc)
       link.target = repo .. "/" .. kind .. "/main/" .. table.concat(parts, "/") .. frag
       return link
     end,
+    Image = local_chart,
+    RawBlock = function(block)
+      if block.format == "html" and block.text:find("<img", 1, true) then
+        return pandoc.read(block.text, "html"):walk({ Image = local_chart }).blocks
+      end
+    end,
     Table = function(tbl)
-      return pandoc.Div({ tbl }, pandoc.Attr("", { "table-wrap" },
-        { { "tabindex", "0" }, { "role", "region" }, { "aria-label", "Table, scrollable" } }))
+      local wrapped = pandoc.Div({ tbl }, pandoc.Attr("", { "table-wrap" },
+        { { "tabindex", "0" }, { "role", "region" }, { "aria-label", "Data table, scrollable" } }))
+      return { pandoc.RawBlock("html", '<details class="data-table"><summary>Exact data and statuses</summary>'),
+        wrapped, pandoc.RawBlock("html", '</details>') }
     end,
   })
 end

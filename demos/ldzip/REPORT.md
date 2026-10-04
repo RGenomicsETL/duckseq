@@ -173,6 +173,28 @@ they do not say the formats or their indexes are equivalent.
 
 ### Build
 
+<figure>
+<img src="../../site/assets/charts/ld-build-16b-latency.svg"
+alt="16-bit build latency across the nested chr20 regions. LDZip compression excludes SQLite-index construction; retained representations differ." />
+<figcaption aria-hidden="true">16-bit build latency across the nested
+chr20 regions. LDZip compression excludes SQLite-index construction;
+retained representations differ.</figcaption>
+</figure>
+
+<figure>
+<img src="../../site/assets/charts/ld-build-16b-rss.svg"
+alt="16-bit maximum peak RSS across the three fresh build processes. DuckDB used its default thread count." />
+<figcaption aria-hidden="true">16-bit maximum peak RSS across the three
+fresh build processes. DuckDB used its default thread
+count.</figcaption>
+</figure>
+
+The charts read the [historical per-process build
+rows](evidence/legacy/build.tsv). These short operations and incomplete
+legacy budget enforcement do not establish full DuckHTS STYLE
+qualification. The separate [native matrix report](NATIVE_REPORT.md)
+charts explicit one/four-thread measurements and failed resource cells.
+
 Medians of three fresh processes, at the chosen layout.
 
 | Region | Bits | `ldzip compress` time / peak RSS | `build.sh` time / peak RSS |
@@ -245,8 +267,10 @@ and is not semantically the same output operation.
 
 DBI and CLI execute the same SQL for pair and tag queries against the
 same generated inputs. CLI timing includes starting DuckDB; DBI reuses
-its connection within each fresh R process. All measured cells stayed
-within the declared wall-time, RSS and temporary-output budgets.
+its connection within each fresh R process. The legacy harness did not
+enforce every declared budget and overwrote some failed retry receipts;
+these timings do not certify budget compliance. The native report
+preserves failures and enforces its separate protocol.
 
 ### Comparator limits
 

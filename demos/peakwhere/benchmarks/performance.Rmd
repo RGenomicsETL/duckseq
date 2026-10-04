@@ -1,5 +1,7 @@
 ---
-output: github_document
+output:
+  github_document:
+    html_preview: false
 ---
 
 <!-- Render with `make performance`; timing receipts come from `Rscript bench/run.R`. -->
@@ -12,9 +14,10 @@ results <- jsonlite::read_json("results.json", simplifyVector = FALSE)
 
 # Performance comparison
 
-[Issue #1](https://github.com/sounkou-bioinfo/duckpeakwhere/issues/1) compares
-[duckpeakwhere](../README.md)'s SQL in duckdb-wasm and native DuckDB with
-ChIPseeker `annotatePeak`. Sean Davis's peakwhere is not timed: its
+[duckpeakwhere](../README.md)'s SQL in duckdb-wasm and native DuckDB is
+compared with ChIPseeker `annotatePeak`. The
+[workload design](https://github.com/sounkou-bioinfo/duckpeakwhere/issues/1)
+defines the comparison. Sean Davis's peakwhere is not timed: its
 `src/pipeline.js` is a stub. The independent base-R oracle is a correctness
 reference, not a timing competitor. These are local measurements, not CI benchmarks.
 
@@ -25,6 +28,10 @@ means the two analysis phases, excluding engine startup; native totals sum DuckD
 per-statement wall timers. See process wall times below for startup-inclusive native
 and R measurements. ChIPseeker performs additional nearest-transcript annotation and
 has different category rules, so this is not an equal-output speedup claim.
+
+![Analysis time for W1 and W2, with five-run ranges. ChIPseeker performs different work; these are not equal-output speedups.](../../../site/assets/charts/peakwhere-latency.svg)
+
+![Whole-process peak RSS for native DuckDB and ChIPseeker. Browser memory is unmeasured.](../../../site/assets/charts/peakwhere-rss.svg)
 
 ```{r headline}
 knitr::kable(headline(results), row.names = FALSE)

@@ -3,11 +3,12 @@
 
 # Performance comparison
 
-[Issue \#1](https://github.com/sounkou-bioinfo/duckpeakwhere/issues/1)
-compares [duckpeakwhere](../README.md)’s SQL in duckdb-wasm and native
-DuckDB with ChIPseeker `annotatePeak`. Sean Davis’s peakwhere is not
-timed: its `src/pipeline.js` is a stub. The independent base-R oracle is
-a correctness reference, not a timing competitor. These are local
+[duckpeakwhere](../README.md)’s SQL in duckdb-wasm and native DuckDB is
+compared with ChIPseeker `annotatePeak`. The [workload
+design](https://github.com/sounkou-bioinfo/duckpeakwhere/issues/1)
+defines the comparison. Sean Davis’s peakwhere is not timed: its
+`src/pipeline.js` is a stub. The independent base-R oracle is a
+correctness reference, not a timing competitor. These are local
 measurements, not CI benchmarks.
 
 ## Headline
@@ -18,6 +19,21 @@ native totals sum DuckDB’s per-statement wall timers. See process wall
 times below for startup-inclusive native and R measurements. ChIPseeker
 performs additional nearest-transcript annotation and has different
 category rules, so this is not an equal-output speedup claim.
+
+<figure>
+<img src="../../../site/assets/charts/peakwhere-latency.svg"
+alt="Analysis time for W1 and W2, with five-run ranges. ChIPseeker performs different work; these are not equal-output speedups." />
+<figcaption aria-hidden="true">Analysis time for W1 and W2, with
+five-run ranges. ChIPseeker performs different work; these are not
+equal-output speedups.</figcaption>
+</figure>
+
+<figure>
+<img src="../../../site/assets/charts/peakwhere-rss.svg"
+alt="Whole-process peak RSS for native DuckDB and ChIPseeker. Browser memory is unmeasured." />
+<figcaption aria-hidden="true">Whole-process peak RSS for native DuckDB
+and ChIPseeker. Browser memory is unmeasured.</figcaption>
+</figure>
 
 | Workload | wasm                     | native-1t             | native-nt             | chipseeker               |
 |:---------|:-------------------------|:----------------------|:----------------------|:-------------------------|

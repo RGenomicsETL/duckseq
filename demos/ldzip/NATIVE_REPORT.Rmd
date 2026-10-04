@@ -7,10 +7,10 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
-scale <- read.delim("work/perf/native/summary.tsv")
-checkpoint <- read.delim("work/perf/native-checkpoint/summary.tsv")
-raw <- rbind(read.delim("work/perf/native/raw.tsv"), read.delim("work/perf/native-checkpoint/raw.tsv"))
-admission <- read.delim("work/perf/native-admission.tsv")
+scale <- read.delim("evidence/native/ladder/summary.tsv")
+checkpoint <- read.delim("evidence/native/checkpoint/summary.tsv")
+raw <- rbind(read.delim("evidence/native/ladder/raw.tsv"), read.delim("evidence/native/checkpoint/raw.tsv"))
+admission <- read.delim("evidence/native/native-admission.tsv")
 pretty <- function(x) {
   data.frame(Variants = x$n, Bits = x$bits,
     Endpoint = c(sql = "SQL grid", tinycc = "TinyCC SQL matrix", ldzip = "LDZip R matrix")[x$engine],
@@ -22,7 +22,7 @@ pretty <- function(x) {
 }
 boundary <- do.call(rbind, lapply(c(1L,4L), function(threads) do.call(rbind,
   lapply(1:3, function(rep) {
-    stem <- sprintf("work/perf/native-boundary/t%d-r%d", threads, rep)
+    stem <- sprintf("evidence/native/boundary/t%d-r%d", threads, rep)
     line <- grep("^METRIC\\t", readLines(paste0(stem,".log")), value=TRUE)
     stopifnot(length(line)==1L)
     values <- as.numeric(strsplit(line,"\t",fixed=TRUE)[[1L]][2:8])
@@ -38,7 +38,6 @@ boundary <- do.call(rbind, lapply(c(1L,4L), function(threads) do.call(rbind,
       profile_buffer_bytes=profile$system_peak_buffer_memory,
       spill_bytes=profile$system_peak_temp_dir_size)
   }))))
-write.table(boundary,"work/perf/native-boundary/raw.tsv",sep="\t",row.names=FALSE,quote=FALSE)
 ```
 
 ## Result
@@ -46,6 +45,20 @@ write.table(boundary,"work/perf/native-boundary/raw.tsv",sep="\t",row.names=FALS
 Keeping the matrix out of R does not by itself make this implementation faster. The DuckTinyCC aggregate beats the built-in ordered-grid SQL at the qualified small sizes, but exporting a complete dense matrix as SQL lists is substantially slower than LDZip's R-matrix endpoint. Consuming the same constructed columns inside C is much cheaper than exporting and retaining them as SQL values.
 
 The [protocol](NATIVE_PROTOCOL.md) declares the workloads and budgets. The full dimension ladder contains **90 fresh measured processes**, plus **15** for the 5,000-variant checkpoint. Each qualified process executes repeated complete operations for at least five measured seconds. Tables show the median and range of the **three process-average latencies**, not individual-operation medians. Peak RSS is the maximum of the three fresh processes, including runtime/setup and the final profiling operation.
+
+## Measurements at a glance
+
+![16-bit latency with one SQL thread. LDZip returns an R matrix; TinyCC and SQL grid retain SQL lists. Whiskers are three-process ranges; red crosses mark resource failures.](../../site/assets/charts/ld-native-16b-t1-latency.svg)
+
+![16-bit maximum whole-process RSS with one SQL thread. Resource failures are marked explicitly.](../../site/assets/charts/ld-native-16b-t1-rss.svg)
+
+![16-bit latency with four SQL threads. LDZip remains its single-reader R endpoint; retained output representations differ.](../../site/assets/charts/ld-native-16b-t4-latency.svg)
+
+![16-bit maximum whole-process RSS with four SQL threads. Failed resource qualification is not a successful timing point.](../../site/assets/charts/ld-native-16b-t4-rss.svg)
+
+The graphs read archived receipts; they do not rerun engines. Exact values,
+failure statuses and admission results remain in the expandable data tables.
+The 5,000-variant timing checkpoint was measured only at 16 bits.
 
 ## What the endpoints do
 

@@ -27,11 +27,11 @@ read_csv.</figcaption>
 Each result is limited to the fixture, workload and machine named in its
 report.
 
-| Demo                                                                                                                                                 | Original                                      | Established                                                                                                                                                                                                                                                               | Not established                                                                                                                                                                                                                                                                                                            |
-|------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [peakwhere](https://rgenomicsetl.github.io/duckseq/peakwhere/) ([performance report](https://rgenomicsetl.github.io/duckseq/peakwhere/performance/)) | peakwhere and PeakPeek; ChIPseeker for timing | W1 (7,220 mouse thymus chr19 peaks, GENCODE M25 basic chr19): output matches the independent base-R oracle exactly. Analysis time 0.401 s on one DuckDB thread and 0.370 s multithreaded, against ChIPseeker’s 2.776 s; peak RSS 335 MiB multithreaded against 1,198 MiB. | Not an equal-output speedup: ChIPseeker uses different category rules and also finds the nearest transcript. On the larger W2 workload DuckDB is faster but uses more memory (3,297 and 4,903 MiB against 2,143 MiB), and the W2 oracle timed out. No mutation checks reported; no 1×/2×/4× ladder.                        |
-| [AIE](https://rgenomicsetl.github.io/duckseq/aie/)                                                                                                   | Gravlax AIE 0.2.3                             | Exact parity on the checked-in synthetic fixture for both samples and both annotation versions; seven mutation checks.                                                                                                                                                    | No performance benchmark. Parity is limited to the fixture’s equal-length UMIs; other Gravlax input modes are untested.                                                                                                                                                                                                    |
-| [LDZip](https://rgenomicsetl.github.io/duckseq/ldzip/)                                                                                               | LDZip / LDZipMatrix                           | Exact 8-bit and 16-bit matrices at nested 1×/2×/4× chr20 regions (250 kb, 500 kb, 1 Mb); six mutation checks; allele-aware composite keys that accept the `CHROM:POS` IDs LDZip rejects. Three fresh processes per cell with predeclared budgets.                         | LDZip wins dense 5,000-variant extraction (107 ms against 189 ms through DBI at 1×/8-bit) and builds with 20 to 35 times less memory. Pair timings need corrected LDZip batching and equivalent decoded outputs; tag paths include different API/setup work. No compressed LDZip reader on DuckDB; no full-chromosome run. |
+| Demo                                                                                                                                                 | Original                                      | Established                                                                                                                                                                                                                                                                                            | Not established                                                                                                                                                                                                                                                                                                            |
+|------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [peakwhere](https://rgenomicsetl.github.io/duckseq/peakwhere/) ([performance report](https://rgenomicsetl.github.io/duckseq/peakwhere/performance/)) | peakwhere and PeakPeek; ChIPseeker for timing | W1 (7,220 mouse thymus chr19 peaks, GENCODE M25 basic chr19): output matches the independent base-R oracle exactly. Analysis time 0.401 s on one DuckDB thread and 0.370 s multithreaded, against ChIPseeker’s 2.776 s; peak RSS 335 MiB multithreaded against 1,198 MiB.                              | Not an equal-output speedup: ChIPseeker uses different category rules and also finds the nearest transcript. On the larger W2 workload DuckDB is faster but uses more memory (3,297 and 4,903 MiB against 2,143 MiB), and the W2 oracle timed out. No mutation checks reported; no 1×/2×/4× ladder.                        |
+| [AIE](https://rgenomicsetl.github.io/duckseq/aie/)                                                                                                   | Gravlax AIE 0.2.3                             | A materialized raw-evidence cache with region/junction label and overlap-family queries; independent scalar/graph oracle and four semantic mutants. Real 1M/2M/4M PBMC inputs: 144 fresh CLI processes at one/four threads, all within declared budgets. Separate exact fixture compatibility surface. | Counts intentionally have distinct meanings; no equal-output speedup. Gravlax prepares 4M records in 5.13 s versus 13.10 s at four threads. Full-cohort annotation and general multimapper performance, complete STYLE qualification and an independent annotation-correction policy are unverified.                       |
+| [LDZip](https://rgenomicsetl.github.io/duckseq/ldzip/)                                                                                               | LDZip / LDZipMatrix                           | Exact 8-bit and 16-bit matrices at nested 1×/2×/4× chr20 regions (250 kb, 500 kb, 1 Mb); six mutation checks; allele-aware composite keys that accept the `CHROM:POS` IDs LDZip rejects. Three fresh processes per cell with predeclared budgets.                                                      | LDZip wins dense 5,000-variant extraction (107 ms against 189 ms through DBI at 1×/8-bit) and builds with 20 to 35 times less memory. Pair timings need corrected LDZip batching and equivalent decoded outputs; tag paths include different API/setup work. No compressed LDZip reader on DuckDB; no full-chromosome run. |
 
 The regions are nested spans, not exact row ratios.
 
@@ -41,8 +41,10 @@ A demo is complete only when it has all four. The site’s [evidence
 ledger](https://rgenomicsetl.github.io/duckseq/#ledger) shows which
 demos meet which.
 
-1.  **Upstream parity:** exact agreement on the original tool’s own test
-    data or tutorial.
+1.  **Shared-surface parity:** exact agreement on the original tool’s
+    own test data or tutorial for declared shared semantics.
+    Independently test product policies and explain intentional
+    differences.
 2.  **Mutation checks:** each rule is implemented wrongly on purpose,
     and the comparison must fail.
 3.  **Measured performance:** DuckHTS `STYLE.md` rules, with 1×, 2× and
@@ -53,7 +55,8 @@ demos meet which.
 
 LDZip reports a three-process nested-region scale ladder with RSS and
 budgets, but its pair comparator needs correction and remeasurement.
-peakwhere has partial measurements and AIE has none. See the [LDZip
+peakwhere has partial measurements; AIE has real PBMC preparation and
+serving-cost contrasts with distinct counting policies. See the [LDZip
 performance review](demos/ldzip/REVIEW.md) for the verified bottlenecks
 and comparator limits. The separate [native
 measurements](demos/ldzip/NATIVE_REPORT.md) test SQL-resident matrices
@@ -88,6 +91,8 @@ cd demos/aie
 ./setup.sh
 ./test.sh
 ./mutation_test.sh
+./check_evidence.sh
+./prepare_evidence.sh /path/to/input.bam work/input.duckdb sample UR 4
 ```
 
 LDZip’s fixture check needs R, a C++ toolchain, `make`, `curl` and
@@ -126,7 +131,9 @@ node scripts/check-site.mjs _site
 - [peakwhere performance
   report](demos/peakwhere/benchmarks/performance.md), with receipts in
   [`results.json`](demos/peakwhere/benchmarks/results.json)
-- [AIE report](demos/aie/REPORT.md), [schema](demos/aie/SCHEMA.md) and
+- [AIE product report](demos/aie/PRODUCT_REPORT.md), [counting
+  contract](demos/aie/COUNTING_CONTRACT.md), [compatibility
+  report](demos/aie/REPORT.md), [schema](demos/aie/SCHEMA.md) and
   [fixture notes](demos/aie/fixture/README.md)
 - [LDZip report](demos/ldzip/REPORT.md), [performance
   review](demos/ldzip/REVIEW.md) and [native

@@ -19,6 +19,44 @@ not individual-operation medians. Peak RSS is the maximum of the three
 fresh processes, including runtime/setup and the final profiling
 operation.
 
+## Measurements at a glance
+
+<figure>
+<img src="../../site/assets/charts/ld-native-16b-t1-latency.svg"
+alt="16-bit latency with one SQL thread. LDZip returns an R matrix; TinyCC and SQL grid retain SQL lists. Whiskers are three-process ranges; red crosses mark resource failures." />
+<figcaption aria-hidden="true">16-bit latency with one SQL thread. LDZip
+returns an R matrix; TinyCC and SQL grid retain SQL lists. Whiskers are
+three-process ranges; red crosses mark resource failures.</figcaption>
+</figure>
+
+<figure>
+<img src="../../site/assets/charts/ld-native-16b-t1-rss.svg"
+alt="16-bit maximum whole-process RSS with one SQL thread. Resource failures are marked explicitly." />
+<figcaption aria-hidden="true">16-bit maximum whole-process RSS with one
+SQL thread. Resource failures are marked explicitly.</figcaption>
+</figure>
+
+<figure>
+<img src="../../site/assets/charts/ld-native-16b-t4-latency.svg"
+alt="16-bit latency with four SQL threads. LDZip remains its single-reader R endpoint; retained output representations differ." />
+<figcaption aria-hidden="true">16-bit latency with four SQL threads.
+LDZip remains its single-reader R endpoint; retained output
+representations differ.</figcaption>
+</figure>
+
+<figure>
+<img src="../../site/assets/charts/ld-native-16b-t4-rss.svg"
+alt="16-bit maximum whole-process RSS with four SQL threads. Failed resource qualification is not a successful timing point." />
+<figcaption aria-hidden="true">16-bit maximum whole-process RSS with
+four SQL threads. Failed resource qualification is not a successful
+timing point.</figcaption>
+</figure>
+
+The graphs read archived receipts; they do not rerun engines. Exact
+values, failure statuses and admission results remain in the expandable
+data tables. The 5,000-variant timing checkpoint was measured only at 16
+bits.
+
 ## What the endpoints do
 
 - **SQL grid:** generate every requested `(i,j)` cell, left-join

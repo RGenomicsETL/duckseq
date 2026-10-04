@@ -68,7 +68,18 @@ for (const page of pages) {
   const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
   const dup = ids.filter((id, i) => ids.indexOf(id) !== i);
   if (dup.length) fail(`${name}: duplicate ids ${[...new Set(dup)].join(", ")}`);
-  for (const m of html.matchAll(/<img\b[^>]*>/g)) if (!("alt" in attrs(m[0]))) fail(`${name}: <img> without alt`);
+  for (const m of html.matchAll(/<img\b[^>]*>/g)) {
+    const a = attrs(m[0]);
+    if (!("alt" in a)) fail(`${name}: <img> without alt`);
+    if (a.src && !/^(https?:|data:|\/\/)/.test(a.src)) {
+      const { target } = resolveInternal(page, a.src);
+      if (!existsSync(target)) fail(`${name}: broken image ${a.src}`);
+      else if (a.src.includes("assets/charts/")) {
+        const svg = await read(target);
+        if (!/<title\b/.test(svg) || !/<desc\b/.test(svg)) fail(`${name}: chart lacks title/description ${a.src}`);
+      }
+    }
+  }
   if (/<script\b/i.test(html) && /<script[^>]*\ssrc="https?:/i.test(html)) fail(`${name}: external script`);
 
   // Same-origin assets: no external stylesheets, scripts, images, fonts or frames.
@@ -117,7 +128,7 @@ for (const css of files.filter((p) => p.endsWith(".css") && rel(p).startsWith("a
 // ---- Content: required headline text and explicit comparison limits ----
 const landing = existsSync(join(site, "index.html")) ? textOf(await read(join(site, "index.html"))) : "";
 const mustSay = ["7,220", "0.401 s", "0.370 s", "2.776 s", "335.3 MiB", "1,198.4 MiB", "189 ms", "107 ms",
-  "20 to 35 times", "7 mutation checks", "6 mutation checks", "1×/2×/4×", "no performance benchmark", "not an equal-output speedup",
+  "20 to 35 times", "Four independent checks", "6 mutation checks", "1M / 2M / 4M", "144", "different count definitions", "not an equal-output speedup",
   "timed out", "The pair-speed comparison needs a fair rerun", "Measured, comparator gaps"];
 for (const s of mustSay) if (!landing.toLowerCase().includes(s.toLowerCase())) fail(`index.html: expected text "${s}"`);
 for (const banned of [/faster than (everything|all)/i, /universal(ly)?\b/i, /outperforms? (LDZip|Gravlax)/i, /AIE[^.]{0,60}\bbenchmark(ed)? (shows|results)/i]) {
