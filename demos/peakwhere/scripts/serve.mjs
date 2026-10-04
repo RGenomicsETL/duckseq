@@ -17,9 +17,16 @@ const TYPES = {
 export function serve(dir, port = 0) {
   const root = path.resolve(dir);
   const server = createServer(async (req, res) => {
-    const pathname = decodeURIComponent(new URL(req.url, "http://x").pathname);
+    let pathname;
+    try {
+      pathname = decodeURIComponent(new URL(req.url, "http://x").pathname);
+    } catch {
+      res.writeHead(400).end();
+      return;
+    }
     const file = path.join(root, pathname.endsWith("/") ? `${pathname}index.html` : pathname);
-    if (!file.startsWith(root)) {
+    const relative = path.relative(root, file);
+    if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
       res.writeHead(403).end();
       return;
     }
