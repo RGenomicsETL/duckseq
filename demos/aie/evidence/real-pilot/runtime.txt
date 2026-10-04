@@ -1,0 +1,28 @@
+v1.5.1 (Variegata) 7dbb2e646f
+aie 0.2.3
+samtools 1.23
+Using htslib 1.23
+Copyright (C) 2025 Genome Research Ltd.
+
+Samtools compilation details:
+    Features:       build=Makefile curses=yes 
+    CC:             gcc
+    CPPFLAGS:       
+    CFLAGS:         -g -Wall -O2
+    LDFLAGS:        
+    HTSDIR:         htslib-1.23
+    LIBS:           
+    CURSES_LIB:     -lcurses
+
+HTSlib compilation details:
+    Features:       build=Makefile libcurl=yes S3=no GCS=no libdeflate=no lzma=yes bzip2=yes plugins=no htscodecs=1.6.5
+    CC:             gcc
+    CPPFLAGS:       
+    CFLAGS:         -g -Wall -O2 -fvisibility=hidden
+    LDFLAGS:        -fvisibility=hidden
+
+HTSlib URL scheme handlers present:
+    built-in:	 file, preload, data
+    libcurl:	 gophers, rtmpe, rtmpte, smtp, rtmpt, ldaps, smb, rtsp, tftp, pop3, smbs, imaps, pop3s, ftps, https, http, ftp, gopher, imap, sftp, ldap, smtps, rtmps, rtmpts, dict, scp, mqtt, telnet, rtmp
+    crypt4gh-needed:	 crypt4gh
+    mem:	 mem

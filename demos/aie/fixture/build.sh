@@ -2,10 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p work
-cat > fixture/reference.fa <<'EOF'
->chr1
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-EOF
+printf '>chr1\n%120s\n' '' | tr ' ' A > fixture/reference.fa
 samtools faidx fixture/reference.fa
 cat > fixture/whitelist.txt <<'EOF'
 AAAAAAAAAAAAAAAA
@@ -22,13 +19,19 @@ ${sample}_deletion	0	chr1	40	60	5M10D5M	*	0	0	AAAAAAAAAA	FFFFFFFFFF	RG:Z:${sampl
 ${sample}_splice_rep	0	chr1	10	60	5M10N5M	*	0	0	AAAAAAAAAA	FFFFFFFFFF	RG:Z:${sample}	CB:Z:${barcode}	UB:Z:AAAAAAAAAAAC	CR:Z:${barcode}	UR:Z:AAAAAAAAAAAC	NH:i:1	HI:i:1
 ${sample}_multi	0	chr1	30	60	10M	*	0	0	AAAAAAAAAA	FFFFFFFFFF	RG:Z:${sample}	CB:Z:${barcode}	UB:Z:GGGGGGGGGGGG	CR:Z:${barcode}	UR:Z:GGGGGGGGGGGG	NH:i:2	HI:i:1
 ${sample}_multi	256	chr1	60	0	10M	*	0	0	AAAAAAAAAA	FFFFFFFFFF	RG:Z:${sample}	CB:Z:${barcode}	UB:Z:GGGGGGGGGGGG	CR:Z:${barcode}	UR:Z:GGGGGGGGGGGG	NH:i:2	HI:i:2
+${sample}_laterjunction	0	chr1	5	60	5M5N5M10N5M	*	0	0	AAAAAAAAAAAAAAA	FFFFFFFFFFFFFFF	RG:Z:${sample}	CB:Z:${barcode}	UB:Z:CACACACACACA	CR:Z:${barcode}	UR:Z:CACACACACACA	NH:i:1	HI:i:1
+${sample}_three	0	chr1	30	60	10M	*	0	0	AAAAAAAAAA	FFFFFFFFFF	RG:Z:${sample}	CB:Z:${barcode}	UB:Z:GAGAGAGAGAGA	CR:Z:${barcode}	UR:Z:GAGAGAGAGAGA	NH:i:3	HI:i:1
+${sample}_three	256	chr1	35	0	10M	*	0	0	AAAAAAAAAA	FFFFFFFFFF	RG:Z:${sample}	CB:Z:${barcode}	UB:Z:GAGAGAGAGAGA	CR:Z:${barcode}	UR:Z:GAGAGAGAGAGA	NH:i:3	HI:i:2
+${sample}_three	256	chr1	90	0	10M	*	0	0	AAAAAAAAAA	FFFFFFFFFF	RG:Z:${sample}	CB:Z:${barcode}	UB:Z:GAGAGAGAGAGA	CR:Z:${barcode}	UR:Z:GAGAGAGAGAGA	NH:i:3	HI:i:3
 EOF
-  # Abundance chain: X=3, Y=1, Z=1; X-Y and Y-Z are adjacent but X-Z is not.
+  # Abundance chain: X=3, Y=1, Z=2; X-Y and Y-Z are adjacent but X-Z is not.
   for i in 1 2 3; do
     printf '%s\t16\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:AAAAAAAAAAAA\tCR:Z:%s\tUR:Z:AAAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_x${i}" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
   done
   printf '%s\t16\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:CAAAAAAAAAAA\tCR:Z:%s\tUR:Z:CAAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_y" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
-  printf '%s\t16\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:CCAAAAAAAAAA\tCR:Z:%s\tUR:Z:CCAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_z" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
+  for i in 1 2; do
+    printf '%s\t16\tchr1\t70\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:CCAAAAAAAAAA\tCR:Z:%s\tUR:Z:CCAAAAAAAAAA\tNH:i:1\tHI:i:1\n' "${sample}_chain_z${i}" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
+  done
   # Tie: P and Q each occur twice; R is one mismatch from each.
   for umi in TTTTTTTTTTTT CTTTTTTTTTTT; do
     for i in 1 2; do
@@ -36,7 +39,8 @@ EOF
     done
   done
   printf '%s\t0\tchr1\t90\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:ATTTTTTTTTTT\tCR:Z:%s\tUR:Z:ATTTTTTTTTTT\tNH:i:1\tHI:i:1\n' "${sample}_tie_r" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"
-  for umi in GGAAAAAAAAAA GTAAAAAAAAAA TGAAAAAAAAAA TTAAAAAAAAAA; do
+  # A lexical-minimum centre joins two nonadjacent, equally abundant endpoints.
+  for umi in AAGGGGGGGGGG ACGGGGGGGGGG CAGGGGGGGGGG GGAAAAAAAAAA GTAAAAAAAAAA TGAAAAAAAAAA TTAAAAAAAAAA; do
     printf '%s\t0\tchr1\t90\t60\t10M\t*\t0\t0\tAAAAAAAAAA\tFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:%s\tCR:Z:%s\tUR:Z:%s\tNH:i:1\tHI:i:1\n' "${sample}_tieorder_${umi}" "$sample" "$barcode" "$umi" "$barcode" "$umi" >> "work/${sample}.sam"
   done
   printf '%s\t0\tchr1\t10\t60\t5M10N5M10N5M\t*\t0\t0\tAAAAAAAAAAAAAAA\tFFFFFFFFFFFFFFF\tRG:Z:%s\tCB:Z:%s\tUB:Z:ACACACACACAC\tCR:Z:%s\tUR:Z:ACACACACACAC\tNH:i:1\tHI:i:1\n' "${sample}_both" "$sample" "$barcode" "$barcode" >> "work/${sample}.sam"

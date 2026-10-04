@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 550 440">
+<title id="title">3 Mb interval query · 1t</title><desc id="desc">Three fresh processes per point on actual PBMC BAM prefixes, not replicated cells. Count meanings differ: SQL raw-UMI labels, overlap families, Gravlax classes. No equal-output speedup claim. Whiskers show the three-run range; short query timings are diagnostics.</desc>
+<rect width="550" height="440" fill="#f2f5f4"/>
+<g font-family="system-ui,sans-serif" fill="#14202b" font-size="17">
+<text x="24" y="30" font-size="21" font-weight="650">3 Mb interval query · 1t</text>
+<text x="24" y="57" font-size="15">CLI milliseconds · differing count/state policies</text>
+<path d="M78 315.00 H498" stroke="#cbd5d9"/>
+<text x="65" y="320.00" text-anchor="end" font-size="15">0</text>
+<path d="M78 252.57 H498" stroke="#cbd5d9"/>
+<text x="65" y="257.57" text-anchor="end" font-size="15">20</text>
+<path d="M78 190.15 H498" stroke="#cbd5d9"/>
+<text x="65" y="195.15" text-anchor="end" font-size="15">40</text>
+<path d="M78 127.72 H498" stroke="#cbd5d9"/>
+<text x="65" y="132.72" text-anchor="end" font-size="15">60</text>
+<text x="78.00" y="341" text-anchor="middle" font-size="15">1</text>
+<text x="211.33" y="341" text-anchor="middle" font-size="15">2</text>
+<text x="478.00" y="341" text-anchor="middle" font-size="15">4</text>
+<text x="285" y="368" text-anchor="middle">Genuine primary alignment records (millions)</text>
+<polyline fill="none" stroke="#8f6200" stroke-width="2.5" points="78.00,255.70 211.33,249.45 478.00,246.33"/>
+<path d="M78.00 268.18 V249.45 M73.00 268.18 h10 M73.00 249.45 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="78.00" cy="255.70" r="4.5" fill="#8f6200"/>
+<path d="M211.33 255.70 V246.33 M206.33 255.70 h10 M206.33 246.33 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="211.33" cy="249.45" r="4.5" fill="#8f6200"/>
+<path d="M478.00 255.70 V243.21 M473.00 255.70 h10 M473.00 243.21 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="478.00" cy="246.33" r="4.5" fill="#8f6200"/>
+<path d="M24 395 h20" stroke="#8f6200" stroke-width="3"/><text x="50" y="400" font-size="14">Gravlax classes</text>
+<polyline fill="none" stroke="#2458a6" stroke-width="2.5" points="78.00,196.39 211.33,212.00 478.00,202.63"/>
+<path d="M78.00 227.60 V193.27 M73.00 227.60 h10 M73.00 193.27 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="78.00" cy="196.39" r="4.5" fill="#2458a6"/>
+<path d="M211.33 221.36 V196.39 M206.33 221.36 h10 M206.33 196.39 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="211.33" cy="212.00" r="4.5" fill="#2458a6"/>
+<path d="M478.00 202.63 V193.27 M473.00 202.63 h10 M473.00 193.27 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="478.00" cy="202.63" r="4.5" fill="#2458a6"/>
+<path d="M284 395 h20" stroke="#2458a6" stroke-width="3"/><text x="310" y="400" font-size="14">SQL evidence families</text>
+<polyline fill="none" stroke="#1b744a" stroke-width="2.5" points="78.00,149.57 211.33,143.33 478.00,149.57"/>
+<path d="M78.00 158.94 V146.45 M73.00 158.94 h10 M73.00 146.45 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="78.00" cy="149.57" r="4.5" fill="#1b744a"/>
+<path d="M211.33 143.33 V133.97 M206.33 143.33 h10 M206.33 133.97 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="211.33" cy="143.33" r="4.5" fill="#1b744a"/>
+<path d="M478.00 155.81 V149.57 M473.00 155.81 h10 M473.00 149.57 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="478.00" cy="149.57" r="4.5" fill="#1b744a"/>
+<path d="M24 416 h20" stroke="#1b744a" stroke-width="3"/><text x="50" y="421" font-size="14">SQL UMI labels</text>
+</g></svg>

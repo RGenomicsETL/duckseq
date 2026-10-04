@@ -1,0 +1,5 @@
+Binder Error: Referenced column "CB" not found in FROM clause!
+Candidate bindings: "CIGAR"
+
+LINE 2: SELECT QNAME,FLAG,RNAME,POS,CIGAR,CB,CR,
+                                          ^

@@ -1,0 +1,3 @@
+62d7731dd8722dd521e899fa470886626e254c1b118c17747473110a04152119  /root/.duckdb/cli/latest/duckdb
+9a39da4da6da65b5cc6b2a2be38b7cabfe72b493ba4a4fb59809fc581af39484  /usr/lib/R/site-library/Rduckhts/duckhts_extension/build/duckhts.duckdb_extension
+9b0c64b1d53783296a96dafae66173021e3f16168d471379b4b49af0ac6cfdea  demos/aie/.gravlax/target/release/aie

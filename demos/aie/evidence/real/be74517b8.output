@@ -1,0 +1,19 @@
+PASS: mutant a disagrees with Gravlax
+PASS: mutant b disagrees with Gravlax
+PASS: mutant c disagrees with Gravlax
+PASS: mutant d disagrees with Gravlax
+PASS: mutant e disagrees with Gravlax
+PASS: mutant f disagrees with Gravlax
+PASS: mutant g disagrees with Gravlax
+PASS: mutant h disagrees with Gravlax
+PASS: mutant i disagrees with Gravlax
+PASS: all nine mutants fail semantic parity and restored SQL passes
+✔ server confines requests to its root and survives malformed escapes (22.989141ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 91.639429

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 550 440">
+<title id="title">Prepare peak memory</title><desc id="desc">Synthetic 120-base reference, three batches per point; every batch has at least five measured seconds. Latency points are medians of batch means; whiskers are ranges. Counts exactly match Gravlax. Not a public-transcriptome timing verdict.</desc>
+<rect width="550" height="440" fill="#f2f5f4"/>
+<g font-family="system-ui,sans-serif" fill="#14202b" font-size="17">
+<text x="24" y="30" font-size="21" font-weight="650">Prepare peak memory</text>
+<text x="24" y="57" font-size="15">Whole-CLI peak RSS (MiB) · lower is better</text>
+<path d="M78 315.00 H498" stroke="#cbd5d9"/>
+<text x="65" y="320.00" text-anchor="end" font-size="15">0</text>
+<path d="M78 252.60 H498" stroke="#cbd5d9"/>
+<text x="65" y="257.60" text-anchor="end" font-size="15">200</text>
+<path d="M78 190.20 H498" stroke="#cbd5d9"/>
+<text x="65" y="195.20" text-anchor="end" font-size="15">400</text>
+<path d="M78 127.79 H498" stroke="#cbd5d9"/>
+<text x="65" y="132.79" text-anchor="end" font-size="15">600</text>
+<text x="78.00" y="341" text-anchor="middle" font-size="15">1024</text>
+<text x="211.33" y="341" text-anchor="middle" font-size="15">2048</text>
+<text x="478.00" y="341" text-anchor="middle" font-size="15">4096</text>
+<text x="285" y="368" text-anchor="middle">Distinct synthetic cells (1× / 2× / 4×)</text>
+<polyline fill="none" stroke="#8f6200" stroke-width="2.5" points="78.00,285.28 211.33,284.22 478.00,282.12"/>
+<path d="M78.00 285.36 V285.28 M73.00 285.36 h10 M73.00 285.28 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="78.00" cy="285.28" r="4.5" fill="#8f6200"/>
+<path d="M211.33 284.33 V284.22 M206.33 284.33 h10 M206.33 284.22 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="211.33" cy="284.22" r="4.5" fill="#8f6200"/>
+<path d="M478.00 282.27 V282.12 M473.00 282.27 h10 M473.00 282.12 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="478.00" cy="282.12" r="4.5" fill="#8f6200"/>
+<path d="M24 395 h20" stroke="#8f6200" stroke-width="3"/><text x="50" y="400" font-size="14">Gravlax 1t</text>
+<polyline fill="none" stroke="#2458a6" stroke-width="2.5" points="78.00,264.94 211.33,242.74 478.00,196.00"/>
+<path d="M78.00 264.98 V264.94 M73.00 264.98 h10 M73.00 264.94 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="78.00" cy="264.94" r="4.5" fill="#2458a6"/>
+<path d="M211.33 242.83 V242.74 M206.33 242.83 h10 M206.33 242.74 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="211.33" cy="242.74" r="4.5" fill="#2458a6"/>
+<path d="M478.00 196.21 V196.00 M473.00 196.21 h10 M473.00 196.00 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="478.00" cy="196.00" r="4.5" fill="#2458a6"/>
+<path d="M284 395 h20" stroke="#2458a6" stroke-width="3"/><text x="310" y="400" font-size="14">DuckDB SQL 1t</text>
+<polyline fill="none" stroke="#1b744a" stroke-width="2.5" points="78.00,210.07 211.33,209.23 478.00,206.92"/>
+<path d="M78.00 210.76 V210.07 M73.00 210.76 h10 M73.00 210.07 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="78.00" cy="210.07" r="4.5" fill="#1b744a"/>
+<path d="M211.33 210.09 V209.23 M206.33 210.09 h10 M206.33 209.23 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="211.33" cy="209.23" r="4.5" fill="#1b744a"/>
+<path d="M478.00 207.80 V206.92 M473.00 207.80 h10 M473.00 206.92 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="478.00" cy="206.92" r="4.5" fill="#1b744a"/>
+<path d="M24 416 h20" stroke="#1b744a" stroke-width="3"/><text x="50" y="421" font-size="14">Gravlax 4t</text>
+<polyline fill="none" stroke="#ad3028" stroke-width="2.5" points="78.00,245.04 211.33,210.82 478.00,133.97"/>
+<path d="M78.00 245.35 V245.04 M73.00 245.35 h10 M73.00 245.04 h10" stroke="#ad3028" stroke-width="1.5"/>
+<circle cx="78.00" cy="245.04" r="4.5" fill="#ad3028"/>
+<path d="M211.33 212.97 V210.82 M206.33 212.97 h10 M206.33 210.82 h10" stroke="#ad3028" stroke-width="1.5"/>
+<circle cx="211.33" cy="210.82" r="4.5" fill="#ad3028"/>
+<path d="M478.00 137.97 V133.97 M473.00 137.97 h10 M473.00 133.97 h10" stroke="#ad3028" stroke-width="1.5"/>
+<circle cx="478.00" cy="133.97" r="4.5" fill="#ad3028"/>
+<path d="M284 416 h20" stroke="#ad3028" stroke-width="3"/><text x="310" y="421" font-size="14">DuckDB SQL 4t</text>
+</g></svg>

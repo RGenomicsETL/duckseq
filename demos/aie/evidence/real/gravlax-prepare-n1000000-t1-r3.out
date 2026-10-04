@@ -1,0 +1,29 @@
+pattern #3 stats: 0 patterns, 0 alt entries, 0 distinct (chrom,offset) hops (0.00x hop sharing), 0.0% alts share the anchor's shape
+section                 raw         zstd
+meta                    267          188
+alignment.provenance         1956          971
+chroms                 1922          357
+cells                 92680        92689
+shapes                95895        59905
+patterns                  0            9
+rans.tables            1122          191
+c0                   356269       125042
+c1                   137402        50670
+c2                   328121       138019
+c3                   185591        79286
+c4                   236127        98111
+c5                   961732       452370
+c6                   659261       253589
+c7                   140581        62071
+index.chunks            129          138
+coc.0                 89618        89627
+coc.1                 88887        88896
+coc.2                 88016        87486
+coc.3                 90517        89994
+coc.4                 82959        82968
+index.junctions        18444        15485
+index.jpost           10599         1710
+index.cellpost        56232         1379
+edges                 50725        42528
+TOTAL                            1913679  (46.36 bits/molecule over 330233 molecules)
+wrote /root/duckseq/demos/aie/work/real-comparison/archive-n1000000-t1-r3.aie (1915902 bytes)

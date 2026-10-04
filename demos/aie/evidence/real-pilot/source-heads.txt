@@ -1,0 +1,51 @@
+
+https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_possorted_genome_bam.bam
+HTTP/2 200 
+date: Sun, 04 Oct 2026 11:00:48 GMT
+content-type: binary/octet-stream
+content-length: 4785553644
+last-modified: Thu, 15 Nov 2018 00:40:37 GMT
+etag: "76330352904d6db7a2a520643541ee67-571"
+x-amz-storage-class: INTELLIGENT_TIERING
+x-amz-version-id: CGMBzZJ.3eQ42SJ3rnT7GaHinoUPI7Xg
+accept-ranges: bytes
+server: cloudflare
+x-cache: Miss from cloudfront
+via: 1.1 b49d48d565194aba137f10d43fbca1ba.cloudfront.net (CloudFront)
+x-amz-cf-pop: VIE50-P4
+x-amz-cf-id: arPiIQQwIuf23sllTVIxIykxyCaMJu11wHEb-invhdkLBqykK1N2kA==
+cf-cache-status: DYNAMIC
+cf-ray: a453af54fb42bde7-PRG
+
+
+https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v2/pbmc_1k_v2_possorted_genome_bam.bam
+HTTP/2 200 
+date: Sun, 04 Oct 2026 11:00:48 GMT
+content-type: binary/octet-stream
+content-length: 5248696242
+server: cloudflare
+last-modified: Thu, 15 Nov 2018 00:38:14 GMT
+etag: "1506d57dc4fbd8f05bbf8108e615608f-626"
+x-amz-storage-class: INTELLIGENT_TIERING
+x-amz-version-id: ubz17KKrPRvH2WdFATdRGP1D3w9nB2Mc
+accept-ranges: bytes
+x-cache: Miss from cloudfront
+via: 1.1 b49d48d565194aba137f10d43fbca1ba.cloudfront.net (CloudFront)
+x-amz-cf-pop: VIE50-P4
+x-amz-cf-id: KdamvktjPNEYoWS5g7h26928cOUmcD42xhqSHlLcgdYODOXbqvifng==
+cf-cache-status: DYNAMIC
+cf-ray: a453af58ffb8bb9c-PRG
+
+
+https://cf.10xgenomics.com/samples/cell-exp/3.1.0/5k_pbmc_v3_nextgem/5k_pbmc_v3_nextgem_possorted_genome_bam.bam
+HTTP/2 403 
+date: Sun, 04 Oct 2026 11:00:49 GMT
+content-type: application/xml
+server: cloudflare
+x-cache: Error from cloudfront
+via: 1.1 b49d48d565194aba137f10d43fbca1ba.cloudfront.net (CloudFront)
+x-amz-cf-pop: VIE50-P4
+x-amz-cf-id: CD4K8U30F_5_edGqDjCG_Bugd19X7VSJ1Soy_sdgY5XZkcUQuGR1Ug==
+cf-cache-status: DYNAMIC
+cf-ray: a453af5c9b340a1b-PRG
+

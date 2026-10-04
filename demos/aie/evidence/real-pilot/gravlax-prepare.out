@@ -1,0 +1,18 @@
+pattern #3 stats: 0 patterns, 0 alt entries, 0 distinct (chrom,offset) hops (0.00x hop sharing), 0.0% alts share the anchor's shape
+section                 raw         zstd
+meta                    262          184
+alignment.provenance         2379         1153
+chroms                 1922          357
+cells                 18460        18469
+shapes                12589         8104
+patterns                  0            9
+rans.tables            1121          232
+c0                   336553       116234
+index.chunks             12           21
+coc.0                 57743        57752
+index.junctions         2567         2133
+index.jpost            1535          290
+index.cellpost         9230           19
+edges                  4658         3808
+TOTAL                             208765  (38.15 bits/molecule over 43774 molecules)
+wrote pilot.aie (210106 bytes)

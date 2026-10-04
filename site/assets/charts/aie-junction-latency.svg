@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 550 440">
+<title id="title">Junction CLI latency</title><desc id="desc">Synthetic 120-base reference, three batches per point; every batch has at least five measured seconds. Latency points are medians of batch means; whiskers are ranges. Counts exactly match Gravlax. Not a public-transcriptome timing verdict.</desc>
+<rect width="550" height="440" fill="#f2f5f4"/>
+<g font-family="system-ui,sans-serif" fill="#14202b" font-size="17">
+<text x="24" y="30" font-size="21" font-weight="650">Junction CLI latency</text>
+<text x="24" y="57" font-size="15">Milliseconds / fresh CLI invocation · lower is better</text>
+<path d="M78 315.00 H498" stroke="#cbd5d9"/>
+<text x="65" y="320.00" text-anchor="end" font-size="15">0</text>
+<path d="M78 269.07 H498" stroke="#cbd5d9"/>
+<text x="65" y="274.07" text-anchor="end" font-size="15">20</text>
+<path d="M78 223.14 H498" stroke="#cbd5d9"/>
+<text x="65" y="228.14" text-anchor="end" font-size="15">40</text>
+<path d="M78 177.21 H498" stroke="#cbd5d9"/>
+<text x="65" y="182.21" text-anchor="end" font-size="15">60</text>
+<path d="M78 131.27 H498" stroke="#cbd5d9"/>
+<text x="65" y="136.27" text-anchor="end" font-size="15">80</text>
+<text x="78.00" y="341" text-anchor="middle" font-size="15">1024</text>
+<text x="211.33" y="341" text-anchor="middle" font-size="15">2048</text>
+<text x="478.00" y="341" text-anchor="middle" font-size="15">4096</text>
+<text x="285" y="368" text-anchor="middle">Distinct synthetic cells (1× / 2× / 4×)</text>
+<polyline fill="none" stroke="#8f6200" stroke-width="2.5" points="78.00,300.58 211.33,296.09 478.00,287.75"/>
+<path d="M78.00 300.66 V299.56 M73.00 300.66 h10 M73.00 299.56 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="78.00" cy="300.58" r="4.5" fill="#8f6200"/>
+<path d="M211.33 296.17 V295.75 M206.33 296.17 h10 M206.33 295.75 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="211.33" cy="296.09" r="4.5" fill="#8f6200"/>
+<path d="M478.00 288.01 V280.40 M473.00 288.01 h10 M473.00 280.40 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="478.00" cy="287.75" r="4.5" fill="#8f6200"/>
+<path d="M24 395 h20" stroke="#8f6200" stroke-width="3"/><text x="50" y="400" font-size="14">Gravlax 1t</text>
+<polyline fill="none" stroke="#2458a6" stroke-width="2.5" points="78.00,244.54 211.33,221.86 478.00,173.76"/>
+<path d="M78.00 244.94 V244.03 M73.00 244.94 h10 M73.00 244.03 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="78.00" cy="244.54" r="4.5" fill="#2458a6"/>
+<path d="M211.33 222.01 V217.51 M206.33 222.01 h10 M206.33 217.51 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="211.33" cy="221.86" r="4.5" fill="#2458a6"/>
+<path d="M478.00 173.96 V133.97 M473.00 173.96 h10 M473.00 133.97 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="478.00" cy="173.76" r="4.5" fill="#2458a6"/>
+<path d="M284 395 h20" stroke="#2458a6" stroke-width="3"/><text x="310" y="400" font-size="14">DuckDB SQL 1t</text>
+<polyline fill="none" stroke="#1b744a" stroke-width="2.5" points="78.00,300.25 211.33,294.37 478.00,285.37"/>
+<path d="M78.00 300.27 V298.39 M73.00 300.27 h10 M73.00 298.39 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="78.00" cy="300.25" r="4.5" fill="#1b744a"/>
+<path d="M211.33 294.45 V293.20 M206.33 294.45 h10 M206.33 293.20 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="211.33" cy="294.37" r="4.5" fill="#1b744a"/>
+<path d="M478.00 285.74 V284.38 M473.00 285.74 h10 M473.00 284.38 h10" stroke="#1b744a" stroke-width="1.5"/>
+<circle cx="478.00" cy="285.37" r="4.5" fill="#1b744a"/>
+<path d="M24 416 h20" stroke="#1b744a" stroke-width="3"/><text x="50" y="421" font-size="14">Gravlax 4t</text>
+<polyline fill="none" stroke="#ad3028" stroke-width="2.5" points="78.00,246.50 211.33,217.05 478.00,196.45"/>
+<path d="M78.00 247.24 V232.19 M73.00 247.24 h10 M73.00 232.19 h10" stroke="#ad3028" stroke-width="1.5"/>
+<circle cx="78.00" cy="246.50" r="4.5" fill="#ad3028"/>
+<path d="M211.33 219.23 V215.81 M206.33 219.23 h10 M206.33 215.81 h10" stroke="#ad3028" stroke-width="1.5"/>
+<circle cx="211.33" cy="217.05" r="4.5" fill="#ad3028"/>
+<path d="M478.00 198.01 V195.74 M473.00 198.01 h10 M473.00 195.74 h10" stroke="#ad3028" stroke-width="1.5"/>
+<circle cx="478.00" cy="196.45" r="4.5" fill="#ad3028"/>
+<path d="M284 416 h20" stroke="#ad3028" stroke-width="3"/><text x="310" y="421" font-size="14">DuckDB SQL 4t</text>
+</g></svg>

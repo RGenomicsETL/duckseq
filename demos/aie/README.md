@@ -1,29 +1,34 @@
-# Gravlax evidence in DuckDB SQL
+# Queryable alignment evidence
 
-This workspace probes whether BAM-derived evidence can be represented as typed Parquet relations and queried with DuckDB/DuckHTS SQL. Gravlax is pinned at `75b8d6c01064ba92af295543d50230429774e170`; the oracle was built from source with Cargo and reports `aie 0.2.3`.
+DuckHTS reads standard BAM; DuckDB materializes inspectable observations, reference geometry, splice junctions and overlap-connected evidence families. The default trusts supplied CB and uses raw UR. Raw CR/UR and corrected CB/UB remain distinct. Exact UMI labels, evidence families and Gravlax classes have different count meanings; none is silently treated as the same physical-molecule estimate.
 
-## Run
+See the [counting contract](COUNTING_CONTRACT.md) and [real PBMC product report](PRODUCT_REPORT.md). The real 1M/2M/4M-record experiment uses three fresh processes at one/four threads: 144 CLI processes pass declared resource budgets. Full-chr1 and 3 Mb raw-label counts on the 4M-record input also match independent samtools/awk. Full-cohort annotation and general multimapper performance are unverified.
 
-From this directory, run:
+## Product cache
 
 ```sh
-./setup.sh
+./prepare_evidence.sh /path/to/input.bam work/input.duckdb sample UR 4
+duckdb work/input.duckdb -c "SELECT * FROM aie_region_families('1',1,3000000);"
+duckdb work/input.duckdb -c "SELECT * FROM aie_junction_labels('1',donor,acceptor);"
+./check_evidence.sh
+```
+
+`donor` is the last aligned base before a skip; `acceptor` is the last skipped base. Choose observed junction coordinates for the query. An explicit `UB` preparation selects corrected tags. Missing selected tags are audited, not replaced by another tag. Source observations include alternative placements; default counts use primary mapped nonsupplementary evidence.
+
+`DUCKDB`, `DUCKHTS_EXTENSION` and `LD_LIBRARY_PATH` select the reader runtime. Use a new output cache. Product tests use an independent scalar CIGAR cursor and pairwise interval graph under both tag policies; four semantic mutants must disagree with those oracles and restored SQL must pass.
+
+## Gravlax compatibility surface
+
+Gravlax is pinned at `75b8d6c01064ba92af295543d50230429774e170` and reports AIE 0.2.3. From this directory:
+
+```sh
+eval "$(./setup.sh)"
 ./test.sh
 ./mutation_test.sh
 ```
 
-Setup obtains the DuckDB CLI and DuckHTS extension, then clones and builds Gravlax at the recorded commit. Set `DUCKDB` or `DUCKHTS_EXTENSION` to use local alternatives. The tests regenerate the reference, BAMs, indexes, Gravlax archives and Parquet files; run SQL and matching Gravlax region, junction, jset, replay, and annotation-comparison operations; and require all seven SQL mutants to be killed. Requirements: git/network access, Rust/Cargo, R, samtools, jq, curl and unzip. `EXTENSIONS.txt` records the resolved versions and extension checksum after setup.
+These tests regenerate synthetic BAMs, indexes, archives and Parquet relations. They compare region, junction, jset, annotation replay and signed annotation deltas exactly for both samples and annotation versions. All nine declared compatibility mutants must fail with explicit count differences; parser, setup and runtime errors do not count as semantic kills.
 
-`fixture/README.md` documents each alignment. `SCHEMA.md` describes relation keys, ordering, coordinate conventions, and unavailable information. SQL is in `sql/`.
+The [compatibility report](REPORT.md), [fixture rules](fixture/README.md) and [schema](SCHEMA.md) delimit this shared surface. Fixture tags make CR/CB and UR/UB equal; the [real pilot](evidence/real-pilot/README.md) exposes differences those fixtures cannot establish. Raw-UMI product policy is independently validated, not a promise of exhaustive upstream equivalence. Annotation replay remains the scoped compatibility implementation, not the independently specified product default.
 
-## Current oracle result
-
-The fixture-scoped region, junction and jset results agree exactly with Gravlax for both samples. Annotation replay and signed annotation deltas also match for both annotation versions. Seven mutation tests kill altered rules in the annotation SQL. These results are scoped to the checked-in synthetic fixture and do not establish exhaustive compatibility or performance parity.
-
-## Semantics and limitations
-
-The source resolves the main apparent geometry ambiguity: Gravlax's alignment decomposition merges across `D` and records `N` as a junction (`.gravlax/crates/ingest/src/cigar.rs:34-68`); DuckHTS `cigar_aligned_blocks` splits at either operation, so the Parquet geometry retains both those blocks and the ordered CIGAR operation tokens. Gravlax's annotation assignment requires every splice junction to match consecutive transcript exon boundaries exactly, and only unique genes with `NH == 1` qualify for the unique-assignment rule (`.gravlax/crates/anno/src/assign.rs:8-17,321-322`). The current SQL does not yet implement that rule.
-
-Gravlax builds loci by single-linkage read-start distance, then collapses one-mismatch UMIs by descending abundance, with deterministic value ordering for ties (`.gravlax/crates/aie/src/build.rs:7-13,240-257,274-310`). Its archive molecule count is therefore not equivalent to raw distinct-UMI count in every case. Placement alternatives are retained with `NH`/`HI` and descriptive weights in SQL; converting those weights into Gravlax's locus/representative selection is not implemented.
-
-Availability rows distinguish absent evidence from measured zero. The SQL does not infer a biological zero from missing BAM evidence. The fixture uses short synthetic sequence and is an oracle fixture, not performance evidence. Scale measurements, public data staging, richer positive-jset coverage, exact annotation replay, and full cell/UMI correction parity remain undone.
+Requirements: DuckDB/DuckHTS, samtools and R; the compatibility setup additionally needs Git/network access, Rust/Cargo, jq, curl and unzip. Generated inputs, dependencies and serving states are ignored. Committed evidence includes source snapshots, hashes and receipts; rendering reports does not rerun benchmark engines.

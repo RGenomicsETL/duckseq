@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 550 440">
+<title id="title">Real PBMC preparation · 4t</title><desc id="desc">Three fresh processes per point on actual PBMC BAM prefixes, not replicated cells. Count meanings differ: SQL raw-UMI labels, overlap families, Gravlax classes. No equal-output speedup claim. Whiskers show the three-run range; short query timings are diagnostics.</desc>
+<rect width="550" height="440" fill="#f2f5f4"/>
+<g font-family="system-ui,sans-serif" fill="#14202b" font-size="17">
+<text x="24" y="30" font-size="21" font-weight="650">Real PBMC preparation · 4t</text>
+<text x="24" y="57" font-size="15">CLI milliseconds · differing count/state policies</text>
+<path d="M78 315.00 H498" stroke="#cbd5d9"/>
+<text x="65" y="320.00" text-anchor="end" font-size="15">0</text>
+<path d="M78 246.47 H498" stroke="#cbd5d9"/>
+<text x="65" y="251.47" text-anchor="end" font-size="15">5000</text>
+<path d="M78 177.95 H498" stroke="#cbd5d9"/>
+<text x="65" y="182.95" text-anchor="end" font-size="15">10000</text>
+<path d="M78 109.42 H498" stroke="#cbd5d9"/>
+<text x="65" y="114.42" text-anchor="end" font-size="15">15000</text>
+<text x="78.00" y="341" text-anchor="middle" font-size="15">1</text>
+<text x="211.33" y="341" text-anchor="middle" font-size="15">2</text>
+<text x="478.00" y="341" text-anchor="middle" font-size="15">4</text>
+<text x="285" y="368" text-anchor="middle">Genuine primary alignment records (millions)</text>
+<polyline fill="none" stroke="#8f6200" stroke-width="2.5" points="78.00,297.10 211.33,280.04 478.00,244.72"/>
+<path d="M78.00 297.33 V297.03 M73.00 297.33 h10 M73.00 297.03 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="78.00" cy="297.10" r="4.5" fill="#8f6200"/>
+<path d="M211.33 280.60 V279.56 M206.33 280.60 h10 M206.33 279.56 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="211.33" cy="280.04" r="4.5" fill="#8f6200"/>
+<path d="M478.00 246.25 V244.02 M473.00 246.25 h10 M473.00 244.02 h10" stroke="#8f6200" stroke-width="1.5"/>
+<circle cx="478.00" cy="244.72" r="4.5" fill="#8f6200"/>
+<path d="M24 395 h20" stroke="#8f6200" stroke-width="3"/><text x="50" y="400" font-size="14">Gravlax classes</text>
+<polyline fill="none" stroke="#2458a6" stroke-width="2.5" points="78.00,267.55 211.33,225.52 478.00,135.46"/>
+<path d="M78.00 268.03 V263.36 M73.00 268.03 h10 M73.00 263.36 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="78.00" cy="267.55" r="4.5" fill="#2458a6"/>
+<path d="M211.33 225.76 V224.78 M206.33 225.76 h10 M206.33 224.78 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="211.33" cy="225.52" r="4.5" fill="#2458a6"/>
+<path d="M478.00 136.64 V133.97 M473.00 136.64 h10 M473.00 133.97 h10" stroke="#2458a6" stroke-width="1.5"/>
+<circle cx="478.00" cy="135.46" r="4.5" fill="#2458a6"/>
+<path d="M284 395 h20" stroke="#2458a6" stroke-width="3"/><text x="310" y="400" font-size="14">SQL evidence cache</text>
+</g></svg>

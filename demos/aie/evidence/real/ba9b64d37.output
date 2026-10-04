@@ -1,0 +1,2 @@
+PASS: real full raw-UMI labels match independent samtools/awk
+PASS: real window raw-UMI labels match independent samtools/awk

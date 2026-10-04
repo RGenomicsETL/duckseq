@@ -1,0 +1,16 @@
+2d650e65352a101b5aa40a0c688153fb4288c9c5c41bf84bfdf1e5ede0d0fa09  ./README.md
+3de29149a02605c7380f530a757a2b48137322da8cf48c135e5cbb700a048def  ./raw.tsv
+65e316741a0e7a163409e3f4bc438e2405c7683c3e879578692aa4c0973c7a3d  ./source/BENCHMARK_PROTOCOL.md
+c2a585839e1f602171abb11d306a674816245b3017ffc0ab781b43e5c0fcd571  ./source/benchmark.R
+d4e6aecfc2dc2ee75ab9adbf7af1cf97b352667d9224d168bf73253aa7c68c5d  ./source/fixture/build.sh
+410788868faad386d0644a059383de581c4371b101045c1659ca7b6310972dde  ./source/fixture/template.sam
+1f0b540d0f3cef917d429d8acd9511efdbd2141b3bea848cff841421b89c81d9  ./source/sql/annotation_counts.sql
+e699931de7a23bdec1bd7e3f41e0fe88b494b6f8d860901131f3538072a88a5c  ./source/sql/availability.sql
+0e8c8667cde4262e548d86e02135c2efd26ed206512e21f958a1f04e5f09b844  ./source/sql/jset.sql
+47a63a2d519004f35d87c07c597168ef9f3a9746a7f5343db4ddaec6b917f4f6  ./source/sql/junction.sql
+b04aec286fc9ca361dacecf6666356fb59edf7e46c4ac64575f935b1a6b953f3  ./source/sql/load.sql
+cc21bc2b42a59f2fafeb5d5856f369a725b422ade5f9515076cf91368a02be23  ./source/sql/region.sql
+0f0935432c7497ebade827ec642e9f54aa570d6326d3bf66060b54ab62d96819  ./t1-raw.tsv
+be6ec36d9cac879f7e0ebbf7d958cc961105e80e3e9d23d3ed6ae8e5eb73817c  ./t1-receipts.tar.zst
+fe28e67073de5215d6ead8cdeefd59e4ffcda895f18fd72f17d4a4753bc6f62a  ./t4-raw.tsv
+1bbaea965c80ee60769ffb68a49d9e7ac0d63e3bab867655f2f3d666ac2e82b1  ./t4-receipts.tar.zst

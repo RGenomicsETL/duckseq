@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
-eval "$(./setup.sh)"
+if [[ -n "${AIE_RUNTIME_ENV:-}" ]]; then
+  source "$AIE_RUNTIME_ENV"
+else
+  eval "$(./setup.sh)"
+fi
 if [[ -n "$DUCKHTS_LIBRARY_PATH" ]]; then
   export LD_LIBRARY_PATH="$DUCKHTS_LIBRARY_PATH${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 fi
@@ -17,9 +21,9 @@ check_equal() {
   fi
 }
 ./fixture/build.sh > work/fixture-build.log 2>&1
-"$DUCKDB" -unsigned < sql/load.sql > work/load.log
+"$DUCKDB" -unsigned -bail < sql/load.sql > work/load.log
 for query in region junction jset availability annotation_counts; do
-  "$DUCKDB" -unsigned -csv < "sql/${query}.sql" > "work/sql-${query}.csv"
+  "$DUCKDB" -unsigned -bail -csv < "sql/${query}.sql" > "work/sql-${query}.csv"
 done
 
 for sample in a b; do
@@ -33,6 +37,15 @@ for sample in a b; do
   oracle_junction=$(awk -F '\t' -v c="$cell" '$1=="cell" && $2==c {print $3}' "work/aie-${sample}-junction.tsv")
   check_equal "region sample_${sample}" "$sql_region" "$oracle_region"
   check_equal "junction sample_${sample}" "$sql_junction" "$oracle_junction"
+  for donor in 19 29; do
+    sed "s/p.ref_before = 14/p.ref_before = $donor/" sql/junction.sql > "work/junction-${donor}.sql"
+    "$DUCKDB" -unsigned -bail -csv < "work/junction-${donor}.sql" > "work/sql-junction-${donor}.csv"
+    "$AIE" query "$archive" junction "chr1:${donor}-$((donor+10))" --format tsv --top 0 \
+      > "work/aie-${sample}-junction-${donor}.tsv" 2> "work/aie-${sample}-junction-${donor}.log"
+    sql_junction=$(awk -F, -v c="$cell" '$2==c {n=$3} END {print n+0}' "work/sql-junction-${donor}.csv")
+    oracle_junction=$(awk -F '\t' -v c="$cell" '$1=="cell" && $2==c {n=$3} END {print n+0}' "work/aie-${sample}-junction-${donor}.tsv")
+    check_equal "later junction ${donor} sample_${sample}" "$sql_junction" "$oracle_junction"
+  done
 done
 
 for sample in a b; do

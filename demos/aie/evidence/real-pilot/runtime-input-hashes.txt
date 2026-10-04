@@ -1,0 +1,5 @@
+d5d0963915960d3c26cf289434f864d6b3c6b23807a09b23d92fbb26b65de616  demos/aie/work/real-pilot/pilot.bam
+067786eb8e3937da50c31e50f33fad5a85ee43d4b74173d4e3924e8df778d990  demos/aie/work/real-pilot/source.bam.bai
+d4ee662d52379257152c5fd6962014e1cc01375aad39f2047d9b107cc783f7ca  demos/aie/work/real-pilot/source-first-1MiB.bam.part
+9a39da4da6da65b5cc6b2a2be38b7cabfe72b493ba4a4fb59809fc581af39484  /usr/lib/R/site-library/Rduckhts/duckhts_extension/build/duckhts.duckdb_extension
+9b0c64b1d53783296a96dafae66173021e3f16168d471379b4b49af0ac6cfdea  demos/aie/.gravlax/target/release/aie

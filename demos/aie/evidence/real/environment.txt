@@ -1,0 +1,5 @@
+DuckDB: v1.5.1 (Variegata) 7dbb2e646f
+Gravlax: aie 0.2.3
+R: R version 4.6.0 (2026-04-24)
+Host: Linux 6.8.0-78-generic #78-Ubuntu SMP PREEMPT_DYNAMIC Tue Aug 12 11:34:18 UTC 2025 Ubuntu-2404-noble-amd64-base x86_64 root root root
+Source/derived BAMs: tmpfs; counting contract: CB+UR labels/families, not Gravlax UMI classes; no equal-output speedup claim
